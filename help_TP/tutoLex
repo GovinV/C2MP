@@ -1,0 +1,37 @@
+Lex(ubuntu FLex):
+	=> Gén d'analyseur lexical
+		->Principe : lit une prec d'un analyseur lexical et genere le code c qui l'implé
+			->specif : couple (regex,action)
+		-> Forme générale d'un fichier lex(extension .l)
+
+		Structure en 3 Parties:
+		-> Section des définitions (C et/ou Lex)
+
+			-raccourci pour les regex, à utiliser ensuite entre {}
+			-options Lex:
+			-Déclarattions C (Headers et Variables Global) entre %{ et %} en début de ligne
+			balise pour fin de section en début de ligne : %%
+		-> Section des règles lexicales
+			-Liste de couples(regex/actions en C)
+				=>Regex: en début de ligne(sinon il pense que on cherche les mots avec les espaces ou tab)
+				=>Action: Instruction ou bloc de code C({}) et qui commence sur la meme ligne que la regex
+			%%
+		-> section code C
+			=> Code C
+			%%
+
+
+	=> Fontionnement:
+		-> Lex fournit une fonction yylex() qui lance l'analyse lexi sur le ficher ouvert pointé par la var Global yyin (de type FILE*)
+		-> yylex() parcout le fichier à analyser et tenter de detecter LES plus lonGUES sequences de symboles qui correspondent à une regex:
+			-> en cas d'égalité , le première dans la liste est prioritaire
+			-> dans le corps de le l'action, on peut utiliser les vars globals suivantes:
+				-yytext qui pounte vers la chaine reconnue
+		-> Par déf, les symboles non reconnues par une regex sont écrits sur la sortie standard
+		-> yylex() termine quand: 
+			-le fichier est parcouru en entier
+			-quand une action fait un return (entier)
+			-quand on appelle yyterminate()
+
+Compi de lex.cc.c :
+gcc lex.cc.y -lcl

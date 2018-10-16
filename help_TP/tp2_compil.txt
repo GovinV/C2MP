@@ -1,0 +1,94 @@
+TP2:
+
+en lex => Regex
+avec yacc => grammaire
+
+=> sur linux, yacc = bizon
+
+
+makefile:
+prefixe=exo1
+
+all: y.tab.o lex.yy.o
+	gcc y.tab.o lex.yy.o -ly -lfl -o $(prefixe)
+
+y.tab.o: $(prefixe).y
+	yacc -d $(prefixe).y
+	gcc -c y.tab.c
+
+lex.yy.o: $(prefixe).l y.tab.h
+	lex $(prefixe).l
+	gcc -c lex.yy.c
+
+clean:
+	rm -f *.o y.tab.c y.tab.h lex.yy.c a.out $(prefixe)
+
+
+
+Structure Fichier Yacc
+
+/* Déclaration c & yacc */
+
+- déclaration c entre %{ }%
+- déclaration Yacc :
+	- %Token pour def les tokens
+	- %left / %right : pour def associativité & priorités
+	- %type / %union : pour gerer les types
+
+
+
+%%
+
+/* Règles de trad */
+Couples production/action(optionnelle)
+exemple:
+
+C-> cC | d   
+	en Yacc 
+C : 'c'C  {printf("action\n");}
+  | 'd'   {___________________}
+  ;                            
+
+
+
+%%
+
+/* Fonction auxiliare */
+Code C
+	On y lance l'analyse syntaxiqueen appelant yyarse()
+	elle nécessite int yylex(); => int représente l'unité lexical
+
+
+
+
+
+Exo1:
+yacc -v pour avoir un fichier avec les automates
+On peut que teste une fois apres ça foire
+
+
+
+
+Exo2:
+
+
+Pour faire des tokens
+dans yacc: 
+ajouter dans la zone décla yacc
+%token NOM_TOKEN 
+appeler yacc avec l'option -d => genere y.tab.h
+tokens sera un #define
+
+dans lex:
+dans la  zone décla c en lex
+faire include de y.tab.h
+action concerné faire return de NOM_TOKEN
+
+Chq symbole (termi ou non) peut porter un valeur (par def, un entier)
+dans chq action, on peut les utiliser ou les def.
+on y associe de la meme maniere suiante dans les action:
+-$$ pour les non termi de gauche
+-$i pour le ieme el à droite
+
+E: E '+' E
+$$ $1    $3
