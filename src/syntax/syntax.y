@@ -2,6 +2,8 @@
 	#include <stdio.h>
 	int yylex();
 	void yyerror(char*);
+
+  FILE *yyin, *yyout;
 %}
 
 
@@ -30,9 +32,15 @@ E : E '+' E   {printf("E: E + E\n");
 
 %%
 
-int main()
+int main(int argc, char *argv[])
 {
-	printf("hello\n");
-	yyparse();
-	return 0;
+  if(argc != 2)
+  {
+    return 1;
+  }
+
+  yyin = fopen(argv[1], "r");
+  yyout = fopen(stdout, "w");
+  yyparse();
+  return 0;
 }

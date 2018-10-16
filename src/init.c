@@ -1,4 +1,4 @@
-#include "stdio.h"
+/*#include "stdio.h"
 #include "stdlib.h"
 
 static char table_des_symboles[];
@@ -52,4 +52,4 @@ int symbole_2_index(char symbole)
             return i;
     }
     return -1;
-}
+}*/

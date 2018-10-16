@@ -47,7 +47,7 @@ OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o) $(LEX_OUTPUT_OBJ
 # DEPS = $(OBJECTS:.o=.d)
 
 # flags #
-COMPILE_FLAGS = -Wall -Wextra -g
+COMPILE_FLAGS = #-Wall -Wextra -g
 LEX_FLAGS = 
 YACC_FLAGS = -d
 INCLUDES = -I include/ -I /usr/local/include
@@ -72,9 +72,9 @@ dirs:
 # checks the executable and symlinks to the output
 .PHONY: all
 all: $(BIN_PATH)/$(BIN_NAME)
-	# @echo "Making symlink: $(BIN_NAME) -> $<"
-	# @$(RM) $(BIN_NAME)
-	# @ln -s $(BIN_PATH)/$(BIN_NAME) $(BIN_NAME)
+	@echo "Making symlink: $(BIN_NAME) -> $<"
+	@$(RM) $(BIN_NAME)
+	@ln -s $(BIN_PATH)/$(BIN_NAME) $(BIN_NAME)
 
 # Creation of the executable
 $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)# $(YACCS_C) $(LEXS_C)
