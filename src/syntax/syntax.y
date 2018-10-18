@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
   }
 
   yyin = fopen(argv[1], "r");
-  yyout = fopen(stdout, "w");
+  yyout = stdout;
   yyparse();
   return 0;
 }
