@@ -18,7 +18,9 @@
 [#()+*\\$]  { return yytext[0];}
 
 [\n]    { return yytext[0];}
+<<EOF>> { static int once = 0; return once++ ? 0 : '\n'; }
 .	{ printf("car inconnu : %s\n",yytext); }
+
 
 %%
 
