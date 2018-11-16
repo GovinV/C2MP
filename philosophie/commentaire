@@ -1,0 +1,1 @@
+Un commentaire non termine ("/*" sans "*/") ne compile pas, preuve dans le fichier commentaire.c qui ne compile pas

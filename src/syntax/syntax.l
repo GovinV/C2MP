@@ -4,13 +4,13 @@
 	#include "y.tab.h"
 %}
 
-
 %%
 
+"/*"((\*+[^/*])|([^*]))*\**"*/"	{ yylval = 'm'; return COMMENT; } // extremely unefficient way to catch a multiple line C comment
+"//"[^\n]*"\n"			{ yylval = yytext[2]; return COMMENT; } // single line C comment
 
-[a\ ]	{ return yytext[0];}
-[\n]	{ yylval = yytext[0]; return NEWLINE;}
-.	{ printf("car inconnu : %s\n",yytext); }
+[a\n]				{ return yytext[0]; }
+.				{ printf("car inconnu : %s\n",yytext); }
 
 
 %%

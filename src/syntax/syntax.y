@@ -3,19 +3,26 @@
 	int yylex();
 	void yyerror(char*);
 
-  FILE *yyin, *yyout;
+	FILE *yyin, *yyout;
+	int commentNum = 0;
 %}
 
 
 %token TYPE
 %token ENTIER
+%token COMMENT
 %token NEWLINE
 %token SPACES
-%left '+' 
+%left '+'
 %left '*'
 %%
 
-ROOT: SEPARATION DECLARATIONS
+ROOT : 'a' ROOT
+	| '\n' ROOT
+	| COMMENT ROOT {++commentNum;printf("Commmentaire trouve : %c\n", $1);}
+	|;
+
+/*ROOT: SEPARATION DECLARATIONS
 	| DECLARATIONS
 	;
 DECLARATIONS: DECLARATION SEPARATION DECLARATIONS
@@ -46,7 +53,7 @@ PRECOMPILERLINE: LETTERORNUMBER
 	|
 	;
 FUNCTION: 'a'
-	;
+	;*/
 
 /*axiom: E '\n' {printf("val = %d\n",$1);}
      ;
@@ -70,14 +77,15 @@ E : E '+' E   {printf("E: E + E\n");
 
 int main(int argc, char *argv[])
 {
-  if(argc != 2)
-  {
-    return 1;
-  }
+	if(argc != 2)
+	{
+		return 1;
+	}
 
-  yyin = fopen(argv[1], "r");
-  yyout = stdout;
-  yyparse();
-  printf("c bon\n");
-  return 0;
+	yyin = fopen(argv[1], "r");
+	yyout = stdout;
+	yyparse();
+	printf("End of parsing\n");
+	printf("Found %d comments\n", commentNum);
+	return 0;
 }
