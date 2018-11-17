@@ -7,19 +7,24 @@
 	int commentNum = 0;
 %}
 
+%union
+{
+	char *string;
+}
 
 %token TYPE
 %token ENTIER
 %token COMMENT
 %token NEWLINE
 %token SPACES
+%token SYMBOL
 %left '+'
 %left '*'
 %%
 
 ROOT : 'a' ROOT
 	| '\n' ROOT
-	| COMMENT ROOT {++commentNum;printf("Commmentaire trouve : %c\n", $1);}
+	| SYMBOL ROOT {++commentNum;printf("%x\n", $1);printf("Symbole trouve : %s\n", $1.string);}
 	|;
 
 /*ROOT: SEPARATION DECLARATIONS
@@ -86,6 +91,6 @@ int main(int argc, char *argv[])
 	yyout = stdout;
 	yyparse();
 	printf("End of parsing\n");
-	printf("Found %d comments\n", commentNum);
+	printf("Found %d symbols\n", commentNum);
 	return 0;
 }
