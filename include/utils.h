@@ -5,10 +5,14 @@
 #define PRECISION   1
 #define ROUNDING    2
 
-struct pragma 
+struct pragmaExt 
 {
-    int precision;
-    const char * rounding;
+    char * extension;
+    union 
+    {
+        int precision;
+        char * rouding;
+    };
 };
 
 /**
