@@ -5,13 +5,18 @@
 #define PRECISION   1
 #define ROUNDING    2
 
+/**
+ * @brief Cette structure décrit une extension pour un pragma. Contient le nom
+ * de l'extension (precision ou rounding) ainsi que la valeur, soit un int soit
+ * une chaine de caractère.
+ */
 struct pragmaExt 
 {
     char * extension;
     union 
     {
         int precision;
-        char * rouding;
+        char * rounding;
     };
 };
 
