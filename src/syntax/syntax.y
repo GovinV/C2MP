@@ -42,39 +42,39 @@ P_PRAGMA:
   ;
 
 P_EXTENSION:
-  P_EXTENSION ' ' EXTENSION {printf("Passe dans 2\n");}
+   EXTENSION P_EXTENSION {printf("Passe dans 2\n");}
   | { printf(" passe vide\n");}
   ;
 
 EXTENSION: 
-  ID SPACE '(' SPACE INTEGER SPACE ')' SPACE 
+  SYMBOL '(' INTEGER ')' ' '
            { 
               int type;
               printf("Passe preci\n");
               if ( (type = checkExtension($1) ) == ERROR ) 
               {
                 printf("Not supported %s\n",$1);
-                return 1;
+                // return 1;
               }
               if ( type == PRECISION ) 
               {
                 printf("Ext %s\n",$1);
-                $$.precision = $5;
+                $$.precision = $3;
               }
            }
-  | ID SPACE '(' SPACE ID SPACE ')' SPACE
+  | SYMBOL '(' SYMBOL ')' ' '
            { 
               int type;
               printf("Passe roundings\n");
               if ( (type=checkExtension($1) ) == ERROR ) 
               {
                 printf("Not supported %s\n",$1);
-                return 1;
+                // return 1;
               }
               if (type == ROUNDING) 
               {
                 printf("Ext %s\n",$1);
-                $$.rounding = $5;
+                $$.rounding = $3;
               }
            }
   ;
@@ -82,10 +82,10 @@ EXTENSION:
 /**
  * Not necessary space
  */
-SPACE: 
-  ' '
-  |
-  ;
+// SPACE: 
+//   ' '
+//   |
+//   ;
 
 %%
 
