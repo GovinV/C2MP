@@ -25,13 +25,13 @@
 										return FLOAT;
 									}
 
-([_]|[a-z]|[A-Z])([_]|[a-z]|[A-Z]|[0-9])+	{ 
+
+([_]|[a-z]|[A-Z])([_]|[a-z]|[A-Z]|[0-9])*	{ 
 										yylval.string = strdup(yytext); 
 									  	return SYMBOL; 
 									}
 
 [ \t\n]+							{}
-
 .									{ 
 										return yytext[0]; 
 									}

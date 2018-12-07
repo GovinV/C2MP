@@ -9,3 +9,14 @@ int checkExtension(char * s)
         return ROUNDING;
     return ERROR;
 }
+
+int parseFct(char *symbol)
+{
+    if (strncmp(symbol, "sqrtf", 5) == 0)
+        return SQRTF;
+    if (strncmp(symbol, "powf", 4) == 0)
+        return POWF;
+    if (strncmp(symbol, "sinf", 4) == 0)
+        return SINF;
+    return UNKNOWN;
+}
