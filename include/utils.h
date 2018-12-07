@@ -10,15 +10,7 @@
  * de l'extension (precision ou rounding) ainsi que la valeur, soit un int soit
  * une chaine de caractère.
  */
-struct pragmaExt 
-{
-    char * extension;
-    union 
-    {
-        int precision;
-        char * rounding;
-    };
-};
+
 
 /**
  * @brief Vérifie l'existance de l'extension du pragma entrée en paramètre.
