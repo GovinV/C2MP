@@ -31,6 +31,18 @@
 									  	return SYMBOL; 
 									}
 
+if									{
+										return IF;
+									}
+
+while								{
+										return WHILE;
+									}
+
+for									{
+										return FOR;
+									}						
+
 [ \t\n]+							{}
 .									{ 
 										return yytext[0]; 
