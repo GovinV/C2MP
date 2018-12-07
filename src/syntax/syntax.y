@@ -40,6 +40,12 @@
             float valueFloat;
         };
     } vars;
+	
+	typedef struct insQuad{
+		char op;
+		int val1;
+		int val2;
+	}insQuad;
 }
 
 %token <string>     ID
@@ -62,6 +68,7 @@
 %type <nvalue>      EXPR
 %type <nvalue>      NUMBER
 %type <vars>        VAR
+%type <insQuad>     INSTRUC
 
 %left '*' '/'
 %left '+' '-'
@@ -117,6 +124,7 @@ INSTRUC:
 	| WHILE '(' CONDITION ')' INSTRUC
 	| FOR '(' INTRUC ';' CONDITION ';' INSTRUC ')' INSTRUC 
 	| AFF ';'
+	|
 	;
 
 CONDITION:
@@ -132,8 +140,7 @@ CONDITIONpp:
 	| COMPARISON
 	| EXPR
 	;
-
->>>>>>> Stashed changes
+  
 COMPARISON:
 	EXPR '<' EXPR
 	| EXPR '>' EXPR
