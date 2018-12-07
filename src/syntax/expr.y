@@ -32,7 +32,7 @@
 
 }
 
-%token <value>     INTEGER
+%token <value>      INTEGER
 %token <fvalue>     FLOAT
 %token <string>     PRAGMA
 %token <string>     SYMBOL
@@ -72,8 +72,13 @@ EXPR:
     | NUMBER        { printf("EXPR = NUMBER\n"); }
     ;
 
-SQRT:
-      SQRT '(' EXPR ')'
+FCT:
+      SYMBOL '(' EXPR ARG ')'
+    ;
+
+ARG:
+      ',' EXPR ARG
+    | 
     ;
 
 %%
