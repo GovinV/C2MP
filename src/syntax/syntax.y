@@ -25,6 +25,21 @@
 			char *  rounding;
 		};
 	} extension;
+    union 
+    {
+      int valueInt;
+      float valueFloat;
+    } nvalue;
+
+    struct
+    {
+        const char * name;
+        int ref;
+        union{
+            int valueInt;
+            float valueFloat;
+        };
+    } vars;
 }
 
 %token <string>     ID
@@ -32,7 +47,14 @@
 %token <fvalue>     FLOAT
 %token <string>     PRAGMA
 %token <string>     SYMBOL
+
 %type <extension>   EXTENSION
+%type <nvalue>      EXPR
+%type <nvalue>      NUMBER
+%type <vars>        VAR
+
+%left '*' '/'
+%left '+' '-'
 
 
 %%
@@ -110,6 +132,42 @@ COMPARISON:
 	| EXPR NEQ EXPR
 	;
 
+AFF: 
+      VAR '=' EXPR ';'      { printf("VAR = EXPR\n"); }
+    | VAR '=' FCT ';'       { printf("VAR = FCT\n"); }
+    | '(' VAR '=' EXPR ')' 
+    ;
+
+NUMBER: 
+      INTEGER       { printf("NUMBER = INTEGER = %d\n", $1); }
+    | FLOAT         { printf("NUMBER = FLOAT = %f\n", $1); }
+    ;
+
+EXPR: 
+      EXPR '+' EXPR { printf("EXPR + EXPR\n"); }
+    | EXPR '*' EXPR { printf("EXPR * EXPR\n"); }
+    | EXPR '-' EXPR { printf("EXPR - EXPR\n"); }
+    | EXPR '/' EXPR { printf("EXPR / EXPR\n"); }
+    | '(' EXPR ')'  { printf("(EXPR)\n"); }
+    | SYMBOL        { printf("EXPR = SYMBOL %s\n", $1); }
+    | NUMBER        { printf("EXPR = NUMBER\n"); }
+    ;
+
+FCT:
+      SYMBOL '(' EXPR ARG ')' 
+      { printf("FCT %s\n", $1); 
+        if (parseFct($1) == UNKNOWN) printf("Unknown function\n"); 
+      }
+    ;
+
+VAR: 
+      SYMBOL        { printf("VAR %s\n", $1); }
+    ;
+
+ARG:
+      ',' EXPR ARG
+    | 
+    ;
 
 
 %%
@@ -118,6 +176,7 @@ int main(int argc, char *argv[])
 {
 	if(argc != 2)
 	{
+		fprintf(stderr, "Erreur arg manquant\n");
 		return 1;
 	}
  
