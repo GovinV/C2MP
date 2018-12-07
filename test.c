@@ -1,2 +1,1 @@
-#pragma MPC precision ( 215 ) dez ( dez )
-
+#pragma MPC precision(215) dez(dez) 
