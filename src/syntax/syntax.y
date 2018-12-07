@@ -47,6 +47,16 @@
 %token <fvalue>     FLOAT
 %token <string>     PRAGMA
 %token <string>     SYMBOL
+%token 				OR
+%token 				AND
+%token 				GTE
+%token 				LTE
+%token 				IF
+%token 				FOR
+%token 				WHILE
+%token				NEQ
+%token 				EQ
+
 
 %type <extension>   EXTENSION
 %type <nvalue>      EXPR
@@ -102,11 +112,11 @@ EXTENSION:
 	;
 
 INSTRUC:
-	'{' INTRUC '}'
+	'{' INSTRUC '}'
 	| IF '(' CONDITION ')' INSTRUC
-	| WHILE '(' CONDITION ')' INTRUC
+	| WHILE '(' CONDITION ')' INSTRUC
 	| FOR '(' INTRUC ';' CONDITION ';' INSTRUC ')' INSTRUC 
-	| AFF
+	| AFF ';'
 	;
 
 CONDITION:
@@ -120,9 +130,10 @@ CONDITIONp:
 CONDITIONpp:
 	'(' CONDITION ')'
 	| COMPARISON
-	| TRUE
-	| FALSE;
-      SYMBOL '(' EXPR ARG ')' 
+	| EXPR
+	;
+
+>>>>>>> Stashed changes
 COMPARISON:
 	EXPR '<' EXPR
 	| EXPR '>' EXPR
