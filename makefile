@@ -29,10 +29,11 @@ YACC_OUTPUT_OBJECT = $(BUILD_PATH)/y.tab.o
 SOURCES = $(shell find $(SRC_PATH) -name '*.$(SRC_EXT)' | sort -k 1nr | cut -f2-)
 # FIND LEX FILES
 SYNTAX_FILE = syntax
+SYNTAX_FILE_2 = expr
 LEX = $(LEX_PATH)/$(SYNTAX_FILE).$(LEX_EXT)
 # FIND YACC FILES
 #TEST = ${shell echo `find $(YACC_PATH) -name '*.$(YACC_EXT)' | sort -k 1nr | cut -f2-`}
-YACC = $(LEX_PATH)/$(SYNTAX_FILE).$(YACC_EXT)
+YACC = $(LEX_PATH)/$(SYNTAX_FILE_2).$(YACC_EXT)
 
 
 # FIND LEX FILES
