@@ -122,7 +122,7 @@ CONDITIONpp:
 	| COMPARISON
 	| TRUE
 	| FALSE;
-
+      SYMBOL '(' EXPR ARG ')' 
 COMPARISON:
 	EXPR '<' EXPR
 	| EXPR '>' EXPR
@@ -152,7 +152,7 @@ EXPR:
     | SYMBOL        { printf("EXPR = SYMBOL %s\n", $1); }
     | NUMBER        { printf("EXPR = NUMBER\n"); }
     ;
-
+  
 FCT:
       SYMBOL '(' EXPR ARG ')' 
       { printf("FCT %s\n", $1); 
