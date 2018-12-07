@@ -46,15 +46,15 @@
 
 %%
 
-Axiom: AFF;
-
-AFF: 
-      VAR '=' EXPR ';'   { printf("VAR = EXPR\n"); }
-    | '(' VAR '=' EXPR ')'
+Axiom: 
+      AFF
+    | FCT
     ;
 
-VAR: 
-      SYMBOL        { printf("VAR %s\n", $1); }
+AFF: 
+      VAR '=' EXPR ';'      { printf("VAR = EXPR\n"); }
+    | VAR '=' FCT ';'       { printf("VAR = FCT\n"); }
+    | '(' VAR '=' EXPR ')' 
     ;
 
 NUMBER: 
@@ -73,7 +73,14 @@ EXPR:
     ;
 
 FCT:
-      SYMBOL '(' EXPR ARG ')'
+      SYMBOL '(' EXPR ARG ')' 
+      { printf("FCT %s\n", $1); 
+        if (parseFct($1) == UNKNOWN) printf("Unknown function\n"); 
+      }
+    ;
+
+VAR: 
+      SYMBOL        { printf("VAR %s\n", $1); }
     ;
 
 ARG:
