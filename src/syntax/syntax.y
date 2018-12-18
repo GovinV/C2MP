@@ -10,7 +10,7 @@
 	int commentNum = 0;
 %}
 
-%union 
+%union
 {
 	char  * string;
 	int     value;
@@ -41,11 +41,12 @@
         };
     } vars;
 	
-	typedef struct insQuad{
+	struct insQuad{
+		int aff;
 		char op;
 		int val1;
 		int val2;
-	}insQuad;
+	} insQuad;
 }
 
 %token <string>     ID
@@ -68,7 +69,8 @@
 %type <nvalue>      EXPR
 %type <nvalue>      NUMBER
 %type <vars>        VAR
-%type <insQuad>     INSTRUC
+%type <insQuad>     INSTRUCTION
+%type <int>         CONDITION
 
 %left '*' '/'
 %left '+' '-'
@@ -76,8 +78,8 @@
 
 %%
 
-P_PRAGMA: 
-	PRAGMA P_EXTENSION {printf("Passe dans 1\n");}
+P_PRAGMA:
+	PRAGMA P_EXTENSION INSTRUCTION {printf("Passe dans 1\n");}
 	;
 
 P_EXTENSION:
@@ -85,9 +87,9 @@ P_EXTENSION:
 	| { printf(" passe vide\n");}
 	;
 
-EXTENSION: 
+EXTENSION:
 	SYMBOL '(' INTEGER ')'
-	 { 
+	 {
 		int type;
 		printf("Passe preci\n");
 		if ( (type = checkExtension($1) ) == ERROR ) 
@@ -102,7 +104,7 @@ EXTENSION:
 		}
 	 }
 	| SYMBOL '(' SYMBOL ')'
-	 { 
+	 {
 		int type;
 		printf("Passe roundings\n");
 		if ( (type=checkExtension($1) ) == ERROR ) 
@@ -118,18 +120,18 @@ EXTENSION:
 	 }
 	;
 
-INSTRUC:
-	'{' INSTRUC '}'
-	| IF '(' CONDITION ')' INSTRUC
-	| WHILE '(' CONDITION ')' INSTRUC
-	| FOR '(' INTRUC ';' CONDITION ';' INSTRUC ')' INSTRUC 
+INSTRUCTION:
+    '{' INSTRUCTION '}'
+	| IF '(' CONDITION ')' INSTRUCTION
+	| WHILE '(' CONDITION ')' INSTRUCTION
+	| FOR '(' INSTRUCTION ';' CONDITION ';' INSTRUCTION ')' INSTRUCTION
 	| AFF ';'
-	|
+	| ';'
 	;
 
 CONDITION:
-	CONDITIONp OR CONDITIONp;
-	| CONDITIONp;
+    CONDITIONp OR CONDITIONp
+    | CONDITIONp;
 
 CONDITIONp:
 	CONDITIONpp AND CONDITIONpp
@@ -138,7 +140,7 @@ CONDITIONp:
 CONDITIONpp:
 	'(' CONDITION ')'
 	| COMPARISON
-	| EXPR
+	/*| EXPR*/ // TODO : while(1)
 	;
   
 COMPARISON:
@@ -148,20 +150,21 @@ COMPARISON:
 	| EXPR GTE EXPR
 	| EXPR EQ EXPR
 	| EXPR NEQ EXPR
+    /*| EXPR*/
 	;
 
 AFF: 
-      VAR '=' EXPR ';'      { printf("VAR = EXPR\n"); }
-    | VAR '=' FCT ';'       { printf("VAR = FCT\n"); }
-    | '(' VAR '=' EXPR ')' 
+      'a'/*SYMBOL*/ '=' EXPR          { printf("VAR = EXPR\n"); }
+    | 'a'/*SYMBOL*/ '=' FCT           { printf("VAR = FCT\n"); }
+    | '(' SYMBOL '=' EXPR ')'
     ;
 
-NUMBER: 
+NUMBER:
       INTEGER       { printf("NUMBER = INTEGER = %d\n", $1); }
     | FLOAT         { printf("NUMBER = FLOAT = %f\n", $1); }
     ;
 
-EXPR: 
+EXPR:
       EXPR '+' EXPR { printf("EXPR + EXPR\n"); }
     | EXPR '*' EXPR { printf("EXPR * EXPR\n"); }
     | EXPR '-' EXPR { printf("EXPR - EXPR\n"); }
@@ -170,17 +173,17 @@ EXPR:
     | SYMBOL        { printf("EXPR = SYMBOL %s\n", $1); }
     | NUMBER        { printf("EXPR = NUMBER\n"); }
     ;
-  
+
 FCT:
-      SYMBOL '(' EXPR ARG ')' 
+      SYMBOL '(' /*EXPR ARG*/ ')' /* PEUTETRE QUON SEN FOUT DES ARGUMENTS */
       { printf("FCT %s\n", $1); 
         if (parseFct($1) == UNKNOWN) printf("Unknown function\n"); 
       }
     ;
 
-VAR: 
-      SYMBOL        { printf("VAR %s\n", $1); }
-    ;
+/*VAR:
+      '^'        { printf("VAR %s\n", $1); }
+    ;*/
 
 ARG:
       ',' EXPR ARG

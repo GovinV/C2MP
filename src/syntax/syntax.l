@@ -15,35 +15,51 @@
 										return PRAGMA; 
 									}
 
-[+-]?0|[1-9][0-9]*					{
-										yylval.value = atoi(yytext);
-										return INTEGER;
-									}
-
-[+-]?(0|[1-9][0-9]*[.])?[0-9]+		{
+[-+]?[0-9]*\.[0-9]*[fd]?([eE][-+]?[0-9]+)? {
 										yylval.fvalue = atof(yytext);
 										return FLOAT;
 									}
 
-
-([_]|[a-z]|[A-Z])([_]|[a-z]|[A-Z]|[0-9])*	{ 
-										yylval.string = strdup(yytext); 
-									  	return SYMBOL; 
+[+-]?[0-9]+					{ /*[+-]?0|[1-9][0-9]*/
+										yylval.value = atoi(yytext);
+										return INTEGER;
 									}
 
 if									{
 										return IF;
 									}
 
-while								{
+while								{ // PB A REGLER : VARIABLE QUI SAPPELLE WHILE1
 										return WHILE;
 									}
 
 for									{
 										return FOR;
-									}						
+									}
 
-[ \t\n]+							{}
+[<][=]                              {
+										return LTE;
+									}
+
+[>][=]                              {
+										return GTE;
+									}
+
+[=][=]                              {
+										return EQ;
+									}
+
+[!][=]                              {
+										return NEQ;
+									}
+
+
+a	{ /* ([_]|[a-z]|[A-Z])([_]|[a-z]|[A-Z]|[0-9])* */
+										yylval.string = strdup(yytext); 
+									  	return SYMBOL; 
+									}
+
+[ \t\n]+							{} // cOUNT ONLY FIRST AFTER PRAGMA
 .									{ 
 										return yytext[0]; 
 									}
