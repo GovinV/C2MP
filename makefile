@@ -50,7 +50,7 @@ OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o) $(LEX_OUTPUT_OBJ
 # flags #
 COMPILE_FLAGS = #-Wall -Wextra -g
 LEX_FLAGS = 
-YACC_FLAGS = -d
+YACC_FLAGS = -d -v
 INCLUDES = -I include/ -I /usr/local/include
 # Space-separated pkg-config libraries used by this project
 LIBS = -ly -lfl

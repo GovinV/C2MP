@@ -4,9 +4,9 @@
 int checkExtension(char * s)
 {
     if (strncmp(s, "precision", 9) == 0)
-        return PRECISION;
+        return 1;
     if (strncmp(s, "rounding", 8) == 0)
-        return ROUNDING;
+        return 2;
     return ERROR;
 }
 

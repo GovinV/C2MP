@@ -63,7 +63,8 @@
 %token 				WHILE
 %token				NEQ
 %token 				EQ
-
+%token				PRECISION
+%token 				ROUNDING
 
 %type <extension>   EXTENSION
 %type <nvalue>      EXPR
@@ -79,7 +80,7 @@
 %%
 
 P_PRAGMA:
-	PRAGMA P_EXTENSION INSTRUCTION {printf("Passe dans 1\n");}
+	PRAGMA P_EXTENSION '\n' INSTRUCTION {printf("Passe dans 1\n");}
 	;
 
 P_EXTENSION:
@@ -87,10 +88,11 @@ P_EXTENSION:
 	| { printf(" passe vide\n");}
 	;
 
+
 EXTENSION:
-	SYMBOL '(' INTEGER ')'
+	PRECISION '(' INTEGER ')'
 	 {
-		int type;
+		/*int type;
 		printf("Passe preci\n");
 		if ( (type = checkExtension($1) ) == ERROR ) 
 		{
@@ -100,12 +102,13 @@ EXTENSION:
 		if ( type == PRECISION ) 
 		{
 			printf("Ext %s\n",$1);
-			$$.precision = $3;
-		}
+		}*/
+		$$.precision = $3;
+		printf("precision\n");
 	 }
-	| SYMBOL '(' SYMBOL ')'
+	| ROUNDING '(' SYMBOL ')'
 	 {
-		int type;
+		/*int type;
 		printf("Passe roundings\n");
 		if ( (type=checkExtension($1) ) == ERROR ) 
 		{
@@ -115,8 +118,9 @@ EXTENSION:
 		if (type == ROUNDING) 
 		{
 			printf("Ext %s\n",$1);
-			$$.rounding = $3;
-		}
+		}*/
+		$$.rounding = $3;
+		printf("rounding\n");
 	 }
 	;
 
@@ -138,9 +142,9 @@ CONDITIONp:
 	| CONDITIONpp;
 
 CONDITIONpp:
-	'(' CONDITION ')'
-	| COMPARISON
-	/*| EXPR*/ // TODO : while(1)
+	/*'(' CONDITION ')'
+	| */COMPARISON
+	| EXPR // TODO : while(1)
 	;
   
 COMPARISON:
@@ -150,14 +154,21 @@ COMPARISON:
 	| EXPR GTE EXPR
 	| EXPR EQ EXPR
 	| EXPR NEQ EXPR
-    /*| EXPR*/
+    | '(' COMPARISON ')'
 	;
 
+RVALUE:
+	EXPR
+	|  FCT
+	;	
+
+
 AFF: 
-      'a'/*SYMBOL*/ '=' EXPR          { printf("VAR = EXPR\n"); }
-    | 'a'/*SYMBOL*/ '=' FCT           { printf("VAR = FCT\n"); }
-    | '(' SYMBOL '=' EXPR ')'
+    SYMBOL '=' RVALUE          { printf("VAR = osef\n"); }
+    | '(' AFF ')'
     ;
+
+
 
 NUMBER:
       INTEGER       { printf("NUMBER = INTEGER = %d\n", $1); }
@@ -171,7 +182,7 @@ EXPR:
     | EXPR '/' EXPR { printf("EXPR / EXPR\n"); }
     | '(' EXPR ')'  { printf("(EXPR)\n"); }
     | SYMBOL        { printf("EXPR = SYMBOL %s\n", $1); }
-    | NUMBER        { printf("EXPR = NUMBER\n"); }
+    /*| NUMBER        { printf("EXPR = NUMBER\n"); }*/
     ;
 
 FCT:

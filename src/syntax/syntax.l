@@ -2,6 +2,8 @@
 	#include <stdio.h>
 	#include <string.h>
 	#include "y.tab.h"
+	#include "utils.h"
+	int pragmaOn = 0;
 %}
 
 %%
@@ -12,6 +14,7 @@
 "//"[^\n]*"\n"						{}
 
 #pragma[ \t]+MPC[ \t]+				{
+										pragmaOn = 1;
 										return PRAGMA; 
 									}
 
@@ -24,7 +27,6 @@
 										yylval.value = atoi(yytext);
 										return INTEGER;
 									}
-
 if									{
 										return IF;
 									}
@@ -54,12 +56,27 @@ for									{
 									}
 
 
-a	{ /* ([_]|[a-z]|[A-Z])([_]|[a-z]|[A-Z]|[0-9])* */
-										yylval.string = strdup(yytext); 
+[_a-zA-Z][_a-zA-Z0-9]*	{ /*  */
+										yylval.string = strdup(yytext);
+										if(pragmaOn)
+										{
+											int type = checkExtension(yylval.string);
+											if(type == 1)
+												return PRECISION;
+											if(type == 2)
+												return ROUNDING;
+										}
+										 
 									  	return SYMBOL; 
 									}
-
-[ \t\n]+							{} // cOUNT ONLY FIRST AFTER PRAGMA
+[\n]+								{
+										if(pragmaOn)
+										{
+											pragmaOn = 0;
+											return yytext[0];
+										}
+									} // cOUNT ONLY FIRST AFTER PRAGMA
+[ \t\n]+							{} 
 .									{ 
 										return yytext[0]; 
 									}

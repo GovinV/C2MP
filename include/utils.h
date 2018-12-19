@@ -2,8 +2,7 @@
 #define __UTILS_C
 
 #define ERROR      -1
-#define PRECISION   1
-#define ROUNDING    2
+
 
 /**
  * Est-ce que ces macros ne seraient pas générés avec yacc?
