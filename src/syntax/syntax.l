@@ -18,12 +18,12 @@
 										return PRAGMA; 
 									}
 
-[-+]?[0-9]*\.[0-9]*[fd]?([eE][-+]?[0-9]+)? {
+[0-9]*\.[0-9]*[fd]?([eE][-+]?[0-9]+)? {
 										yylval.fvalue = atof(yytext);
 										return FLOAT;
 									}
 
-[+-]?[0-9]+					{ /*[+-]?0|[1-9][0-9]*/
+[0-9]+                              { /*[+-]?0|[1-9][0-9]*/
 										yylval.value = atoi(yytext);
 										return INTEGER;
 									}
@@ -53,6 +53,14 @@ for									{
 
 [!][=]                              {
 										return NEQ;
+									}
+
+[&][&]                              {
+										return AND;
+									}
+
+[|][|]                              {
+										return OR;
 									}
 
 
