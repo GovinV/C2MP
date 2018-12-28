@@ -5,8 +5,10 @@
 
 #define SYMBOL_MAX_STRING 42
 
-typedef enum {
+typedef enum 
+{
     INTEGER,
+    LABEL,
     STRING
 } type;
 
@@ -19,7 +21,7 @@ typedef struct symbol_s
     struct symbol_s *next;
 } Symbol;
 
-Symbol *symbol_alloc();
+Symbol *symbol_alloc(void);
 void symbol_free(Symbol *);
 Symbol *symbol_newtemp(Symbol **);
 Symbol *symbol_lookup(Symbol *, char *);
