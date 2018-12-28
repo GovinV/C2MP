@@ -1,93 +1,33 @@
 %{
-/*
-list of operators :
-< > : binary
-i s : <= (i) and >= (s)
-e E : binary == (e) and != (E)
-+ - * / : binary
-| : bitwise or
-& : bitwise and
-^ : xor
-O : logical or
-A : logical and
-
-
-m : unary -
-p : unary +
-! : logical not
-~ : bitwise not
-*/
-
-    #define C2MP_NUM_TYPE_FLOAT 0
-    #define C2MP_NUM_TYPE_INTEGER 1
-
-    #define C2MP_OPERATOR_BINARY_PLUS       '+'
-    #define C2MP_OPERATOR_BINARY_MINUS      '-'
-    #define C2MP_OPERATOR_BINARY_DOT        '*'
-    #define C2MP_OPERATOR_BINARY_DIVIDE     '/'
-
-    #define C2MP_OPERATOR_UNARY_PLUS        'p'
-    #define C2MP_OPERATOR_UNARY_MINUS       'm'
-
-    #define C2MP_OPERATOR_LOWER_THAN        '<'
-    #define C2MP_OPERATOR_GREATER_THAN      '>'
-    #define C2MP_OPERATOR_LOWER_OR_EQUAL    'i'
-    #define C2MP_OPERATOR_GREATER_OR_EQUAL  's'
-    #define C2MP_OPERATOR_EQUAL             'e'
-    #define C2MP_OPERATOR_NOT_EQUAL         'E'
-
-    #define C2MP_OPERATOR_LOGICAL_AND       'A'
-    #define C2MP_OPERATOR_LOGICAL_OR        'O'
-    #define C2MP_OPERATOR_LOGICAL_NOT       '!'
-    #define C2MP_OPERATOR_BITWISE_AND       '&'
-    #define C2MP_OPERATOR_BITWISE_OR        '|'
-    #define C2MP_OPERATOR_BITWISE_XOR       '^'
-    #define C2MP_OPERATOR_BITWISE_NOT       '~'
-
-    #define C2MP_CHARACTER_INTEGER          'n'
-    #define C2MP_CHARACTER_FLOAT            'f'
-    #define C2MP_CHARACTER_VARIABLE         'v'
-
-
-
-    #define C2MP_QUAD_ASSIGNMENT            '='
-    #define C2MP_QUAD_IF                    'I'
-    #define C2MP_QUAD_ELSE                  'z'
-    #define C2MP_QUAD_ENDIF                 '}'
-
-
-
-    #define MAX_VARIABLES 1024*8
-
-
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <string.h>
 	#include "utils.h"
+
 	int yylex();
 	void yyerror(char*);
  
 	FILE *yyin, *yyout;
 	int commentNum = 0;
 
-    typedef struct expressionAST expressionAST;
-    typedef struct semiQuad semiQuad;
-    typedef struct quad quad;
+typedef struct semiQuad semiQuad;
+typedef struct quad quad;
+typedef struct expressionAST expressionAST;
 
-    expressionAST *createExpressionAST(char operator, expressionAST *expr1, expressionAST *expr2);
-    expressionAST *createIntAST(int integer);
-    expressionAST *createFloatAST(float number);
-    expressionAST *createVariableAST(int variable);
-    void freeExpressionAST(expressionAST *expr);
-    void printExpressionAST(expressionAST *expr);
+expressionAST *createExpressionAST(char operator, expressionAST *expr1, expressionAST *expr2);
+expressionAST *createIntAST(int integer);
+expressionAST *createFloatAST(float number);
+expressionAST *createVariableAST(int variable);
+void freeExpressionAST(expressionAST *expr);
+void printExpressionAST(expressionAST *expr);
 
-    semiQuad *createSemiQuad(char operator, int assignment, expressionAST *expression);
-    semiQuad *concatSemiQuad(semiQuad *q1, semiQuad *q2);
-    void printSemiQuads(semiQuad *q1);
+int getVariableReference(const char name[]);
+int getReferenceFromName(const char name[]);
+const char *getNameFromReference(int reference);
 
-    int getVariableReference(const char name[]);
-    int getReferenceFromName(const char name[]);
-    const char *getNameFromReference(int reference);
+semiQuad *createSemiQuad(char operator, int assignment, expressionAST *expression);
+semiQuad *concatSemiQuad(semiQuad *q1, semiQuad *q2);
+void printSemiQuads(semiQuad *q1);
 %}
 
 %union
@@ -394,270 +334,7 @@ ARG:
 
 %%
 
-expressionAST *createExpressionAST(char operator, expressionAST *expr1, expressionAST *expr2)
-{
-    expressionAST *expr = malloc(sizeof(expressionAST));
-    expr->operator = operator;
-    expr->expression.e1 = expr1;
-    expr->expression.e2 = expr2;
-    return expr;
-}
 
-expressionAST *createIntAST(int integer)
-{
-    expressionAST *expr = malloc(sizeof(expressionAST));
-    expr->operator = 'n';
-    expr->valueInt = integer;
-    return expr;
-}
-
-expressionAST *createFloatAST(float number)
-{
-    expressionAST *expr = malloc(sizeof(expressionAST));
-    expr->operator = 'f';
-    expr->valueFloat = number;
-    return expr;
-}
-
-expressionAST *createVariableAST(int variable)
-{
-    expressionAST *expr = malloc(sizeof(expressionAST));
-    expr->operator = 'v';
-    expr->valueVariable = variable;
-    return expr;
-}
-
-
-void freeExpressionAST(expressionAST *expr)
-{
-    if(expr == NULL)
-    {
-        fprintf(stderr, "Warning, tried to free a NULL expression\n");
-        return;
-    }
-    switch(expr->operator)
-    {
-        case C2MP_OPERATOR_BINARY_PLUS:
-        case C2MP_OPERATOR_BINARY_MINUS:
-        case C2MP_OPERATOR_BINARY_DOT:
-        case C2MP_OPERATOR_BINARY_DIVIDE:
-        case C2MP_OPERATOR_LOWER_THAN:
-        case C2MP_OPERATOR_GREATER_THAN:
-        case C2MP_OPERATOR_LOWER_OR_EQUAL:
-        case C2MP_OPERATOR_GREATER_OR_EQUAL:
-        case C2MP_OPERATOR_EQUAL:
-        case C2MP_OPERATOR_NOT_EQUAL:
-        case C2MP_OPERATOR_BITWISE_AND:
-        case C2MP_OPERATOR_BITWISE_OR:
-        case C2MP_OPERATOR_BITWISE_XOR:
-        case C2MP_OPERATOR_LOGICAL_AND:
-        case C2MP_OPERATOR_LOGICAL_OR:
-            freeExpressionAST(expr->expression.e1);
-            freeExpressionAST(expr->expression.e2);
-            break;
-        case C2MP_OPERATOR_UNARY_MINUS: // unary minus
-        case C2MP_OPERATOR_UNARY_PLUS: // unary plus
-        case C2MP_OPERATOR_LOGICAL_NOT:
-        case C2MP_OPERATOR_BITWISE_NOT:
-            freeExpressionAST(expr->expression.e1);
-            break;
-        case C2MP_CHARACTER_INTEGER: // number
-        case C2MP_CHARACTER_FLOAT: // float
-        case C2MP_CHARACTER_VARIABLE: // variable
-            free(expr);
-            break;
-        default:
-            fprintf(stderr, "Warning, unknown expression operation : %c\n", expr->operator);
-    }
-}
-
-void printExpressionAST(expressionAST *expr)
-{
-    if(expr == NULL)
-    {
-        fprintf(stderr, "Warning, tried to print a NULL expression\n");
-        return;
-    }
-    switch(expr->operator)
-    {
-        case C2MP_OPERATOR_BINARY_PLUS:
-        case C2MP_OPERATOR_BINARY_MINUS:
-        case C2MP_OPERATOR_BINARY_DOT:
-        case C2MP_OPERATOR_BINARY_DIVIDE:
-        case C2MP_OPERATOR_LOWER_THAN:
-        case C2MP_OPERATOR_GREATER_THAN:
-        case C2MP_OPERATOR_LOWER_OR_EQUAL:
-        case C2MP_OPERATOR_GREATER_OR_EQUAL:
-        case C2MP_OPERATOR_EQUAL:
-        case C2MP_OPERATOR_NOT_EQUAL:
-        case C2MP_OPERATOR_BITWISE_AND:
-        case C2MP_OPERATOR_BITWISE_OR:
-        case C2MP_OPERATOR_BITWISE_XOR:
-        case C2MP_OPERATOR_LOGICAL_AND:
-        case C2MP_OPERATOR_LOGICAL_OR:
-            printf("(");
-            printExpressionAST(expr->expression.e1);
-            printf("%c", expr->operator);
-            printExpressionAST(expr->expression.e2);
-            printf(")");
-            break;
-        case C2MP_OPERATOR_UNARY_MINUS:
-        case C2MP_OPERATOR_UNARY_PLUS:
-        case C2MP_OPERATOR_LOGICAL_NOT:
-        case C2MP_OPERATOR_BITWISE_NOT:
-            printf("(");
-            printf("%c", expr->operator);
-            printExpressionAST(expr->expression.e1);
-            printf(")");
-            break;
-        case C2MP_CHARACTER_INTEGER: // number
-            printf("%d", expr->valueInt);
-            break;
-        case C2MP_CHARACTER_FLOAT: // float
-            printf("%f", expr->valueFloat);
-            break;
-        case C2MP_CHARACTER_VARIABLE: // variable
-            printf("(%s)", getNameFromReference(expr->valueVariable));
-            break;
-        default:
-            fprintf(stderr, "Warning, unknown expression operation : %c\n", expr->operator);
-    }
-}
-
-
-semiQuad *createSemiQuad(char operator, int assignment, expressionAST *expression)
-{
-    semiQuad *quad = malloc(sizeof(semiQuad));
-    quad->operator = operator;
-    quad->assignment = assignment;
-    quad->expression = expression;
-    quad->next = quad;
-    quad->previous = quad;
-
-    return quad;
-}
-
-// concatenates 2 quads or 2 quadlists
-semiQuad *concatSemiQuad(semiQuad *q1, semiQuad *q2)
-{
-    if(q2 == NULL)
-    {
-        return q1;
-    }
-    if(q1 == NULL)
-    {
-        return q2;
-    }
-
-    /*if(q2->next == q2)
-    {
-        q2->next = q1;
-        q2->previous = q1->previous;
-        q1->previous->next = q2;
-        q1->previous = q2;
-    }
-    else
-    {
-        q1->previous->next = q2;
-        q2->previous->next = q1;
-        q1->previous = q2->previous;
-        q2->previous = q1->previous;
-    }*/
-    semiQuad *head1 = q1;
-    semiQuad *head2 = q2;
-    semiQuad *tail1 = q1->previous;
-    semiQuad *tail2 = q2->previous;
-
-    head1->previous = tail2;
-    tail1->next = head2;
-    head2->previous = tail1;
-    tail2->next = head1;
-
-    return q1;
-}
-
-void printSemiQuads(semiQuad *q)
-{
-    if(q == NULL)
-    {
-        printf("no quad\n");
-    }
-
-    semiQuad *firstQuad = q;
-    semiQuad *currentQuad = q;
-
-    int indent = 0;
-
-    do
-    {
-        for(int i=0;i<indent;++i)
-        { // indent quads
-            printf("  ");
-        }
-
-        switch(currentQuad->operator)
-        {
-            case C2MP_QUAD_ASSIGNMENT:
-                printf("%s = ", getNameFromReference(currentQuad->assignment));
-                printExpressionAST(currentQuad->expression);
-                break;
-            case C2MP_QUAD_IF:
-                ++indent;
-                printf("if ");
-                printExpressionAST(currentQuad->expression);
-                break;
-            case C2MP_QUAD_ELSE:
-                printf("\b\belse");
-                break;
-            case C2MP_QUAD_ENDIF:
-                --indent;
-                printf("\b\bendif");
-                break;
-            default:
-                fprintf(stderr, "Warning, unknown semi quad operation : %d (%c)\n", currentQuad->operator, currentQuad->operator);
-        }
-        printf("\n");
-
-        currentQuad = currentQuad->next;
-    }while(currentQuad != firstQuad);
-}
-
-
-
-char *variables[MAX_VARIABLES];
-int variablesSize = 0;
-
-// if the variable is found, returns a reference, else -1
-int getVariableReference(const char name[])
-{
-    for(int i=0;i<variablesSize;++i)
-    {
-        if(strcmp(name, variables[i]) == 0)
-        {
-            return i;
-        }
-    }
-    return -1;
-}
-
-// if the variable is found, returns a reference, else creates one and returns it
-int getReferenceFromName(const char name[])
-{
-    int reference = getVariableReference(name);
-    if(reference == -1)
-    {
-        variables[variablesSize] = strdup(name);
-        return variablesSize++;
-    }
-
-    return reference;
-}
-
-// returns the name of the variable
-const char *getNameFromReference(int reference)
-{
-    return variables[reference];
-}
 
 int main(int argc, char *argv[])
 {

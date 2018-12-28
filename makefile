@@ -88,7 +88,8 @@ $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)# $(YACCS_C) $(LEXS_C)
 # Source file rules
 # After the first compilation they will be joined with the rules from the
 # dependency files to provide header dependencies
-$(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT)
+
+$(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT) $(YACC_OUTPUT_OBJECT)
 	@echo "Compiling: $< -> $@"
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -97,7 +98,7 @@ $(LEX_OUTPUT_OBJECT): $(YACC_OUTPUT_OBJECT) $(LEX)
 	$(LXX) $(LEX_FLAGS) -o $(LEX_OUTPUT_C) $(LEX) 
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $(LEX_OUTPUT_C) -o $(LEX_OUTPUT_OBJECT)
 
-$(YACC_OUTPUT_OBJECT): $(YACC) 
+$(YACC_OUTPUT_OBJECT): $(YACC)
 	$(YXX) $(YACC_FLAGS) $<
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c y.tab.c -o $(YACC_OUTPUT_OBJECT)
 	@mv y.tab.c y.tab.h $(BUILD_PATH)

@@ -3,9 +3,17 @@
 
 #include <stdbool.h>
 
-#define SYMBOL_MAX_STRING 42
+#include "utils.h"
 
-typedef enum 
+#define MAX_VARIABLES 1024*8
+
+//#define SYMBOL_MAX_STRING 42
+
+int getVariableReference(const char name[]);
+int getReferenceFromName(const char name[]);
+const char *getNameFromReference(int reference);
+
+/*typedef enum 
 {
     INTEGER,
     LABEL,
@@ -26,6 +34,7 @@ void symbol_free(Symbol *);
 Symbol *symbol_newtemp(Symbol **);
 Symbol *symbol_lookup(Symbol *, char *);
 Symbol *symbol_add(Symbol **, char *);
-void symbol_print(Symbol *);
+void symbol_print(Symbol *);*/
 
-#endif
+#endif // SYMBOL_H
+

@@ -1,6 +1,6 @@
 #include "../include/quad.h"
 
-#include <stdlib.h>
+/*#include <stdlib.h>
 #include <stdio.h>
 
 Quad *quad_init(char* op, Symbol *arg1, Symbol *arg2, Symbol *res)
@@ -101,4 +101,4 @@ void quad_print(Quad *quad)
             quad->arg1->id,quad->arg1->val
         );
     }
-}
+}*/

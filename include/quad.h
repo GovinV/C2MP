@@ -4,7 +4,7 @@
 #include "utils.h"
 #include "symbol.h"
 
-typedef enum 
+/*typedef enum 
 {
     OP_ADD,
     OP_SUBTRACT,
@@ -33,6 +33,6 @@ Quad* quad_init(char * op, Symbol* arg1, Symbol* arg2, Symbol* res);
 operation quad_operation(char* op);
 void quad_free(Quad *quad);
 void quad_add(Quad **dest, Quad *src);
-void quad_print(Quad *quad);
+void quad_print(Quad *quad);*/
 
 #endif
