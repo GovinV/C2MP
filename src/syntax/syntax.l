@@ -27,9 +27,14 @@
 										yylval.value = atoi(yytext);
 										return INTEGER;
 									}
-if									{
-										return IF;
-									}
+
+if                                  {
+                                        return IF;
+                                    }
+
+else                                {
+                                        return ELSE;
+                                    }
 
 while								{ // PB A REGLER : VARIABLE QUI SAPPELLE WHILE1
 										return WHILE;
