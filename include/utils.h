@@ -1,6 +1,10 @@
 #ifndef __UTILS_C
 #define __UTILS_C
 
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+
 #define ERROR      -1
 
 
@@ -10,6 +14,7 @@
  */
 enum {UNKNOWN, SQRTF, POWF, SINF};
 
+void panic(char *, char * , char *);
 /**
  * @brief Cette structure décrit une extension pour un pragma. Contient le nom
  * de l'extension (precision ou rounding) ainsi que la valeur, soit un int soit

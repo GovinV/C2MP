@@ -1,13 +1,16 @@
-typedef struct ast {
-  char* type;
-  union {
-    struct {
-      struct ast* left;
-      struct ast* right;
-    } operation;
-    int number;
-    char* id;
-  } u;
+typedef struct ast 
+{
+	char * type;
+	union 
+	{
+    	struct 
+		{
+      		struct ast* left;
+      		struct ast* right;
+    	} operation;
+    	int number;
+    	char * id;
+  	} u;
 } ast;
 
 ast* ast_new_operation(char*, ast*, ast*);
