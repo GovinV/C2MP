@@ -1,4 +1,4 @@
-CXX = gcc 
+CXX = gcc
 LXX ?= lex
 YXX ?= yacc
 
@@ -48,7 +48,7 @@ OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o) $(LEX_OUTPUT_OBJ
 # DEPS = $(OBJECTS:.o=.d)
 
 # flags #
-COMPILE_FLAGS = #-Wall -Wextra -g
+COMPILE_FLAGS = -Wall -Wextra -g
 LEX_FLAGS = 
 YACC_FLAGS = -d -v
 INCLUDES = -I include/ -I /usr/local/include

@@ -1,8 +1,31 @@
 #ifndef QUAD_H
 #define QUAD_H
 
+#include "../build/y.tab.h"
 #include "utils.h"
+#include "semiQuad.h"
 #include "symbol.h"
+#include "ast.h"
+
+#define C2MP_QUAD_OPERAND_VARIABLE 0
+#define C2MP_QUAD_OPERAND_INTEGER 1
+#define C2MP_QUAD_OPERAND_FLOAT 2
+
+typedef struct quadOperand quadOperand;
+typedef struct quad quad;
+
+quadOperand createVariableOperand(int reference);
+quadOperand createIntegerOperand(int value);
+quadOperand createFloatOperand(float value);
+quadOperand createVoidOperand(void);
+
+quad *createQuad(int assignment, char operator, quadOperand value1, quadOperand value2);
+quad *copySemiQuad(semiQuad *sq);
+quad *generateQuadsFromAST(expressionAST *expr);
+quad *getQuadFromSemiQuad(semiQuad *sq);
+quad *concatQuads(quad *q1, quad *q2);
+void printOperand(quadOperand operand);
+void printQuads(quad* q);
 
 /*typedef enum 
 {

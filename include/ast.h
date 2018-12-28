@@ -3,6 +3,7 @@
 
 #include "../build/y.tab.h"
 #include "utils.h"
+#include "symbol.h"
 
 typedef struct expressionAST expressionAST;
 

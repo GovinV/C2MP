@@ -81,15 +81,24 @@ void symbol_print(Symbol *sym)
         printf("%s\t%s\n", sym->id, (sym->isconstant == true ? "constante" : "variable"));
 }*/
 
-char *variables[MAX_VARIABLES];
+symbol variables[MAX_VARIABLES];
 int variablesSize = 0;
 
+symbol newSymbol(const char name[])
+{
+    variables[variablesSize].name = strdup(name);
+    variables[variablesSize].reference = variablesSize;
+    variables[variablesSize].isConstant = 0;
+
+    return variables[variablesSize++];
+}
+
 // if the variable is found, returns a reference, else -1
-int getVariableReference(const char name[])
+int getSymbolReference(const char name[])
 {
     for(int i=0;i<variablesSize;++i)
     {
-        if(strcmp(name, variables[i]) == 0)
+        if(strcmp(name, variables[i].name) == 0)
         {
             return i;
         }
@@ -100,11 +109,10 @@ int getVariableReference(const char name[])
 // if the variable is found, returns a reference, else creates one and returns it
 int getReferenceFromName(const char name[])
 {
-    int reference = getVariableReference(name);
+    int reference = getSymbolReference(name);
     if(reference == -1)
     {
-        variables[variablesSize] = strdup(name);
-        return variablesSize++;
+        return newSymbol(name).reference;
     }
 
     return reference;
@@ -113,7 +121,18 @@ int getReferenceFromName(const char name[])
 // returns the name of the variable
 const char *getNameFromReference(int reference)
 {
-    return variables[reference];
+    return variables[reference].name;
+}
+
+symbol newTemp(void)
+{
+    char buffer[1024];
+    static int tempCount = 0;
+    snprintf(buffer, 1024, "C2MP___temp_%d",tempCount);
+
+    ++tempCount;
+
+    return newSymbol(buffer);
 }
 
 

@@ -10,9 +10,23 @@
 	FILE *yyin, *yyout;
 	int commentNum = 0;
 
+typedef struct quadOperand quadOperand;
 typedef struct semiQuad semiQuad;
 typedef struct quad quad;
 typedef struct expressionAST expressionAST;
+
+quadOperand createVariableOperand(int reference);
+quadOperand createIntegerOperand(int value);
+quadOperand createFloatOperand(float value);
+quadOperand createVoidOperand(void);
+
+quad *createQuad(int assignment, char operator, quadOperand value1, quadOperand value2);
+quad *copySemiQuad(semiQuad *sq);
+quad *generateQuadsFromAST(expressionAST *expr);
+quad *getQuadFromSemiQuad(semiQuad *sq);
+quad *concatQuads(quad *q1, quad *q2);
+void printOperand(quadOperand operand);
+void printQuads(quad* q);
 
 expressionAST *createExpressionAST(char operator, expressionAST *expr1, expressionAST *expr2);
 expressionAST *createIntAST(int integer);
@@ -21,7 +35,7 @@ expressionAST *createVariableAST(int variable);
 void freeExpressionAST(expressionAST *expr);
 void printExpressionAST(expressionAST *expr);
 
-int getVariableReference(const char name[]);
+int getSymbolReference(const char name[]);
 int getReferenceFromName(const char name[]);
 const char *getNameFromReference(int reference);
 
@@ -87,24 +101,37 @@ void printSemiQuads(semiQuad *q1);
 
         /*union
         { // depending on the operator
-		    struct expressionAST *expression; // example : "="
-		    int variable; // example "if"
+            struct expressionAST *expression; // example : "="
+            int variable; // example "if"
         };*/
         struct expressionAST *expression;
 
-		struct semiQuad *previous;
-		struct semiQuad *next;
-	} *semiQuad;
-	
-	struct quad
+        struct semiQuad *previous;
+        struct semiQuad *next;
+    } *semiQuad;
+
+    struct quadOperand
     {
-		int assigned; // variable to which the operation is affected
-		char operator;
-		int value1;
-		int value2;
-		struct quad *previous;
-		struct quad *next;
-	} *quad;
+        int type;
+        union
+        {
+            int reference;
+            int valueInt;
+            float valueFloat;
+        };
+    } quadOperand;
+
+    struct quad
+    {
+        int assignment; // variable to which the operation is affected
+        char operator;
+
+        struct quadOperand operand1;
+        struct quadOperand operand2;
+
+        struct quad *previous;
+        struct quad *next;
+    } *quad;
 }
 
 %token <string>         ID
@@ -148,13 +175,19 @@ void printSemiQuads(semiQuad *q1);
 
 %left '!' '~'
 
+%right ')' ELSE
+
 
 %%
 
 P_PRAGMA:
 	PRAGMA P_EXTENSION '\n' INSTRUCTION {
-                                            printf("PRAGMA read, result :\n");
+                                            printf("generated semi quads :\n");
                                             printSemiQuads($4);
+                                            printf("generated quads :\n");
+                                            quad *quads = getQuadFromSemiQuad($4);
+                                            printf("... :\n");
+                                            printQuads(quads);
                                         }
 	;
 
