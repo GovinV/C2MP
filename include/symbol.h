@@ -7,11 +7,19 @@
 
 #define MAX_VARIABLES 1024*8
 
+typedef enum 
+{
+    FLOAT_NUMBER,
+    INTEGER_NUMBER,
+    STRING
+} symbolType;
+
 typedef struct symbol_s
 {
     int reference;
     char *name;
     bool isConstant;
+    symbolType type_symbol;
 } symbol;
 
 //#define SYMBOL_MAX_STRING 42
@@ -20,12 +28,6 @@ int getSymbolReference(const char name[]);
 int getReferenceFromName(const char name[]);
 const char *getNameFromReference(int reference);
 symbol newTemp(void);
-
-/*typedef enum 
-{
-    INTEGER,
-    FLOAT
-} symbolType;*/
 
 /*
 typedef enum 

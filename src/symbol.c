@@ -136,4 +136,17 @@ symbol newTemp(void)
 }
 
 
+char * type_symbol(symbolType type) 
+{
+    switch(type) 
+    {
+        case INTEGER_NUMBER:
+            return "integer";
+        case FLOAT_NUMBER:
+            return "float";
+        case STRING:
+            return "string";
+    }
 
+    return NULL;
+}

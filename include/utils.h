@@ -56,6 +56,10 @@ p : unary +
 #define C2MP_QUAD_IF                    'I'
 #define C2MP_QUAD_ELSE                  'z'
 #define C2MP_QUAD_ENDIF                 '}'
+#define C2MP_QUAD_WHILE                 'W'
+#define C2MP_QUAD_ENDWHILE              'w'
+#define C2MP_QUAD_DOWHILE               'D'
+#define C2MP_QUAD_ENDDOWHILE            'd'
 
 #include <string.h>
 #include <stdlib.h>
