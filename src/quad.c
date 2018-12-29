@@ -66,8 +66,64 @@ quad *copySemiQuad(semiQuad *sq)
         case C2MP_QUAD_ENDIF:
             return createQuad(-1, sq->operator, createVoidOperand(), createVoidOperand());
             break;
+        case C2MP_QUAD_WHILE:
+        case C2MP_QUAD_DOWHILE:
+            //generatedQuads = generateQuadsFromAST_2(sq->expression);
+            break;
+        case C2MP_QUAD_ENDWHILE:
+        case C2MP_QUAD_ENDDOWHILE:
+            break;
         default:
             fprintf(stderr, "Warning, unknown semi quad operation : %d (%c)\n", sq->operator, sq->operator);
+    }
+    return NULL;
+}
+
+quad *generateQuadsFromAST_2(expressionAST *expr)
+{
+    if(expr == NULL)
+    {
+        fprintf(stderr, "Warning, tried to generate quads from NULL AST\n");
+        return NULL;
+    }
+    quad *quadExpr1, *quadExpr2, *quadExpr, *finalQuads;
+    int reference1, reference2, reference;
+    switch(expr->operator)
+    {
+        case C2MP_OPERATOR_BINARY_PLUS:
+        case C2MP_OPERATOR_BINARY_MINUS:
+        case C2MP_OPERATOR_BINARY_DOT:
+        case C2MP_OPERATOR_BINARY_DIVIDE:
+        case C2MP_OPERATOR_LOWER_THAN:
+        case C2MP_OPERATOR_GREATER_THAN:
+        case C2MP_OPERATOR_LOWER_OR_EQUAL:
+        case C2MP_OPERATOR_GREATER_OR_EQUAL:
+        case C2MP_OPERATOR_EQUAL:
+        case C2MP_OPERATOR_NOT_EQUAL:
+        case C2MP_OPERATOR_BITWISE_AND:
+        case C2MP_OPERATOR_BITWISE_OR:
+        case C2MP_OPERATOR_BITWISE_XOR:
+        case C2MP_OPERATOR_LOGICAL_AND:
+        case C2MP_OPERATOR_LOGICAL_OR:
+            
+            break;
+        case C2MP_OPERATOR_UNARY_MINUS:
+        case C2MP_OPERATOR_UNARY_PLUS:
+        case C2MP_OPERATOR_LOGICAL_NOT:
+        case C2MP_OPERATOR_BITWISE_NOT:
+            
+            break;
+        case C2MP_CHARACTER_INTEGER: // number
+           
+            break;
+        case C2MP_CHARACTER_FLOAT: // float
+            
+            break;
+        case C2MP_CHARACTER_VARIABLE: // variable
+           
+            break;
+        default:
+            fprintf(stderr, "Warning, unknown expression operation : %c\n", expr->operator);
     }
     return NULL;
 }

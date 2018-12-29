@@ -21,6 +21,7 @@ quadOperand createVoidOperand(void);
 
 quad *createQuad(int assignment, char operator, quadOperand value1, quadOperand value2);
 quad *copySemiQuad(semiQuad *sq);
+quad *generateQuadsFromAST_2(expressionAST *expr);
 quad *generateQuadsFromAST(expressionAST *expr);
 quad *getQuadFromSemiQuad(semiQuad *sq);
 quad *concatQuads(quad *q1, quad *q2);

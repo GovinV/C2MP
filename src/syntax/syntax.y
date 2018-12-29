@@ -261,7 +261,11 @@ INSTRUCTION:
                                                     result = concatSemiQuad(result, endIfQuad);
                                                     $$ = result;
                                                 }
-	| WHILE '(' EXPR ')' INSTRUCTION
+	| WHILE '(' EXPR ')' INSTRUCTION            {
+                                                    /*semiQuad *whileQuad = createSemiQuad(C2MP_QUAD_WHILE, -1, $3);
+                                                    semiQuad *endWhileQuad = createSemiQuad(C2MP_QUAD_ENDWHILE, -1, NULL);
+                                                    semiQuad *result;*/
+                                                }
 	| FOR '(' INSTRUCTION ';' EXPR ';' INSTRUCTION ')' INSTRUCTION
 	| ASSIGNMENT ';'                                                    { $$ = $1; }
 	| ';'                                                               { $$ = NULL; }

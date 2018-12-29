@@ -28,6 +28,7 @@ int getSymbolReference(const char name[]);
 int getReferenceFromName(const char name[]);
 const char *getNameFromReference(int reference);
 symbol newTemp(void);
+char * type_symbol(symbolType type);
 
 /*
 typedef enum 
