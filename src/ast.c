@@ -78,6 +78,58 @@ expressionAST *createVariableAST(int variable)
     return expr;
 }
 
+expressionAST *copyExpressionAST(expressionAST *expressionAST)
+{
+    if(expressionAST == NULL)
+    {
+        return NULL;
+    }
+
+    struct expressionAST *currentAST = malloc(sizeof(struct expressionAST));
+    currentAST->operator = expressionAST->operator;
+
+    switch(expressionAST->operator)
+    {
+        case C2MP_OPERATOR_BINARY_PLUS:
+        case C2MP_OPERATOR_BINARY_MINUS:
+        case C2MP_OPERATOR_BINARY_DOT:
+        case C2MP_OPERATOR_BINARY_DIVIDE:
+        case C2MP_OPERATOR_LOWER_THAN:
+        case C2MP_OPERATOR_GREATER_THAN:
+        case C2MP_OPERATOR_LOWER_OR_EQUAL:
+        case C2MP_OPERATOR_GREATER_OR_EQUAL:
+        case C2MP_OPERATOR_EQUAL:
+        case C2MP_OPERATOR_NOT_EQUAL:
+        case C2MP_OPERATOR_BITWISE_AND:
+        case C2MP_OPERATOR_BITWISE_OR:
+        case C2MP_OPERATOR_BITWISE_XOR:
+        case C2MP_OPERATOR_LOGICAL_AND:
+        case C2MP_OPERATOR_LOGICAL_OR:
+            currentAST->expression.e1 = copyExpressionAST(expressionAST->expression.e1);
+            currentAST->expression.e2 = copyExpressionAST(expressionAST->expression.e2);
+            break;
+        case C2MP_OPERATOR_UNARY_MINUS:
+        case C2MP_OPERATOR_UNARY_PLUS:
+        case C2MP_OPERATOR_LOGICAL_NOT:
+        case C2MP_OPERATOR_BITWISE_NOT:
+            currentAST->expression.e1 = copyExpressionAST(expressionAST->expression.e1);
+            break;
+        case C2MP_CHARACTER_INTEGER: // number
+            currentAST->valueInt = expressionAST->valueInt;
+            break;
+        case C2MP_CHARACTER_FLOAT: // float
+            currentAST->valueFloat = expressionAST->valueFloat;
+            break;
+        case C2MP_CHARACTER_VARIABLE: // variable
+            currentAST->valueVariable = expressionAST->valueVariable;
+            break;
+        default:
+            fprintf(stderr, "Warning, unknown expression operation : %c\n", expressionAST->operator);
+    }
+
+    return currentAST;
+}
+
 
 void freeExpressionAST(expressionAST *expr)
 {

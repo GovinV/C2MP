@@ -40,6 +40,10 @@ while								{ // PB A REGLER : VARIABLE QUI SAPPELLE WHILE1
 										return WHILE;
 									}
 
+do                                  {
+                                        return DO;
+                                    }
+
 for									{
 										return FOR;
 									}

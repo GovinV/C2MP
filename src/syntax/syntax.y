@@ -2,6 +2,8 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <string.h>
+    #include <stdbool.h>
+	#include "symbol.h"
 	#include "utils.h"
 
 	int yylex();
@@ -14,6 +16,8 @@ typedef struct quadOperand quadOperand;
 typedef struct semiQuad semiQuad;
 typedef struct quad quad;
 typedef struct expressionAST expressionAST;
+
+expressionAST *copyExpressionAST(expressionAST *expressionAST);
 
 quadOperand createVariableOperand(int reference);
 quadOperand createIntegerOperand(int value);
@@ -42,6 +46,8 @@ const char *getNameFromReference(int reference);
 semiQuad *createSemiQuad(char operator, int assignment, expressionAST *expression);
 semiQuad *concatSemiQuad(semiQuad *q1, semiQuad *q2);
 void printSemiQuads(semiQuad *q1);
+
+symbol newTemp(void);
 %}
 
 %union
@@ -147,6 +153,7 @@ void printSemiQuads(semiQuad *q1);
 %token 				    ELSE
 %token 				    FOR
 %token 				    WHILE
+%token 				    DO
 %token				    NEQ
 %token 				    EQ
 %token				    PRECISION
@@ -159,6 +166,8 @@ void printSemiQuads(semiQuad *q1);
 %type <variable>        VAR
 %type <semiQuad>        INSTRUCTION
 %type <semiQuad>        INSTRUCTION_LIST
+%type <semiQuad>        BLOC
+%type <semiQuad>        BLOC_LIST
 %type <int>             CONDITION
 %type <semiQuad>        ASSIGNMENT
 
@@ -181,7 +190,7 @@ void printSemiQuads(semiQuad *q1);
 %%
 
 P_PRAGMA:
-	PRAGMA P_EXTENSION '\n' INSTRUCTION {
+	PRAGMA P_EXTENSION '\n' BLOC {
                                             printf("generated semi quads :\n");
                                             printSemiQuads($4);
                                             printf("generated quads :\n");
@@ -233,16 +242,16 @@ EXTENSION:
 	 }
 	;
 
-INSTRUCTION_LIST:
-    INSTRUCTION INSTRUCTION_LIST                { $$ = concatSemiQuad($1, $2); }
-    | INSTRUCTION                               { $$ = $1; }
+BLOC_LIST:
+    BLOC BLOC_LIST                { $$ = concatSemiQuad($1, $2); }
+    | BLOC                               { $$ = $1; }
     ;
 
-INSTRUCTION:
-    '{' INSTRUCTION_LIST '}'                    {
+BLOC:
+    '{' BLOC_LIST '}'                    {
                                                     $$ = $2;
                                                 }
-    | IF '(' EXPR ')' INSTRUCTION               {
+    | IF '(' EXPR ')' BLOC               {
                                                     semiQuad *ifQuad = createSemiQuad(C2MP_QUAD_IF, -1, $3);
                                                     semiQuad *endIfQuad = createSemiQuad(C2MP_QUAD_ENDIF, -1, NULL);
                                                     semiQuad *result;
@@ -250,7 +259,7 @@ INSTRUCTION:
                                                     result = concatSemiQuad(result, endIfQuad);
                                                     $$ = result;
                                                 }
-    | IF '(' EXPR ')' INSTRUCTION ELSE INSTRUCTION {
+    | IF '(' EXPR ')' BLOC ELSE BLOC {
                                                     semiQuad *ifQuad = createSemiQuad(C2MP_QUAD_IF, -1, $3);
                                                     semiQuad *elseQuad = createSemiQuad(C2MP_QUAD_ELSE, -1, NULL);
                                                     semiQuad *endIfQuad = createSemiQuad(C2MP_QUAD_ENDIF, -1, NULL);
@@ -261,14 +270,41 @@ INSTRUCTION:
                                                     result = concatSemiQuad(result, endIfQuad);
                                                     $$ = result;
                                                 }
-	| WHILE '(' EXPR ')' INSTRUCTION            {
-                                                    /*semiQuad *whileQuad = createSemiQuad(C2MP_QUAD_WHILE, -1, $3);
-                                                    semiQuad *endWhileQuad = createSemiQuad(C2MP_QUAD_ENDWHILE, -1, NULL);
-                                                    semiQuad *result;*/
+	| WHILE '(' EXPR ')' BLOC            {
+                                                    int conditionVariable = newTemp().reference; // loops need to know which variable they are looping on
+                                                    semiQuad *whileQuad = createSemiQuad(C2MP_QUAD_WHILE, conditionVariable, $3);
+                                                    semiQuad *endWhileQuad = createSemiQuad(C2MP_QUAD_ENDWHILE, conditionVariable, copyExpressionAST($3));
+                                                    semiQuad *result;
+                                                    result = concatSemiQuad(whileQuad, $5);
+                                                    result = concatSemiQuad(result, endWhileQuad);
+                                                    $$ = result;
                                                 }
-	| FOR '(' INSTRUCTION ';' EXPR ';' INSTRUCTION ')' INSTRUCTION
-	| ASSIGNMENT ';'                                                    { $$ = $1; }
-	| ';'                                                               { $$ = NULL; }
+	| DO BLOC WHILE '(' EXPR ')' ';'     {
+                                                    int conditionVariable = newTemp().reference;
+                                                    semiQuad *doWhileQuad = createSemiQuad(C2MP_QUAD_DOWHILE, conditionVariable, $5);
+                                                    semiQuad *endDoWhileQuad = createSemiQuad(C2MP_QUAD_ENDDOWHILE, conditionVariable, copyExpressionAST($5));
+                                                    semiQuad *result;
+                                                    result = concatSemiQuad(doWhileQuad, $2);
+                                                    result = concatSemiQuad(result, endDoWhileQuad);
+                                                    $$ = result;
+                                                }
+	| FOR '(' INSTRUCTION ';' EXPR ';' INSTRUCTION ')' BLOC  {
+                                                    int conditionVariable = newTemp().reference;
+                                                    semiQuad *whileQuad = createSemiQuad(C2MP_QUAD_WHILE, conditionVariable, $5);
+                                                    semiQuad *endWhileQuad = createSemiQuad(C2MP_QUAD_ENDWHILE, conditionVariable, copyExpressionAST($5));
+                                                    semiQuad *result;
+                                                    result = concatSemiQuad($3, whileQuad); // initialization + while
+                                                    result = concatSemiQuad(result, $9); // inside of the loop
+                                                    result = concatSemiQuad(result, $7); // "increment"
+                                                    result = concatSemiQuad(result, endWhileQuad); // endwhile
+                                                    $$ = result;
+                                                }
+	| INSTRUCTION ';'                                                    { $$ = $1; }
+	;
+
+INSTRUCTION:
+    ASSIGNMENT                                                    { $$ = $1; }
+	|                                                              { $$ = NULL; }
 	;
 
 /*CONDITION:

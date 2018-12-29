@@ -31,6 +31,7 @@ expressionAST *createExpressionAST(char operator, expressionAST *expr1, expressi
 expressionAST *createIntAST(int integer);
 expressionAST *createFloatAST(float number);
 expressionAST *createVariableAST(int variable);
+expressionAST *copyExpressionAST(expressionAST *expressionAST);
 void freeExpressionAST(expressionAST *expr);
 void printExpressionAST(expressionAST *expr);
 

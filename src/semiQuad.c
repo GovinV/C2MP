@@ -90,21 +90,20 @@ void printSemiQuads(semiQuad *q)
                 break;
             case C2MP_QUAD_WHILE:
                 ++indent;
-                printf("while");
+                printf("while ");
                 printExpressionAST(currentQuad->expression);
+                break;
+            case C2MP_QUAD_DOWHILE:
+                printf("do ");
                 break;
             case C2MP_QUAD_ENDWHILE:
                 --indent;
                 printf("\b\bendwhile");
                 break;
-            case C2MP_QUAD_DOWHILE:
-                ++indent;
-                printf("do while");
-                printExpressionAST(currentQuad->expression);
-                break;
             case C2MP_QUAD_ENDDOWHILE:
                 --indent;
-                printf("\b\benddowhile");
+                printf("\b\bwhile");
+                printExpressionAST(currentQuad->expression);
                 break;
             default:
                 fprintf(stderr, "Warning, unknown semi quad operation : %d (%c)\n", currentQuad->operator, currentQuad->operator);
