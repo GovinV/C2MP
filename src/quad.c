@@ -94,6 +94,11 @@ quad *copySemiQuad(semiQuad *sq)
     return NULL;
 }
 
+
+// TO BE EFFICIENT : C2MP_OPERATOR_LOGICAL_AND and C2MP_OPERATOR_LOGICAL_OR should not do this big logic with if then else if the remaining tree is small
+// TODO
+// example 1 : a && (3*x*y*z+3241 > 3*d/g) in this case it is smart to check for the second operand only if a is true
+// example 2 : a && b in this case it is better just to do : temporary = a && b
 quad *generateQuadsFromAST(expressionAST *expr)
 {
     if(expr == NULL)
@@ -104,8 +109,99 @@ quad *generateQuadsFromAST(expressionAST *expr)
 
     quad *quadExpr1, *quadExpr2, *quadExpr, *finalQuads;
     int reference1, reference2, reference;
+    int resultTemporary;
     switch(expr->operator)
     {
+        case C2MP_OPERATOR_LOGICAL_AND:
+            quadExpr1 = generateQuadsFromAST(expr->expression.e1);
+            quadExpr2 = generateQuadsFromAST(expr->expression.e2);
+
+            reference1 = quadExpr1->previous->assignment;
+            reference2 = quadExpr2->previous->assignment;
+
+            resultTemporary = newTemp().reference;
+
+            /* generate these quads :
+a = ...
+t = a!=0
+if(t)
+{
+    b = ...
+    t = b
+}
+else
+{
+    t=0
+}
+
+            a result of expr1
+            b result of expr2
+            */
+
+            finalQuads = concatQuads(quadExpr1,
+                createQuad(resultTemporary, C2MP_OPERATOR_NOT_EQUAL, createVariableOperand(reference1), createIntegerOperand(0))); // if expr1 == 0
+            finalQuads = concatQuads(finalQuads,
+                createQuad(-1, C2MP_QUAD_IF, createVariableOperand(resultTemporary), createVoidOperand())); // if resultTemporary != 0
+            finalQuads = concatQuads(finalQuads, quadExpr2);
+            finalQuads = concatQuads(finalQuads,
+                createQuad(resultTemporary, C2MP_QUAD_ASSIGNMENT, createVariableOperand(reference2), createVoidOperand())); // t = expr2
+            finalQuads = concatQuads(quadExpr1,
+                createQuad(-1, C2MP_QUAD_ELSE, createVoidOperand(), createVoidOperand())); // else
+            finalQuads = concatQuads(finalQuads,
+                createQuad(resultTemporary, C2MP_QUAD_ASSIGNMENT, createIntegerOperand(0), createVoidOperand())); // t = 0
+            finalQuads = concatQuads(quadExpr1,
+                createQuad(-1, C2MP_QUAD_ENDIF, createVoidOperand(), createVoidOperand())); // endif
+            finalQuads = concatQuads(finalQuads,
+                createQuad(resultTemporary, C2MP_QUAD_ASSIGNMENT, createVariableOperand(resultTemporary), createVoidOperand()));
+                    // t = t, needed for generation and will be optimized
+
+            return finalQuads;
+            break;
+        case C2MP_OPERATOR_LOGICAL_OR:
+            quadExpr1 = generateQuadsFromAST(expr->expression.e1);
+            quadExpr2 = generateQuadsFromAST(expr->expression.e2);
+
+            reference1 = quadExpr1->previous->assignment;
+            reference2 = quadExpr2->previous->assignment;
+
+            resultTemporary = newTemp().reference;
+
+            /* generate these quads :
+a = ...
+t = a==0
+if(t)
+{
+    b = ...
+    t = b
+}
+else
+{
+    t=1
+}
+
+            a result of expr1
+            b result of expr2
+            */
+
+            finalQuads = concatQuads(quadExpr1,
+                createQuad(resultTemporary, C2MP_OPERATOR_EQUAL, createVariableOperand(reference1), createIntegerOperand(0))); // if expr1 == 0
+            finalQuads = concatQuads(finalQuads,
+                createQuad(-1, C2MP_QUAD_IF, createVariableOperand(resultTemporary), createVoidOperand())); // if resultTemporary == 0
+            finalQuads = concatQuads(finalQuads, quadExpr2);
+            finalQuads = concatQuads(finalQuads,
+                createQuad(resultTemporary, C2MP_QUAD_ASSIGNMENT, createVariableOperand(reference2), createVoidOperand())); // t = expr2
+            finalQuads = concatQuads(quadExpr1,
+                createQuad(-1, C2MP_QUAD_ELSE, createVoidOperand(), createVoidOperand())); // else
+            finalQuads = concatQuads(finalQuads,
+                createQuad(resultTemporary, C2MP_QUAD_ASSIGNMENT, createIntegerOperand(1), createVoidOperand())); // t = 1
+            finalQuads = concatQuads(quadExpr1,
+                createQuad(-1, C2MP_QUAD_ENDIF, createVoidOperand(), createVoidOperand())); // endif
+            finalQuads = concatQuads(finalQuads,
+                createQuad(resultTemporary, C2MP_QUAD_ASSIGNMENT, createVariableOperand(resultTemporary), createVoidOperand()));
+                    // t = t, needed for generation and will be optimized
+
+            return finalQuads;
+            break;
         case C2MP_OPERATOR_BINARY_PLUS:
         case C2MP_OPERATOR_BINARY_MINUS:
         case C2MP_OPERATOR_BINARY_DOT:
@@ -119,8 +215,6 @@ quad *generateQuadsFromAST(expressionAST *expr)
         case C2MP_OPERATOR_BITWISE_AND:
         case C2MP_OPERATOR_BITWISE_OR:
         case C2MP_OPERATOR_BITWISE_XOR:
-        case C2MP_OPERATOR_LOGICAL_AND:
-        case C2MP_OPERATOR_LOGICAL_OR:
             quadExpr1 = generateQuadsFromAST(expr->expression.e1);
             quadExpr2 = generateQuadsFromAST(expr->expression.e2);
 
