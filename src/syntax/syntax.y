@@ -376,7 +376,7 @@ EXPR:
                                     $$ = createFloatAST($1.valueFloat);
                                     break;
                                 case C2MP_NUM_TYPE_INTEGER:
-                                    $$ = createFloatAST($1.valueInt);
+                                    $$ = createIntAST($1.valueInt);
                                     break;
                                 default:
                                     fprintf(stderr, "Unknown number type %d\n", $1.type);
@@ -435,9 +435,24 @@ int main(int argc, char *argv[])
 
     printSemiQuads(code);*/
  
+    FILE * output;
 	yyin = fopen(argv[1], "r");
-	yyout = stdout;
+    if(yyin == NULL)
+        panic("syntax.y", "main", "Error open file\n");
+
+	//yyout = stdout;
 	yyparse();
-	printf("End of parsing\n");
+
+    output = fopen("output.c", "w+");
+    if(output == NULL)
+        panic("syntax.y", "main", "Error open file\n");
+
+    if ( fclose(yyin) != 0)
+        panic("syntax.y", "main", "Error close file\n");
+    if ( fclose(output) != 0)
+        panic("syntax.y", "main", "Error close file\n");
+
+    printf("End of parsing\n");
+
 	return 0;
 }

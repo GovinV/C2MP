@@ -45,6 +45,7 @@ quad *createQuad(int assignment, char operator, quadOperand value1, quadOperand 
     return q;
 }
 
+/* copy result */
 quad *copySemiQuad(semiQuad *sq)
 {
     if(sq == NULL)
@@ -99,6 +100,12 @@ quad *copySemiQuad(semiQuad *sq)
 // TODO
 // example 1 : a && (3*x*y*z+3241 > 3*d/g) in this case it is smart to check for the second operand only if a is true
 // example 2 : a && b in this case it is better just to do : temporary = a && b
+/* read AST : a<b&&b<c become :
+ *
+ *     &&
+ *  <       <
+ * a  b   b   c
+*/
 quad *generateQuadsFromAST(expressionAST *expr)
 {
     if(expr == NULL)
@@ -271,6 +278,7 @@ quad *getQuadFromSemiQuad(semiQuad *sq)
 
     currentSemiQuad = currentSemiQuad->next;
 
+    // 
     while(currentSemiQuad != firstSemiQuad)
     {
         currentQuad = concatQuads(currentQuad, copySemiQuad(currentSemiQuad));
