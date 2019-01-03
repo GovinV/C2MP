@@ -443,14 +443,14 @@ int main(int argc, char *argv[])
 	//yyout = stdout;
 	yyparse();
 
-    output = fopen("output.c", "w+");
+    /*output = fopen("output.c", "w+");
     if(output == NULL)
-        panic("syntax.y", "main", "Error open file\n");
+        panic("syntax.y", "main", "Error open file\n");*/
 
     if ( fclose(yyin) != 0)
         panic("syntax.y", "main", "Error close file\n");
-    if ( fclose(output) != 0)
-        panic("syntax.y", "main", "Error close file\n");
+    /*if ( fclose(output) != 0)
+        panic("syntax.y", "main", "Error close file\n");*/
 
     printf("End of parsing\n");
 
