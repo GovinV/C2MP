@@ -1,4 +1,4 @@
-#pragma MPC 
+#pragma MPC precision(128) rounding(MP_PSDF) 
 {
 
     a = 0.;

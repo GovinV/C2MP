@@ -1,4 +1,4 @@
-#include "../include/semiQuad.h"
+#include "semiQuad.h"
 
 semiQuad *createSemiQuad(char operator, int assignment, expressionAST *expression)
 {

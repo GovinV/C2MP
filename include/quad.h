@@ -1,8 +1,9 @@
 #ifndef QUAD_H
 #define QUAD_H
 
-#include "../build/y.tab.h"
 #include "utils.h"
+#include <string.h>
+#include "../build/y.tab.h"
 #include "semiQuad.h"
 #include "symbol.h"
 #include "ast.h"

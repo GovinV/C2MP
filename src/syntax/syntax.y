@@ -1,10 +1,11 @@
 %{
 	#include <stdio.h>
+    #include "utils.h"
 	#include <stdlib.h>
 	#include <string.h>
     #include <stdbool.h>
 	#include "symbol.h"
-	#include "utils.h"
+	
 
 	int yylex();
 	void yyerror(char*);
@@ -168,6 +169,7 @@ void generateCode(quad* q, char *rounding);
 %token 				    EQ
 %token				    PRECISION
 %token 				    ROUNDING
+%token                  BACKSLASH
 
 %type <extension>       EXTENSION
 %type <p_extension>     P_EXTENSION
@@ -201,7 +203,7 @@ void generateCode(quad* q, char *rounding);
 %%
 
 P_PRAGMA:
-	PRAGMA P_EXTENSION '\n' BLOC {
+	PRAGMA P_EXTENSION BACKSLASH BLOC {
                                             printf("Rounding = %s\n", $2.rounding);
                                             printf("Precision = %d\n", $2.precision);
                                             printf("generated semi quads :\n");
@@ -222,7 +224,7 @@ P_EXTENSION:
                              if ($1.type == PRECISION_T)
                                 $$.precision = $1.precision;
                            }
-	|                      { $$.rounding = "MPC_RDNZZ";
+	|                      { $$.rounding = strdup("MPC_RDNZZ");
                              $$.precision = 128; 
                            }
 	;

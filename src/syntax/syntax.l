@@ -1,8 +1,8 @@
 %{
 	#include <stdio.h>
-	#include <string.h>
-	#include "y.tab.h"
 	#include "utils.h"
+	#include "y.tab.h"
+
 	int pragmaOn = 0;
 %}
 
@@ -71,29 +71,27 @@ for									{
 [|][|]                              {
 										return OR;
 									}
-
+precision 							{
+										if(pragmaOn)
+											return PRECISION;
+									}
+rounding  							{
+										if(pragmaOn)
+											return ROUNDING;
+									}
 
 [_a-zA-Z][_a-zA-Z0-9]*	{ /*  */
-										yylval.string = strdup(yytext);
-										if(pragmaOn)
-										{
-											int type = checkExtension(yylval.string);
-											if(type == 1)
-												return PRECISION;
-											if(type == 2)
-												return ROUNDING;
-										}
-										 
+										yylval.string = strdup(yytext); 
 									  	return SYMBOL; 
 									}
 [\n]+								{
 										if(pragmaOn)
 										{
 											pragmaOn = 0;
-											return '\n';
+											return BACKSLASH;
 										}
 									} // cOUNT ONLY FIRST AFTER PRAGMA
-[ \t\n]+							{} 
+[ \t]+								{} 
 .									{ 
 										return yytext[0]; 
 									}
