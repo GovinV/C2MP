@@ -16,6 +16,19 @@ quad* removeCommonSubExpressions(quad* quads)
 	
 }
 
+int findOptimizationRefTable(int reference)
+{
+	int i = 0;
+	for(i = 0; i < refSize;i++)
+	{
+		if(refTable[i].optimizationRef == reference)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
 int findRefTable(int reference)
 {
 	int i = 0;
@@ -32,7 +45,7 @@ int findRefTable(int reference)
 int findExprHashTable(char op, int operand1, int operand2)
 {
 	int i = 0;
-	for(i = 0; i < exprHashSize;i++)
+	for(i = 0; i < exprHashSize;++i)
 	{
 		if(   exprHashTable[i].operator == op 
 		   && exprHashTable[i].operand1 == operand1
@@ -48,7 +61,7 @@ int findExprHashTable(char op, int operand1, int operand2)
 int findConstantTable(int reference)
 {
 	int i = 0;
-	for(i = 0; i < constSize;i++)
+	for(i = 0; i < constSize;++i)
 	{
 		if(constTable[i].reference == reference)
 		{

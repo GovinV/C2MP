@@ -35,8 +35,13 @@ typedef struct constantRow
 } constRow;
 
 quad* optimizeQuad(quad* quads);
-
 quad* removeCommonSubExpressions(quad* quads);
-
 void resetTables(void);
+
+int findOptimizationRefTable(int reference);
+int findRefTable(int reference);
+int findExprHashTable(char op, int operand1, int operand2);
+int findConstantTable(int reference);
+void resetTables(void);
+
 #endif //OPTI_H
