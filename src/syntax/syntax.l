@@ -90,7 +90,7 @@ for									{
 										if(pragmaOn)
 										{
 											pragmaOn = 0;
-											return yytext[0];
+											return '\n';
 										}
 									} // cOUNT ONLY FIRST AFTER PRAGMA
 [ \t\n]+							{} 

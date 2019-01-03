@@ -48,6 +48,10 @@ semiQuad *concatSemiQuad(semiQuad *q1, semiQuad *q2);
 void printSemiQuads(semiQuad *q1);
 
 symbol newTemp(void);
+
+// generate.h
+void generateCode(quad* q, char *rounding);
+
 %}
 
 %union
@@ -58,13 +62,19 @@ symbol newTemp(void);
 	
 	struct  pragmaExt 
 	{
-		char * ext;
-		union 
-		{
-			int     precision;
-			char *  rounding;
-		};
-	} extension;
+		enum {ROUNDING_T, PRECISION_T} type;
+		union {    
+            int     precision;
+		    char *  rounding;
+        };
+    } extension;
+
+    struct 
+    {
+        int precision;
+        char * rounding;
+    } p_extension;
+
     struct number
     {
         char type; // C2MP_NUM_TYPE_INTEGER = int, C2MP_NUM_TYPE_FLOAT = float
@@ -160,6 +170,7 @@ symbol newTemp(void);
 %token 				    ROUNDING
 
 %type <extension>       EXTENSION
+%type <p_extension>     P_EXTENSION
 %type <expressionAST>   RVALUE
 %type <expressionAST>   EXPR
 %type <number>          NUMBER
@@ -191,54 +202,42 @@ symbol newTemp(void);
 
 P_PRAGMA:
 	PRAGMA P_EXTENSION '\n' BLOC {
+                                            printf("Rounding = %s\n", $2.rounding);
+                                            printf("Precision = %d\n", $2.precision);
                                             printf("generated semi quads :\n");
                                             printSemiQuads($4);
                                             printf("generated quads :\n");
                                             quad *quads = getQuadFromSemiQuad($4);
                                             printf("... :\n");
-                                            printQuads(quads);
+                                            //printQuads(quads);
+                                            generateCode(quads, $2.rounding);
                                         }
 	;
 
 P_EXTENSION:
-	 EXTENSION P_EXTENSION {printf("extension trouvee\n");}
-	|
+	 EXTENSION P_EXTENSION { printf("extension trouvee\n");
+                             $$ = $2;
+                             if ($1.type == ROUNDING_T)
+                                $$.rounding = $1.rounding;
+                             if ($1.type == PRECISION_T)
+                                $$.precision = $1.precision;
+                           }
+	|                      { $$.rounding = "MPC_RDNZZ";
+                             $$.precision = 128; 
+                           }
 	;
 
 
 EXTENSION:
 	PRECISION '(' INTEGER ')'
 	 {
-		int type;
-		printf("Tentative d'assigner une precision\n");
-		/*if ( (type = checkExtension($1) ) == ERROR ) 
-		{
-			printf("Precision non reconnue %s\n",$1);
-			// return 1;
-		}
-		if ( type == PRECISION ) 
-		{
-			printf("Ext %s\n",$1);
-		}*/
+		$$.type = PRECISION_T;
 		$$.precision = $3;
-		printf("Precision mise a %d\n", $$.precision);
 	 }
 	| ROUNDING '(' SYMBOL ')'
 	 {
-		int type;
-		printf("Tentative d'assigner un arrondi\n");
-		/*if ( (type=checkExtension($1) ) == ERROR ) 
-		{
-			printf("Arrondi non reconnu %s\n",$1);
-			//return 1;
-		}
-		if (type == ROUNDING) 
-		{
-			printf("Ext %s\n",$1);
-		}*/
+		$$.type = ROUNDING_T;
 		$$.rounding = $3;
-		printf("rounding\n");
-		printf("Arrondi mis a %s\n", $$.rounding);
 	 }
 	;
 
