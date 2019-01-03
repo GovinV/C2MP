@@ -387,7 +387,11 @@ EXPR:
 FCT:
       SYMBOL '(' EXPR ARG ')' /* PEUTETRE QUON SEN FOUT DES ARGUMENTS */
       { printf("FCT %s\n", $1); 
-        if (parseFct($1) == UNKNOWN) printf("Unknown function\n"); 
+        if (parseFct($1) == UNKNOWN)
+        {
+            printf("Unknown function\n"); 
+            return UNKNOWN;
+        }  
       }
     ;
 
