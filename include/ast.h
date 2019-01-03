@@ -1,8 +1,9 @@
 #ifndef AST_H_DEFINED
 #define AST_H_DEFINED
 
-#include "../build/y.tab.h"
 #include "utils.h"
+#include <string.h>
+#include "../build/y.tab.h"
 #include "symbol.h"
 
 typedef struct expressionAST expressionAST;

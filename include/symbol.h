@@ -2,10 +2,10 @@
 #define SYMBOL_H
 
 #include <stdbool.h>
-
 #include "utils.h"
+#include <string.h>
 
-#define MAX_VARIABLES 1024*8
+#define MAX 1024*8
 
 typedef enum 
 {

@@ -1,8 +1,9 @@
 #ifndef SEMIQUAD_H
 #define SEMIQUAD_H
 
-#include "../build/y.tab.h"
 #include "utils.h"
+#include <string.h>
+#include "../build/y.tab.h"
 #include "ast.h"
 #include "symbol.h"
 

@@ -1,4 +1,4 @@
-#include "../include/quad.h"
+#include "quad.h"
 
 quadOperand createVariableOperand(int reference)
 {

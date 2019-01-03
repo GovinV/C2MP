@@ -81,7 +81,7 @@ void symbol_print(Symbol *sym)
         printf("%s\t%s\n", sym->id, (sym->isconstant == true ? "constante" : "variable"));
 }*/
 
-symbol variables[MAX_VARIABLES];
+symbol variables[MAX];
 int variablesSize = 0;
 
 symbol newSymbol(const char name[])
