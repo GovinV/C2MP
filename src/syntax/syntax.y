@@ -3,6 +3,7 @@
     #include "utils.h"
 	#include <stdlib.h>
 	#include <string.h>
+    #include <unistd.h>
     #include <stdbool.h>
 	#include "symbol.h"
 	
@@ -416,12 +417,39 @@ ARG:
 
 int main(int argc, char *argv[])
 {
-	if(argc != 2)
+	if(argc <= 2)
 	{
-		fprintf(stderr, "Missing arg\n");
-		return 1;
+		panic("syntax.y", "main", "Missing argument in main");
 	}
 
+    int opt,
+        errflag,
+        option_flag;
+    //FILE * output;
+
+    opt         = 0;
+    errflag     = 0;
+    option_flag = 0;
+
+    /* utilisation de getopt pour gérer les arguments */
+    while ( (opt = getopt(argc, argv, "o") ) != -1)
+    {
+        switch (opt) 
+        {
+            case 'o':
+                option_flag++;
+                break;
+            /* getopt ne reconnait pas un caractère */
+            case '?':
+                errflag++;
+                break;
+        }
+    }
+
+    if (errflag)
+    {
+        panic("syntax.y", "main", "usage : ./C2MP <fichier> -o");
+    }
     /*semiQuad *bloc1 = createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(1));
     bloc1 = concatSemiQuad(bloc1, createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(1)));
     bloc1 = concatSemiQuad(bloc1, createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(2)));
@@ -440,7 +468,6 @@ int main(int argc, char *argv[])
 
     printSemiQuads(code);*/
  
-    FILE * output;
 	yyin = fopen(argv[1], "r");
     if(yyin == NULL)
         panic("syntax.y", "main", "Error open file\n");
