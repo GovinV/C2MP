@@ -5,6 +5,7 @@
 #include <string.h>
 #include "quad.h"
 #include "symbol.h"
+#include "mpc.h"
 
 
 

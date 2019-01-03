@@ -32,11 +32,11 @@ int findRefTable(int reference)
 int findExprHashTable(char op, int operand1, int operand2)
 {
 	int i = 0;
-	for(i = 0; i < refSize;i++)
+	for(i = 0; i < exprHashSize;i++)
 	{
-		if(   refTable[i].operator == op 
-		   && refTable[i].operand1 == operand1
-		   && refTable[i].operand2 == operand2
+		if(   exprHashTable[i].operator == op 
+		   && exprHashTable[i].operand1 == operand1
+		   && exprHashTable[i].operand2 == operand2
 		  )
 		{
 			return i;
