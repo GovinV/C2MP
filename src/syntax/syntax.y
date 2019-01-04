@@ -498,7 +498,7 @@ int main(int argc, char *argv[])
 {
 	if(argc < 2)
 	{
-		panic("syntax.y", "main", "Missing argument - usage : ./C2MP <file>.c -o");
+		panic("syntax.y", "main", "Missing argument - usage : ./C2MP <file>.c -O");
 	}
 
     int opt,
@@ -526,13 +526,13 @@ int main(int argc, char *argv[])
     if(yyin == NULL)
         panic("syntax.y", "main", "Error open file\n");
     
-    
+
     /* utilisation de getopt pour gérer les arguments */
-    while ( (opt = getopt(argc, argv, "o") ) != -1)
+    while ( (opt = getopt(argc, argv, "O") ) != -1)
     {
         switch (opt) 
         {
-            case 'o':
+            case 'O':
                 option_flag = 1;
                 break;
             /* getopt ne reconnait pas un caractère */
