@@ -204,109 +204,147 @@ void generateCode(quad* q, char *rounding);
 %%
 
 P_PRAGMA:
-	PRAGMA P_EXTENSION BACKSLASH BLOC {
-                                            printf("Rounding = %s\n", $2.rounding);
-                                            printf("Precision = %d\n", $2.precision);
-                                            printf("generated semi quads :\n");
-                                            printSemiQuads($4);
-                                            printf("generated quads :\n");
-                                            quad *quads = getQuadFromSemiQuad($4);
-                                            printf("... :\n");
-                                            //printQuads(quads);
-                                            generateCode(quads, $2.rounding);
-                                        }
+	PRAGMA P_EXTENSION BACKSLASH BLOC 
+        {
+            printf("Rounding = %s\n", $2.rounding);
+            printf("Precision = %d\n", $2.precision);
+            printf("generated semi quads :\n");
+            printSemiQuads($4);
+            printf("generated quads :\n");
+            quad *quads = getQuadFromSemiQuad($4);
+            printf("... :\n");
+            //printQuads(quads);
+            generateCode(quads, $2.rounding);
+        }
 	;
 
 P_EXTENSION:
-	 EXTENSION P_EXTENSION { printf("extension trouvee\n");
-                             $$ = $2;
-                             if ($1.type == ROUNDING_T)
-                                $$.rounding = $1.rounding;
-                             if ($1.type == PRECISION_T)
-                                $$.precision = $1.precision;
-                           }
-	|                      { $$.rounding = strdup("MPC_RDNZZ");
-                             $$.precision = 128; 
-                           }
+	EXTENSION P_EXTENSION 
+        { 
+            printf("extension trouvee\n");
+            $$ = $2;
+            if ($1.type == ROUNDING_T)
+                $$.rounding = $1.rounding;
+            if ($1.type == PRECISION_T)
+                $$.precision = $1.precision;
+        }
+	|                      
+        { 
+            $$.rounding = strdup("MPC_RDNZZ");
+            $$.precision = 128; 
+        }
 	;
 
 
 EXTENSION:
 	PRECISION '(' INTEGER ')'
-	 {
-		$$.type = PRECISION_T;
-		$$.precision = $3;
-	 }
+        {
+            $$.type = PRECISION_T;
+            $$.precision = $3;
+        }
 	| ROUNDING '(' SYMBOL ')'
-	 {
-		$$.type = ROUNDING_T;
-		$$.rounding = $3;
-	 }
+        {
+            $$.type = ROUNDING_T;
+            $$.rounding = $3;
+        }
 	;
 
 BLOC_LIST:
-    BLOC BLOC_LIST                { $$ = concatSemiQuad($1, $2); }
-    | BLOC                               { $$ = $1; }
+    BLOC BLOC_LIST
+        { $$ = concatSemiQuad($1, $2); }
+    | BLOC
+        { $$ = $1; }
     ;
 
 BLOC:
-    '{' BLOC_LIST '}'                    {
-                                                    $$ = $2;
-                                                }
-    | IF '(' EXPR ')' BLOC               {
-                                                    semiQuad *ifQuad = createSemiQuad(C2MP_QUAD_IF, -1, $3);
-                                                    semiQuad *endIfQuad = createSemiQuad(C2MP_QUAD_ENDIF, -1, NULL);
-                                                    semiQuad *result;
-                                                    result = concatSemiQuad(ifQuad, $5);
-                                                    result = concatSemiQuad(result, endIfQuad);
-                                                    $$ = result;
-                                                }
-    | IF '(' EXPR ')' BLOC ELSE BLOC {
-                                                    semiQuad *ifQuad = createSemiQuad(C2MP_QUAD_IF, -1, $3);
-                                                    semiQuad *elseQuad = createSemiQuad(C2MP_QUAD_ELSE, -1, NULL);
-                                                    semiQuad *endIfQuad = createSemiQuad(C2MP_QUAD_ENDIF, -1, NULL);
-                                                    semiQuad *result;
-                                                    result = concatSemiQuad(ifQuad, $5);
-                                                    result = concatSemiQuad(result, elseQuad);
-                                                    result = concatSemiQuad(result, $7);
-                                                    result = concatSemiQuad(result, endIfQuad);
-                                                    $$ = result;
-                                                }
-	| WHILE '(' EXPR ')' BLOC            {
-                                                    int conditionVariable = newTemp().reference; // loops need to know which variable they are looping on
-                                                    semiQuad *whileQuad = createSemiQuad(C2MP_QUAD_WHILE, conditionVariable, $3);
-                                                    semiQuad *endWhileQuad = createSemiQuad(C2MP_QUAD_ENDWHILE, conditionVariable, copyExpressionAST($3));
-                                                    semiQuad *result;
-                                                    result = concatSemiQuad(whileQuad, $5);
-                                                    result = concatSemiQuad(result, endWhileQuad);
-                                                    $$ = result;
-                                                }
-	| DO BLOC WHILE '(' EXPR ')' ';'     {
-                                                    int conditionVariable = newTemp().reference;
-                                                    semiQuad *doWhileQuad = createSemiQuad(C2MP_QUAD_DOWHILE, conditionVariable, $5);
-                                                    semiQuad *endDoWhileQuad = createSemiQuad(C2MP_QUAD_ENDDOWHILE, conditionVariable, copyExpressionAST($5));
-                                                    semiQuad *result;
-                                                    result = concatSemiQuad(doWhileQuad, $2);
-                                                    result = concatSemiQuad(result, endDoWhileQuad);
-                                                    $$ = result;
-                                                }
-	| FOR '(' INSTRUCTION ';' EXPR ';' INSTRUCTION ')' BLOC  {
-                                                    int conditionVariable = newTemp().reference;
-                                                    semiQuad *whileQuad = createSemiQuad(C2MP_QUAD_WHILE, conditionVariable, $5);
-                                                    semiQuad *endWhileQuad = createSemiQuad(C2MP_QUAD_ENDWHILE, conditionVariable, copyExpressionAST($5));
-                                                    semiQuad *result;
-                                                    result = concatSemiQuad($3, whileQuad); // initialization + while
-                                                    result = concatSemiQuad(result, $9); // inside of the loop
-                                                    result = concatSemiQuad(result, $7); // "increment"
-                                                    result = concatSemiQuad(result, endWhileQuad); // endwhile
-                                                    $$ = result;
-                                                }
-	| INSTRUCTION ';'                                                    { $$ = $1; }
+    '{' BLOC_LIST '}'                    
+        { $$ = $2; }
+    | IF '(' EXPR ')' BLOC               
+        {
+            semiQuad *ifQuad = createSemiQuad(C2MP_QUAD_IF, -1, $3);
+            semiQuad *endIfQuad = createSemiQuad(C2MP_QUAD_ENDIF, -1, NULL);
+            /*  ifs are assign to nothing so -1, and the condition is $3
+                for endifs, same but just end so NULL */
+            semiQuad *result;
+            result = concatSemiQuad(ifQuad, $5);
+            result = concatSemiQuad(result, endIfQuad);
+            /*  if_semiquad bloc_semiquad endif_semiquad 
+                the same is done for avery special case belove*/
+            $$ = result;
+        }
+    | IF '(' EXPR ')' BLOC ELSE BLOC 
+        {
+            semiQuad *ifQuad = createSemiQuad(C2MP_QUAD_IF, -1, $3);
+            semiQuad *elseQuad = createSemiQuad(C2MP_QUAD_ELSE, -1, NULL);
+            semiQuad *endIfQuad = createSemiQuad(C2MP_QUAD_ENDIF, -1, NULL);
+            semiQuad *result;
+            result = concatSemiQuad(ifQuad, $5);
+            result = concatSemiQuad(result, elseQuad);
+            result = concatSemiQuad(result, $7);
+            result = concatSemiQuad(result, endIfQuad);
+            $$ = result;
+        }
+	| WHILE '(' EXPR ')' BLOC            
+        {
+            int conditionVariable = newTemp().reference; 
+            /* loops need to know which variable they are looping on */
+            semiQuad *whileQuad = createSemiQuad(C2MP_QUAD_WHILE, 
+                                                 conditionVariable, $3);
+            semiQuad *endWhileQuad = createSemiQuad(C2MP_QUAD_ENDWHILE, 
+                                                    conditionVariable, 
+                                                    copyExpressionAST($3));
+            semiQuad *result;
+            result = concatSemiQuad(whileQuad, $5);
+            result = concatSemiQuad(result, endWhileQuad);
+            $$ = result;
+        }
+	| DO BLOC WHILE '(' EXPR ')' ';'     
+        {
+            int conditionVariable = newTemp().reference;
+            semiQuad *doWhileQuad = createSemiQuad(C2MP_QUAD_DOWHILE,
+                                                   conditionVariable,
+                                                   $5);
+            semiQuad *endDoWhileQuad = createSemiQuad(C2MP_QUAD_ENDDOWHILE,
+                                                      conditionVariable,
+                                                      copyExpressionAST($5));
+            /*  Redo the condition's expression at every end of while bloc
+                because condition here is only on a variable
+                ex: while(var1<10) => 
+                    t1 = var1 < 10 
+                    while(t1)
+                        ...(modification of var1)
+                        t1 = var1 < 10
+            */   
+            semiQuad *result;
+            result = concatSemiQuad(doWhileQuad, $2);
+            result = concatSemiQuad(result, endDoWhileQuad);
+            $$ = result;
+        }
+	| FOR '(' INSTRUCTION ';' EXPR ';' INSTRUCTION ')' BLOC  
+        {
+            int conditionVariable = newTemp().reference;
+            semiQuad *whileQuad = createSemiQuad(C2MP_QUAD_WHILE,
+                                                 conditionVariable,
+                                                 $5);
+            semiQuad *endWhileQuad = createSemiQuad(C2MP_QUAD_ENDWHILE,
+                                                    conditionVariable,
+                                                    copyExpressionAST($5));
+            semiQuad *result;
+            result = concatSemiQuad($3, whileQuad); // initialization + while
+            result = concatSemiQuad(result, $9); // inside of the loop
+            result = concatSemiQuad(result, $7); // "increment"
+            result = concatSemiQuad(result, endWhileQuad); // endwhile
+            $$ = result;
+        }
+	| INSTRUCTION ';' 
+        { $$ = $1; }
 	;
 
 INSTRUCTION:
-    ASSIGNMENT                                                    { $$ = $1; }
-	|                                                              { $$ = NULL; }
+    ASSIGNMENT                                                    
+        { $$ = $1; }
+	|                                                              
+        { $$ = NULL; }
 	;
 
 /*CONDITION:
@@ -327,82 +365,114 @@ INSTRUCTION:
 	| EXPR GTE EXPR
 	| EXPR EQ EXPR
 	| EXPR NEQ EXPR
-	//| EXPR // TODO : while(1) empeche par ce commentaire. le pb semble etre regle en dupliquant les boucles. le pb est encore plus regle en fusionnant expr et condition
+	//| EXPR // TODO : while(1) empeche par ce commentaire. 
+    le pb semble etre regle en dupliquant les boucles.
+    le pb est encore plus regle en fusionnant expr et condition
 	;*/
 
 RVALUE:
-	EXPR                    { $$ = $1; }
+	EXPR                    
+        { $$ = $1; }
 	;
 
 
 ASSIGNMENT: 
-    VAR '=' RVALUE          {
-                                $$ = createSemiQuad(C2MP_QUAD_ASSIGNMENT, $1.reference, $3);
-                            }
+    VAR '=' RVALUE          
+        {
+            $$ = createSemiQuad(C2MP_QUAD_ASSIGNMENT, $1.reference, $3);
+        }
     | '(' ASSIGNMENT ')'
+        { $$ = $2;}
     ;
 
 
 
 NUMBER:
-      INTEGER       { $$.type = 1; $$.valueInt = $1; }
-    | FLOAT         { $$.type = 0; $$.valueFloat = $1; }
+    INTEGER       
+        { $$.type = 1; $$.valueInt = $1; }
+    | FLOAT         
+        { $$.type = 0; $$.valueFloat = $1; }
     ;
 
 EXPR:
-      EXPR '+' EXPR     { $$ = createExpressionAST(C2MP_OPERATOR_BINARY_PLUS, $1, $3); }
-    | EXPR '*' EXPR     { $$ = createExpressionAST(C2MP_OPERATOR_BINARY_DOT, $1, $3); }
-    | EXPR '-' EXPR     { $$ = createExpressionAST(C2MP_OPERATOR_BINARY_MINUS, $1, $3); }
-    | EXPR '/' EXPR     { $$ = createExpressionAST(C2MP_OPERATOR_BINARY_DIVIDE, $1, $3); }
-    | '-' EXPR          { $$ = createExpressionAST(C2MP_OPERATOR_UNARY_MINUS, $2, NULL); }
-    | '+' EXPR          { $$ = createExpressionAST(C2MP_OPERATOR_UNARY_PLUS, $2, NULL); }
-    | EXPR '<' EXPR     { $$ = createExpressionAST(C2MP_OPERATOR_LOWER_THAN, $1, $3); }
-	| EXPR '>' EXPR     { $$ = createExpressionAST(C2MP_OPERATOR_GREATER_THAN, $1, $3); }
-	| EXPR LTE EXPR     { $$ = createExpressionAST(C2MP_OPERATOR_LOWER_OR_EQUAL, $1, $3); }
-	| EXPR GTE EXPR     { $$ = createExpressionAST(C2MP_OPERATOR_GREATER_OR_EQUAL, $1, $3); }
-	| EXPR EQ EXPR      { $$ = createExpressionAST(C2MP_OPERATOR_EQUAL, $1, $3); }
-	| EXPR NEQ EXPR     { $$ = createExpressionAST(C2MP_OPERATOR_NOT_EQUAL, $1, $3); }
-    | EXPR OR EXPR      { $$ = createExpressionAST(C2MP_OPERATOR_LOGICAL_OR, $1, $3); }
-    | EXPR AND EXPR     { $$ = createExpressionAST(C2MP_OPERATOR_LOGICAL_AND, $1, $3); }
-    | EXPR '&' EXPR     { $$ = createExpressionAST(C2MP_OPERATOR_BITWISE_AND, $1, $3); }
-    | EXPR '^' EXPR     { $$ = createExpressionAST(C2MP_OPERATOR_BITWISE_XOR, $1, $3); }
-    | EXPR '|' EXPR     { $$ = createExpressionAST(C2MP_OPERATOR_BITWISE_OR, $1, $3); }
-    | '!' EXPR          { $$ = createExpressionAST(C2MP_OPERATOR_LOGICAL_NOT, $2, NULL); }
-    | '~' EXPR          { $$ = createExpressionAST(C2MP_OPERATOR_BITWISE_NOT, $2, NULL); }
-    | '(' EXPR ')'      { $$ = $2; }
-    | VAR               { $$ = createVariableAST($1.reference); }
-    | NUMBER            {
-                            switch($1.type)
-                            {
-                                case C2MP_NUM_TYPE_FLOAT:
-                                    $$ = createFloatAST($1.valueFloat);
-                                    break;
-                                case C2MP_NUM_TYPE_INTEGER:
-                                    $$ = createIntAST($1.valueInt);
-                                    break;
-                                default:
-                                    fprintf(stderr, "Unknown number type %d\n", $1.type);
-                            }
-                        }
-	| FCT               { printf("EXPR = FUNCTION\n"); }
+    EXPR '+' EXPR     
+        { $$ = createExpressionAST(C2MP_OPERATOR_BINARY_PLUS, $1, $3); }
+    | EXPR '*' EXPR     
+        { $$ = createExpressionAST(C2MP_OPERATOR_BINARY_DOT, $1, $3); }
+    | EXPR '-' EXPR     
+        { $$ = createExpressionAST(C2MP_OPERATOR_BINARY_MINUS, $1, $3); }
+    | EXPR '/' EXPR     
+        { $$ = createExpressionAST(C2MP_OPERATOR_BINARY_DIVIDE, $1, $3); }
+    | '-' EXPR          
+        { $$ = createExpressionAST(C2MP_OPERATOR_UNARY_MINUS, $2, NULL); }
+    | '+' EXPR          
+        { $$ = createExpressionAST(C2MP_OPERATOR_UNARY_PLUS, $2, NULL); }
+    | EXPR '<' EXPR     
+        { $$ = createExpressionAST(C2MP_OPERATOR_LOWER_THAN, $1, $3); }
+	| EXPR '>' EXPR     
+        { $$ = createExpressionAST(C2MP_OPERATOR_GREATER_THAN, $1, $3); }
+	| EXPR LTE EXPR     
+        { $$ = createExpressionAST(C2MP_OPERATOR_LOWER_OR_EQUAL, $1, $3); }
+	| EXPR GTE EXPR     
+        { $$ = createExpressionAST(C2MP_OPERATOR_GREATER_OR_EQUAL, $1, $3); }
+	| EXPR EQ EXPR      
+        { $$ = createExpressionAST(C2MP_OPERATOR_EQUAL, $1, $3); }
+	| EXPR NEQ EXPR     
+        { $$ = createExpressionAST(C2MP_OPERATOR_NOT_EQUAL, $1, $3); }
+    | EXPR OR EXPR      
+        { $$ = createExpressionAST(C2MP_OPERATOR_LOGICAL_OR, $1, $3); }
+    | EXPR AND EXPR     
+        { $$ = createExpressionAST(C2MP_OPERATOR_LOGICAL_AND, $1, $3); }
+    | EXPR '&' EXPR     
+        { $$ = createExpressionAST(C2MP_OPERATOR_BITWISE_AND, $1, $3); }
+    | EXPR '^' EXPR     
+        { $$ = createExpressionAST(C2MP_OPERATOR_BITWISE_XOR, $1, $3); }
+    | EXPR '|' EXPR     
+        { $$ = createExpressionAST(C2MP_OPERATOR_BITWISE_OR, $1, $3); }
+    | '!' EXPR          
+        { $$ = createExpressionAST(C2MP_OPERATOR_LOGICAL_NOT, $2, NULL); }
+    | '~' EXPR          
+        { $$ = createExpressionAST(C2MP_OPERATOR_BITWISE_NOT, $2, NULL); }
+    | '(' EXPR ')'      
+        { $$ = $2; }
+    | VAR               
+        { $$ = createVariableAST($1.reference); }
+    | NUMBER            
+        {
+            switch($1.type)
+            {
+                case C2MP_NUM_TYPE_FLOAT:
+                    $$ = createFloatAST($1.valueFloat);
+                    break;
+                case C2MP_NUM_TYPE_INTEGER:
+                    $$ = createIntAST($1.valueInt);
+                    break;
+                default:
+                    fprintf(stderr, "Unknown number type %d\n", $1.type);
+            }
+        }
+	| FCT               
+        { printf("EXPR = FUNCTION\n"); }
     ;
 
 FCT:
-      SYMBOL '(' EXPR ARG ')' /* PEUTETRE QUON SEN FOUT DES ARGUMENTS */
-      { printf("FCT %s\n", $1); 
-        if (parseFct($1) == UNKNOWN)
-        {
-            printf("Unknown function\n"); 
-            return UNKNOWN;
-        }  
-      }
+    SYMBOL '(' EXPR ARG ')' /* PEUTETRE QUON SEN FOUT DES ARGUMENTS */
+        { 
+            printf("FCT %s\n", $1); 
+            if (parseFct($1) == UNKNOWN)
+            {
+                printf("Unknown function\n"); 
+                return UNKNOWN;
+            }  
+        }
     ;
 
 VAR:
-      SYMBOL            {
-                            $$.name = $1;
-                            $$.reference = getReferenceFromName($1);
-                        }
+    SYMBOL            
+        {
+            $$.name = $1;
+            $$.reference = getReferenceFromName($1);
+        }
     ;
 
 ARG:
@@ -417,7 +487,7 @@ ARG:
 
 int main(int argc, char *argv[])
 {
-	if(argc <= 2)
+	if(argc < 2)
 	{
 		panic("syntax.y", "main", "Missing argument in main");
 	}

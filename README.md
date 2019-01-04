@@ -1,5 +1,7 @@
 Members:
-FLINT Clément
+FLINT Clément 
+DIVRIOTIS Constantin
+JUNG Lionel
 VETRIVEL Govindaraj
 
 # C2MP
