@@ -61,6 +61,10 @@ p : unary +
 #define C2MP_QUAD_DOWHILE               'D'
 #define C2MP_QUAD_ENDDOWHILE            'd'
 
+// Known functions
+#define C2MP_FUNCTION_POW               1
+#define C2MP_FUNCTION_SQRT              2
+#define UNKNOWN                         -1
 
 #include <string.h>
 #include <stdlib.h>
@@ -68,14 +72,8 @@ p : unary +
 
 #define ERROR      -1
 
-
-/**
- * Est-ce que ces macros ne seraient pas générés avec yacc?
- * Comment les choper depuis yacc?
- */
-enum {UNKNOWN, SQRTF, POWF, SINF};
-
 void panic(char *, char * , char *);
+
 /**
  * @brief Cette structure décrit une extension pour un pragma. Contient le nom
  * de l'extension (precision ou rounding) ainsi que la valeur, soit un int soit

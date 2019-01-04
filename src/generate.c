@@ -106,7 +106,7 @@ void generateCode(quad *q, char *rounding)
 
         // result must be different from 0
         case C2MP_OPERATOR_NOT_EQUAL:
-            printf("mpc_set_si(%s, ", getNameFromReference(currentQuad->assignment));
+            printf("%s = ", getNameFromReference(currentQuad->assignment));
             printf("!mpc_cmp(");
             printOperand(currentQuad->operand1);
             printf(", ");

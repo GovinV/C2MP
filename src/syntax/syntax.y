@@ -175,6 +175,7 @@ void generateCode(quad* q, char *rounding);
 %type <p_extension>     P_EXTENSION
 %type <expressionAST>   RVALUE
 %type <expressionAST>   EXPR
+%type <expressionAST>   FCT
 %type <number>          NUMBER
 %type <variable>        VAR
 %type <semiQuad>        INSTRUCTION
@@ -212,6 +213,7 @@ P_PRAGMA:
                                             quad *quads = getQuadFromSemiQuad($4);
                                             printf("... :\n");
                                             //printQuads(quads);
+                                            exit(1);
                                             generateCode(quads, $2.rounding);
                                         }
 	;
@@ -383,18 +385,35 @@ EXPR:
                                     fprintf(stderr, "Unknown number type %d\n", $1.type);
                             }
                         }
-	| FCT               { printf("EXPR = FUNCTION\n"); }
+	| FCT               { $$ = $1; }
     ;
 
 FCT:
-      SYMBOL '(' EXPR ARG ')' /* PEUTETRE QUON SEN FOUT DES ARGUMENTS */
-      { printf("FCT %s\n", $1); 
-        if (parseFct($1) == UNKNOWN)
+      SYMBOL '(' EXPR ')'
+      {
+        int type;
+        if ((type = parseFct($1)) == UNKNOWN)
         {
             printf("Unknown function\n"); 
-            return UNKNOWN;
-        }  
+            $$ = NULL;
+        }
+        else {
+            $$ = createExpressionAST(type, $3, NULL);
+        }
       }
+    | SYMBOL '(' EXPR ',' EXPR ')'
+      {
+        int type;
+        if ((type = parseFct($1)) == UNKNOWN)
+        {
+            printf("Unknown function\n"); 
+            $$ = NULL;
+        }
+        else {
+            $$ = createExpressionAST(type, $3, $5);
+        }
+      }
+    | SYMBOL '(' EXPR ',' EXPR ARG ')' { printf("not supported function %s\n", $1); $$ = NULL; }
     ;
 
 VAR:

@@ -252,7 +252,7 @@ else
             return createQuad(newTemp().reference, C2MP_QUAD_ASSIGNMENT, createIntegerOperand(expr->valueInt), createVoidOperand());
             break;
         case C2MP_CHARACTER_FLOAT: // float
-            return createQuad(newTemp().reference, C2MP_QUAD_ASSIGNMENT, createIntegerOperand(expr->valueFloat), createVoidOperand());
+            return createQuad(newTemp().reference, C2MP_QUAD_ASSIGNMENT, createFloatOperand(expr->valueFloat), createVoidOperand());
             break;
         case C2MP_CHARACTER_VARIABLE: // variable
             return createQuad(newTemp().reference, C2MP_QUAD_ASSIGNMENT, createVariableOperand(expr->valueVariable), createVoidOperand());

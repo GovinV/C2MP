@@ -19,11 +19,13 @@ int checkExtension(char * s)
 
 int parseFct(char *symbol)
 {
-    if (strncmp(symbol, "sqrtf", 5) == 0)
-        return SQRTF;
-    if (strncmp(symbol, "powf", 4) == 0)
-        return POWF;
-    if (strncmp(symbol, "sinf", 4) == 0)
-        return SINF;
+    /** 
+     * This could be buggy: for example a function called "sqrthello" would
+     * match with this implementation...
+     */
+    if (strncmp(symbol, "sqrt", 5) == 0)
+        return C2MP_FUNCTION_SQRT;
+    if (strncmp(symbol, "pow", 4) == 0)
+        return C2MP_FUNCTION_POW;
     return UNKNOWN;
 }

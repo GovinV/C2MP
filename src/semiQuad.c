@@ -105,6 +105,14 @@ void printSemiQuads(semiQuad *q)
                 printf("\b\bwhile");
                 printExpressionAST(currentQuad->expression);
                 break;
+            case C2MP_FUNCTION_POW:
+                printf("pow");
+                printExpressionAST(currentQuad->expression);
+                break;
+            case C2MP_FUNCTION_SQRT:
+                printf("sqrt");
+                printExpressionAST(currentQuad->expression);
+                break;
             default:
                 fprintf(stderr, "Warning, unknown semi quad operation : %d (%c)\n", currentQuad->operator, currentQuad->operator);
         }
