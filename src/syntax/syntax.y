@@ -179,7 +179,6 @@ quad* removeCommonSubExpressions(quad* quads);
 %type <p_extension>     P_EXTENSION
 %type <expressionAST>   RVALUE
 %type <expressionAST>   EXPR
-%type <expressionAST>   FCT
 %type <number>          NUMBER
 %type <variable>        VAR
 %type <semiQuad>        INSTRUCTION
@@ -348,7 +347,7 @@ BLOC:
 	;
 
 INSTRUCTION:
-    ASSIGNMENT                                                    
+    ASSIGNMENT                                                   
         { $$ = $1; }
 	|                                                              
         { $$ = NULL; }
@@ -459,35 +458,19 @@ EXPR:
             }
         }
 	| FCT               
-        { $$ = $1; }
+        { printf("EXPR = FUNCTION\n"); }
     ;
 
 FCT:
-      SYMBOL '(' EXPR ')'
-      {
-        int type;
-        if ((type = parseFct($1)) == UNKNOWN)
-        {
-            printf("Unknown function\n"); 
-            $$ = NULL;
+    SYMBOL '(' EXPR ARG ')' /* PEUTETRE QUON SEN FOUT DES ARGUMENTS */
+        { 
+            printf("FCT %s\n", $1); 
+            if (parseFct($1) == UNKNOWN)
+            {
+                printf("Unknown function\n"); 
+                return UNKNOWN;
+            }  
         }
-        else {
-            $$ = createExpressionAST(type, $3, NULL);
-        }
-      }
-    | SYMBOL '(' EXPR ',' EXPR ')'
-      {
-        int type;
-        if ((type = parseFct($1)) == UNKNOWN)
-        {
-            printf("Unknown function\n"); 
-            $$ = NULL;
-        }
-        else {
-            $$ = createExpressionAST(type, $3, $5);
-        }
-      }
-    | SYMBOL '(' EXPR ',' EXPR ARG ')' { printf("not supported function %s\n", $1); $$ = NULL; }
     ;
 
 VAR:
@@ -543,6 +526,9 @@ int main(int argc, char *argv[])
     {
         panic("syntax.y", "main", "usage : ./C2MP <fichier> -o");
     }
+
+    open_file();
+    
     /*semiQuad *bloc1 = createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(1));
     bloc1 = concatSemiQuad(bloc1, createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(1)));
     bloc1 = concatSemiQuad(bloc1, createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(2)));
@@ -578,6 +564,8 @@ int main(int argc, char *argv[])
         panic("syntax.y", "main", "Error close file\n");*/
 
     printf("End of parsing\n");
+
+    close_file();
 
 	return 0;
 }
