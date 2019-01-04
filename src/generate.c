@@ -1,24 +1,27 @@
 #include "generate.h"
 #include "quad.h"
+#include "symbol.h"
 
-void generateCode(quad *q, char *rounding)
+void generateCode(quad *q, char *rounding, int precision)
 {
     symbol ass;
+    quad *firstQuad = q;
+    quad *currentQuad = q;
+    int indent = 0;
 
     if (q == NULL)
     {
         printf("no quads\n");
     }
 
-    quad *firstQuad = q;
-    quad *currentQuad = q;
-
-    int indent = 0;
+    // generation of the initialisations of the temporary variables
+    generateInitCode(q, precision);
 
     do
     {
         for (int i = 0; i < indent + 1; ++i)
-        { // indent quads
+        { 
+            // indent quads
             fprintf(output, "  ");
         }
 
@@ -164,12 +167,12 @@ void generateCode(quad *q, char *rounding)
             break;
 
         case C2MP_QUAD_ELSE:
-            fprintf(output, "\b\b} else {");
+            fprintf(output, "} else {");
             break;
 
         case C2MP_QUAD_ENDIF:
             --indent;
-            fprintf(output, "\b\b}");
+            fprintf(output, "}");
             break;
 
         case C2MP_QUAD_WHILE:
@@ -183,12 +186,12 @@ void generateCode(quad *q, char *rounding)
 
         case C2MP_QUAD_ENDWHILE:
             --indent;
-            fprintf(output, "\b\b}   // %s", getNameFromReference(currentQuad->assignment));
+            fprintf(output, "}   // %s", getNameFromReference(currentQuad->assignment));
             break;
 
         case C2MP_QUAD_ENDDOWHILE:
             --indent;
-            fprintf(output, "\b\b while (%s);", getNameFromReference(currentQuad->assignment));
+            fprintf(output, " while (%s);", getNameFromReference(currentQuad->assignment));
             break;
 
         case C2MP_FUNCTION_POW:
@@ -226,4 +229,59 @@ void generateCode(quad *q, char *rounding)
         currentQuad = currentQuad->next;
 
     } while (currentQuad != firstQuad);
+}
+
+void generateInitCode(quad *q, int precision)
+{
+    int index;
+    char *base = "C2MP___temp_";
+    char *varName;
+    quad *firstQuad = q;
+    quad *currentQuad = q;
+
+    if (q == NULL)
+    {
+        fprintf(stderr, "generateInitCode warning: no quad was generated\n");
+        return;
+    }
+    
+    /**
+     * List of the temporary variables we found. A variable can be used several
+     * times. So we need to check for each variable found if it was already
+     * found and put into the list. The list is a tab of booleans, each index
+     * represent a temporary variable of the form "C2MP___temp_index". When
+     * tempList[index] is true, it means that "C2MP__temp_index" must be init.
+     */
+    bool tempList[MAX];
+    for (int i = 0; i < MAX; i++)
+    {
+        tempList[i] = false;
+    }
+
+    // First, we need to find all the different temporary variables
+    do
+    {
+        if (getSymbolFromReference(currentQuad->assignment).isTemp)
+        {
+            varName = getNameFromReference(currentQuad->assignment);
+            varName = strrchr(varName, '_');
+            varName++; // varName points to "_xx"
+            index = atoi(varName); 
+            tempList[index] = true;
+        }
+        currentQuad = currentQuad->next;
+    } while(currentQuad != firstQuad);
+
+    // Second, we have to generate the code to init the variables
+    for (int i = 0; i < MAX; i++)
+    {
+        if (tempList[i])
+        {
+            fprintf(output, "  mpc_t %s%d;", base, i);
+            fprintf(output, " mpc_init(%s%d, %d);\n", base, i, precision);
+        }
+    }
+
+    fprintf(output, "\n");
+
 }

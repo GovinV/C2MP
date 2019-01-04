@@ -52,7 +52,7 @@ void printSemiQuads(semiQuad *q1);
 symbol newTemp(void);
 
 // generate.h
-void generateCode(quad* q, char *rounding);
+void generateCode(quad* q, char *rounding, int precision);
 
 // optimization.h
 quad* removeCommonSubExpressions(quad* quads);
@@ -217,14 +217,13 @@ P_PRAGMA:
             printf("generated quads :\n");
             quad *quads = getQuadFromSemiQuad($4);
             printf("... :\n");
-            generateCode(quads, $2.rounding);
             if (option_flag == 1)
             {
                 printf("\n\nOptimization... :\n");
             //printQuads(quads);
                 quads = removeCommonSubExpressions(quads);
             }
-            generateCode(quads, $2.rounding);
+            generateCode(quads, $2.rounding, $2.precision);
         }
 	;
 
@@ -462,7 +461,7 @@ EXPR:
             }
         }
 	| FCT               
-        { printf("EXPR = FUNCTION\n"); }
+        { $$ = $1; }
     ;
 
 FCT:
