@@ -195,10 +195,8 @@ quad* removeAllCommonSubExpressions(quad* quads);
 %type <number>          NUMBER
 %type <variable>        VAR
 %type <semiQuad>        INSTRUCTION
-%type <semiQuad>        INSTRUCTION_LIST
 %type <semiQuad>        BLOC
 %type <semiQuad>        BLOC_LIST
-%type <int>             CONDITION
 %type <semiQuad>        ASSIGNMENT
 
 %left OR
@@ -222,27 +220,29 @@ quad* removeAllCommonSubExpressions(quad* quads);
 P_PRAGMA:
 	PRAGMA P_EXTENSION BACKSLASH BLOC
         {
+            printf("***** Found Pragma *****\n");
             printf("Rounding = %s\n", $2.rounding);
             printf("Precision = %d\n", $2.precision);
             printf("generated semi quads :\n");
             printSemiQuads($4);
-            printf("generated quads :\n");
+            printf("Quads generation:\n");
             quad *quads = getQuadFromSemiQuad($4);
-            printf("... :\n");
+            printf("End of quads generation\n");
             if (option_flag == 1)
             {
-                printf("\n\nOptimization... :\n");
+                printf("Optimization:\n");
                 //printQuads(quads);
                 quads = removeAllCommonSubExpressions(quads);
+                printf("End of Optimization.\n");
             }
             generateCode(quads, $2.rounding, $2.precision);
+            printf("\n");
         }
 	;
 
 P_EXTENSION:
 	EXTENSION P_EXTENSION 
         { 
-            printf("extension trouvee\n");
             $$ = $2;
             if ($1.type == ROUNDING_T)
                 $$.rounding = $1.rounding;
@@ -575,7 +575,7 @@ int main(int argc, char *argv[])
         panic("syntax.y", "main", "Error Open File\n");
     yyin = finput;
  
-    /* utilisation de getopt pour gérer les arguments */
+    /* Use getopt to handle option */
     while ( (opt = getopt(argc, argv, "O") ) != -1)
     {
         switch (opt) 
@@ -583,7 +583,7 @@ int main(int argc, char *argv[])
             case 'O':
                             option_flag = 1;
                 break;
-            /* getopt ne reconnait pas un caractère */
+            /* Character not recognized */
             case '?':
                 errflag++;
                 break;
@@ -597,11 +597,10 @@ int main(int argc, char *argv[])
  
     open_file();    
     yyout = output;
-    //yyout = stdout;
+
     while(pragmaMet == 0)
     {
         yyparse();
-        printf("pragmaMet : %d\n", pragmaMet);
         if (pragmaMet == 1) // if we met a pragma
         {
             pragmaMet = 0; // reset 
@@ -615,8 +614,6 @@ int main(int argc, char *argv[])
             // create new output
             snprintf(ret, 10, "output%d.c", i); 
             snprintf(ret2, 10, "output%d.c", i-1); 
-            printf("output : %s\n", ret);
-            printf("input : %s\n", ret2);
 
             // open new file
             output = fopen(ret, "w+");
@@ -646,6 +643,7 @@ int main(int argc, char *argv[])
         else break;
     }
 
+    printf("%d pragma in source. Final Result in file : result.c\n",i-1);
     if ( rename(ret, "result.c") == -1)
     {
         panic("syntax.y", "main", "Error Rename File\n");

@@ -207,7 +207,7 @@ quad* ignoreBlocForCommonSubExpression(quad* quads, quad* firstQuad)
             case C2MP_OPERATOR_UNARY_PLUS:
             case C2MP_OPERATOR_LOGICAL_NOT:
             case C2MP_OPERATOR_BITWISE_NOT:
-                printf("%s\n",getSymbolFromReference(q->assignment).name);
+                // printf("%s\n",getSymbolFromReference(q->assignment).name);
                 assignNewOptimizationRef(q->assignment);
                 break;
             case C2MP_QUAD_IF:
