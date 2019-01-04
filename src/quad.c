@@ -195,6 +195,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
 
             return finalQuads;
             break;
+
         case C2MP_OPERATOR_LOGICAL_OR:
             quadExpr1 = generateQuadsFromAST(expr->expression.e1);
             quadExpr2 = generateQuadsFromAST(expr->expression.e2);
@@ -261,6 +262,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
 
             return finalQuads;
             break;
+
         case C2MP_OPERATOR_BINARY_PLUS:
         case C2MP_OPERATOR_BINARY_MINUS:
         case C2MP_OPERATOR_BINARY_DOT:
@@ -274,6 +276,8 @@ quad *generateQuadsFromAST(expressionAST *expr)
         case C2MP_OPERATOR_BITWISE_AND:
         case C2MP_OPERATOR_BITWISE_OR:
         case C2MP_OPERATOR_BITWISE_XOR:
+        // functions
+        case C2MP_FUNCTION_POW:
             quadExpr1 = generateQuadsFromAST(expr->expression.e1);
             quadExpr2 = generateQuadsFromAST(expr->expression.e2);
 
@@ -289,10 +293,13 @@ quad *generateQuadsFromAST(expressionAST *expr)
 
             return finalQuads;
             break;
+
         case C2MP_OPERATOR_UNARY_MINUS:
         case C2MP_OPERATOR_UNARY_PLUS:
         case C2MP_OPERATOR_LOGICAL_NOT:
         case C2MP_OPERATOR_BITWISE_NOT:
+        // functions
+        case C2MP_FUNCTION_SQRT:
             quadExpr = generateQuadsFromAST(expr->expression.e1);
 
             // the reference is the assigned variable of the last quad
@@ -305,22 +312,26 @@ quad *generateQuadsFromAST(expressionAST *expr)
 
             return finalQuads;
             break;
+
         case C2MP_CHARACTER_INTEGER: // number
             return createQuad(newTemp().reference, C2MP_QUAD_ASSIGNMENT,
                         createIntegerOperand(expr->valueInt),
                         createVoidOperand());
             break;
+
         case C2MP_CHARACTER_FLOAT: // float
 
             return createQuad(newTemp().reference, C2MP_QUAD_ASSIGNMENT,
                         createFloatOperand(expr->valueFloat),
                         createVoidOperand());
             break;
+
         case C2MP_CHARACTER_VARIABLE: // variable
             return createQuad(newTemp().reference, C2MP_QUAD_ASSIGNMENT,
                         createVariableOperand(expr->valueVariable),
                         createVoidOperand());
             break;
+            
         default:
             fprintf(stderr, "Warning, unknown expression operation : %c\n", expr->operator);
     }

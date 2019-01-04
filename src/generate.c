@@ -174,6 +174,20 @@ void generateCode(quad *q, char *rounding)
             printf("\b\b while (%s);", getNameFromReference(currentQuad->assignment));
             break;
 
+        case C2MP_FUNCTION_POW:
+            printf("mpc_pow(%s, ", getNameFromReference(currentQuad->assignment));
+            printOperand(currentQuad->operand1);
+            printf(", ");
+            printOperand(currentQuad->operand2);
+            printf(", %s);", rounding);
+            break;
+        
+        case C2MP_FUNCTION_SQRT:
+            printf("mpc_sqrt(%s, ", getNameFromReference(currentQuad->assignment));
+            printOperand(currentQuad->operand1);
+            printf(", %s);", rounding);
+            break;
+
         // not supported yet
         case C2MP_OPERATOR_BITWISE_AND:
         case C2MP_OPERATOR_BITWISE_OR:

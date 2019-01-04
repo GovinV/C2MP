@@ -19,6 +19,7 @@
     }
 
     y = pow(x, 10);
+    y = sqrt(y);
 
     while(a<1000)
     {

@@ -222,6 +222,18 @@ void printExpressionAST(expressionAST *expr)
         case C2MP_CHARACTER_VARIABLE: // variable
             printf("(%s)", getNameFromReference(expr->valueVariable));
             break;
+        case C2MP_FUNCTION_POW:
+            printf("pow("); 
+            printExpressionAST(expr->expression.e1);
+            printf(", ");
+            printExpressionAST(expr->expression.e2);
+            printf(")");
+            break;
+        case C2MP_FUNCTION_SQRT:
+            printf("sqrt(");
+            printExpressionAST(expr->expression.e1);
+            printf(")");
+            break;
         default:
             fprintf(stderr, "Warning, unknown expression operation : %c\n", expr->operator);
     }
