@@ -59,6 +59,7 @@ void generateCode(quad* q, char *rounding, int precision);
 
 // optimization.h
 quad* removeCommonSubExpressions(quad* quads);
+quad* removeAllCommonSubExpressions(quad* quads);
 
 %}
 
@@ -219,7 +220,7 @@ quad* removeCommonSubExpressions(quad* quads);
 %%
 
 P_PRAGMA:
-	PRAGMA P_EXTENSION BACKSLASH BLOC 
+	PRAGMA P_EXTENSION BACKSLASH BLOC
         {
             printf("Rounding = %s\n", $2.rounding);
             printf("Precision = %d\n", $2.precision);
@@ -231,8 +232,8 @@ P_PRAGMA:
             if (option_flag == 1)
             {
                 printf("\n\nOptimization... :\n");
-            //printQuads(quads);
-                quads = removeCommonSubExpressions(quads);
+                //printQuads(quads);
+                quads = removeAllCommonSubExpressions(quads);
             }
             generateCode(quads, $2.rounding, $2.precision);
         }
@@ -535,47 +536,52 @@ PARAM:
 %%
 
 
-
 int main(int argc, char *argv[])
 {
-	if(argc < 2)
-	{
-		panic("syntax.y", "main", "Missing argument - usage : ./C2MP <file>.c -O");
-	}
-
+    if(argc < 2)
+    {
+        panic("syntax.y", "main", "Missing argument - usage : ./C2MP <file>.c -O");
+    }
+ 
     int opt,
+        i,
         errflag;
+ 
+    char ch, 
+        ret[50], 
+        ret2[50];
+    char * rc;
 
-    char ch;
-    char * ret;
-
+ 
     opt         = 0;
     errflag     = 0;
     option_flag = 0;
+    i           = 1;
     ch          = '.';
 
-    pragmaOn 		= 0;
-	pragmaBlocOn 	= 0;
-	pragmaBlocIndex = 0;
-
-    ret = strrchr(argv[1], ch);
-    if (strncmp(ret, ".c", 2) != 0)
+ 
+    pragmaOn        = 0;
+    pragmaBlocOn    = 0;
+    pragmaBlocIndex = 0;
+ 
+    rc = strrchr(argv[1], ch);
+    if (strncmp(rc, ".c", 2) != 0)
     {
         panic("syntax.y", "main", "Extension File Error");
     }
-
-    yyin = fopen(argv[1], "r");
-    if(yyin == NULL)
-        panic("syntax.y", "main", "Error open file\n");
-    
-
+ 
+    finput = fopen(argv[1], "r");
+    if(finput == NULL)
+        panic("syntax.y", "main", "Error Open File\n");
+    yyin = finput;
+ 
     /* utilisation de getopt pour gérer les arguments */
     while ( (opt = getopt(argc, argv, "O") ) != -1)
     {
         switch (opt) 
         {
             case 'O':
-                option_flag = 1;
+                            option_flag = 1;
                 break;
             /* getopt ne reconnait pas un caractère */
             case '?':
@@ -583,23 +589,74 @@ int main(int argc, char *argv[])
                 break;
         }
     }
-
+ 
     if (errflag)
     {
         panic("syntax.y", "main", "usage : ./C2MP <fichier> -o");
     }
-
+ 
     open_file();    
+    yyout = output;
+    //yyout = stdout;
+    while(pragmaMet == 0)
+    {
+        yyparse();
+        printf("pragmaMet : %d\n", pragmaMet);
+        if (pragmaMet == 1) // if we met a pragma
+        {
+            pragmaMet = 0; // reset 
 
-	//yyout = stdout;
-	yyparse();
+            // close file actual
+            if ( fclose(finput) != 0)
+                panic("syntax.y", "main", "Error Close File\n");
+            if ( fclose(output) != 0)
+                panic("syntax.y", "main", "Error Close File\n");
 
-    if ( fclose(yyin) != 0)
-        panic("syntax.y", "main", "Error close file\n");
+            // create new output
+            snprintf(ret, 10, "output%d.c", i); 
+            snprintf(ret2, 10, "output%d.c", i-1); 
+            printf("output : %s\n", ret);
+            printf("input : %s\n", ret2);
 
+            // open new file
+            output = fopen(ret, "w+");
+            if(output == NULL)
+                panic("syntax.y", "main", "Error Open File\n");
+            if (i == 1)
+            {
+                finput = fopen("output0.c", "r");
+                if(finput == NULL)
+                    panic("syntax.y", "main", "Error Open File\n");
+            }
+            else
+            {
+                finput = fopen(ret2, "r");
+                if(finput == NULL)
+                    panic("syntax.y", "main", "Error Open File\n");
+            }
+            // new input : output with pragma actual
+            yyin = finput;
+
+            // new output
+            yyout = output;
+
+            i++;
+
+        }
+        else break;
+    }
+
+    if ( rename(ret, "result.c") == -1)
+    {
+        panic("syntax.y", "main", "Error Rename File\n");
+    }
+
+    if ( fclose(finput) != 0)
+        panic("syntax.y", "main", "Error Close File\n");
+ 
     printf("End of parsing\n");
-
+ 
     close_file();
-
-	return 0;
+ 
+    return 0;
 }

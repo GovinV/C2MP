@@ -35,10 +35,16 @@ typedef struct constantRow
 } constRow;
 
 quad* optimizeQuad(quad* quads);
-quad* removeCommonSubExpressions(quad* quads);
+quad* removeAllCommonSubExpressions(quad* quads);
+quad* removeCommonSubExpression(quad* quads, quad* firstQuad);
+quad* ignoreBlocForCommonSubExpression(quad* quads, quad* firstQuad);
 void resetTables(void);
 
-
+void optimizeExprToAssignment(quad* q, int reference);
+void assignNewOptimizationRef(int reference);
+void setOptimizationRef(int reference, int hashReference);
+int getOperandOptimizationRef(int reference);
+int createExprHash(char op, int operand1, int operand2);
 int createRefTableRow(int reference);
 int findOptimizationRefTable(int reference);
 int findRefTable(int reference);

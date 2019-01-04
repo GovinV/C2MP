@@ -10,11 +10,21 @@
 "/*"((\*+[^/*])|([^*]))*\**"*/"		{ 
 									}
 
-"//"[^\n]*"\n"						{ }
+"//"[^\n]*"\n"						{ 
+
+									}
 
 #pragma[ \t]+MPC[ \t]+				{
-										pragmaOn = 1;
-										return PRAGMA; 
+										if (pragmaMet == 0)
+										{
+											pragmaOn = 1;
+											return PRAGMA;
+										}
+										else 
+										{
+											printf("yytext pragma : %s\n", yytext);
+											write_file(yytext);
+										}
 									}
 
 [0-9]*\.[0-9]*[fd]?([eE][-+]?[0-9]+)? {
@@ -25,6 +35,7 @@
 										}
 										else
 										{
+											printf("yytext float : %s\n", yytext);
 											write_file(yytext);
 										}
 									}
@@ -36,6 +47,7 @@
 										}
 										else
 										{
+											printf("yytext {: %s\n", yytext);
 											write_file(yytext);
 										}
 									}
@@ -45,16 +57,19 @@
 											pragmaBlocIndex--;
 											if (pragmaBlocIndex == 0)
 											{
+												pragmaMet = 1;
 												pragmaBlocOn = 0;
 											}
 											return yytext[0];
 										}
 										else
 										{
+
+											printf("yytext } : %s\n", yytext);
 											write_file(yytext);
 										}
 									}
-[0-9]+                              { /*[+-]?0|[1-9][0-9]*/
+[0-9]+                              {
 										if ((pragmaBlocOn) || (pragmaOn))
 										{
 											yylval.value = atoi(yytext);
@@ -62,6 +77,7 @@
 										}
 										else
 										{
+											printf("yytext integer : %s\n", yytext);
 											write_file(yytext);
 										}
 									}
@@ -71,6 +87,7 @@ if                                  {
 											return IF;
 										else
 										{
+											printf("yytext if : %s\n", yytext);
 											write_file(yytext);
 										}
                                     }
@@ -80,6 +97,7 @@ else                                {
                                         	return ELSE;
 										else
 										{
+											printf("yytext else : %s\n", yytext);
 											write_file(yytext);
 										}
                                     }
@@ -89,6 +107,7 @@ while								{ // PB A REGLER : VARIABLE QUI SAPPELLE WHILE1
 											return WHILE;
 										else
 										{
+											printf("yytext while : %s\n", yytext);
 											write_file(yytext);
 										}
 									}
@@ -98,6 +117,7 @@ do                                  {
                                         	return DO;
 										else
 										{
+											printf("yytext do : %s\n", yytext);
 											write_file(yytext);
 										}
                                     }
@@ -107,6 +127,7 @@ for									{
 											return FOR;
 										else
 										{
+											printf("yytext for : %s\n", yytext);
 											write_file(yytext);
 										}
 									}
@@ -116,6 +137,7 @@ for									{
 											return LTE;
 										else
 										{
+											printf("yytext <=: %s\n", yytext);
 											write_file(yytext);
 										}
 									}
@@ -125,6 +147,7 @@ for									{
 											return GTE;
 										else
 										{
+											printf("yytext >=: %s\n", yytext);
 											write_file(yytext);
 										}
 									}
@@ -134,6 +157,7 @@ for									{
 											return EQ;
 										else
 										{
+											printf("yytext == : %s\n", yytext);
 											write_file(yytext);
 										}
 									}
@@ -143,6 +167,7 @@ for									{
 											return NEQ;
 										else
 										{
+											printf("yytext !=: %s\n", yytext);
 											write_file(yytext);
 										}
 									}
@@ -152,6 +177,7 @@ for									{
 											return AND;
 										else
 										{
+											printf("yytext &&: %s\n", yytext);
 											write_file(yytext);
 										}
 									}
@@ -161,6 +187,7 @@ for									{
 											return OR;
 										else
 										{
+											printf("yytext || : %s\n", yytext);
 											write_file(yytext);
 										}
 									}
@@ -169,6 +196,7 @@ precision 							{
 											return PRECISION;
 										else
 										{
+											printf("yytext precision: %s\n", yytext);
 											write_file(yytext);
 										}
 									}
@@ -177,6 +205,7 @@ rounding  							{
 											return ROUNDING;
 										else
 										{
+											printf("yytext rounding: %s\n", yytext);
 											write_file(yytext);
 										}
 									}
@@ -189,23 +218,26 @@ rounding  							{
 										}
 										else
 										{
+											printf("yytext symbol: %s\n", yytext);
 											write_file(yytext);
 										}
 
 									}
 [\n]+								{
-										if(pragmaOn)
+										if ((pragmaOn))
 										{
 											pragmaOn = 0;
 											pragmaBlocOn = 1;
 											return BACKSLASH;
 										}
-										else
+										else if (!(pragmaBlocOn))
 										{
+											printf("yytext saut: %s\n", yytext);
 											write_file(yytext);
 										}
 									} // cOUNT ONLY FIRST AFTER PRAGMA
 [ \t]+								{
+										if (!(pragmaBlocOn || pragmaOn))
 											write_file(yytext);
 									} 
 .									{ 
@@ -213,6 +245,7 @@ rounding  							{
 											return yytext[0];
 										else
 										{
+											printf("yytext carac spec : %s\n", yytext);
 											write_file(yytext);
 										}
 									}/*
