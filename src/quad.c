@@ -276,7 +276,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
         case C2MP_OPERATOR_BITWISE_AND:
         case C2MP_OPERATOR_BITWISE_OR:
         case C2MP_OPERATOR_BITWISE_XOR:
-        // functions
+        /******************** FUNCTIONS ********************/
         case C2MP_FUNCTION_POW:
             quadExpr1 = generateQuadsFromAST(expr->expression.e1);
             quadExpr2 = generateQuadsFromAST(expr->expression.e2);
@@ -298,8 +298,17 @@ quad *generateQuadsFromAST(expressionAST *expr)
         case C2MP_OPERATOR_UNARY_PLUS:
         case C2MP_OPERATOR_LOGICAL_NOT:
         case C2MP_OPERATOR_BITWISE_NOT:
-        // functions
+        /******************** FUNCTIONS ********************/
+        case C2MP_FUNCTION_ABS:
+        case C2MP_FUNCTION_EXP:
+        case C2MP_FUNCTION_COS:
+        case C2MP_FUNCTION_COSH:
+        case C2MP_FUNCTION_LOG:
+        case C2MP_FUNCTION_LOG10:
+        case C2MP_FUNCTION_SIN:
+        case C2MP_FUNCTION_SINH:
         case C2MP_FUNCTION_SQRT:
+
             quadExpr = generateQuadsFromAST(expr->expression.e1);
 
             // the reference is the assigned variable of the last quad

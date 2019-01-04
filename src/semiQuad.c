@@ -113,6 +113,38 @@ void printSemiQuads(semiQuad *q)
                 printf("sqrt");
                 printExpressionAST(currentQuad->expression);
                 break;
+            case C2MP_FUNCTION_ABS:
+                printf("abs");
+                printExpressionAST(currentQuad->expression);
+                break;
+            case C2MP_FUNCTION_EXP:
+                printf("exp");
+                printExpressionAST(currentQuad->expression);
+                break;
+            case C2MP_FUNCTION_LOG:
+                printf("log");
+                printExpressionAST(currentQuad->expression);
+                break;
+            case C2MP_FUNCTION_LOG10:
+                printf("log10");
+                printExpressionAST(currentQuad->expression);
+                break;
+            case C2MP_FUNCTION_COS:
+                printf("cos");
+                printExpressionAST(currentQuad->expression);
+                break;
+            case C2MP_FUNCTION_SIN:
+                printf("sin");
+                printExpressionAST(currentQuad->expression);
+                break;
+            case C2MP_FUNCTION_COSH:
+                printf("cosh");
+                printExpressionAST(currentQuad->expression);
+                break;
+            case C2MP_FUNCTION_SINH:
+                printf("sinh");
+                printExpressionAST(currentQuad->expression);
+                break;
             default:
                 fprintf(stderr, "Warning, unknown semi quad operation : %d (%c)\n",
                     currentQuad->operator, currentQuad->operator);

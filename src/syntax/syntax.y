@@ -217,7 +217,6 @@ P_PRAGMA:
             printf("generated quads :\n");
             quad *quads = getQuadFromSemiQuad($4);
             printf("... :\n");
-            generateCode(quads, $2.rounding);
             if (option_flag == 1)
             {
                 printf("\n\nOptimization... :\n");
@@ -462,7 +461,7 @@ EXPR:
             }
         }
 	| FCT               
-        { printf("EXPR = FUNCTION\n"); }
+        { $$ = $1; }
     ;
 
 FCT:
