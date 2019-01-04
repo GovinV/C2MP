@@ -512,10 +512,10 @@ ARG:
 
 int main(int argc, char *argv[])
 {
-  if(argc < 2)
-  {
-    panic("syntax.y", "main", "Missing argument - usage : ./C2MP <file>.c -O");
-  }
+    if(argc < 2)
+    {
+        panic("syntax.y", "main", "Missing argument - usage : ./C2MP <file>.c -O");
+    }
  
     int opt,
         i,

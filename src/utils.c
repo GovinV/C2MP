@@ -3,7 +3,7 @@
 /* sortie d'erreur */
 void panic(char * file, char * function, char * error)
 {
-    fprintf(stderr, "%s.c : Unexpected error occurred - function '%s'\n", file, function);
+    fprintf(stderr, "%s.c : Unexpected Error Occurred - function '%s'\n", file, function);
     fprintf(stderr, "\t%s\n", error);
     
     exit(EXIT_FAILURE);
