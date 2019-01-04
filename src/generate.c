@@ -8,6 +8,7 @@ void generateCode(quad *q, char *rounding, int precision)
     quad *firstQuad = q;
     quad *currentQuad = q;
     int indent = 0;
+    bool *listTemps;
 
     if (q == NULL)
     {
@@ -15,7 +16,7 @@ void generateCode(quad *q, char *rounding, int precision)
     }
 
     // generation of the initialisations of the temporary variables
-    generateInitCode(q, precision);
+    listTemps = generateInitCode(q, precision);
 
     do
     {
@@ -277,20 +278,27 @@ void generateCode(quad *q, char *rounding, int precision)
         currentQuad = currentQuad->next;
 
     } while (currentQuad != firstQuad);
+    
+    fprintf(output, "\n");
+    
+    // generate the clear instructions
+    generateClearCode(listTemps);
+
 }
 
-void generateInitCode(quad *q, int precision)
+bool * generateInitCode(quad *q, int precision)
 {
     int index;
+    bool *tempList;
     char *base = "C2MP___temp_";
-    char *varName;
+    const char *varName;
     quad *firstQuad = q;
     quad *currentQuad = q;
 
     if (q == NULL)
     {
         fprintf(stderr, "generateInitCode warning: no quad was generated\n");
-        return;
+        return NULL;
     }
     
     /**
@@ -300,7 +308,12 @@ void generateInitCode(quad *q, int precision)
      * represent a temporary variable of the form "C2MP___temp_index". When
      * tempList[index] is true, it means that "C2MP__temp_index" must be init.
      */
-    bool tempList[MAX];
+    tempList = malloc(MAX * sizeof(bool));
+    if (tempList == NULL)
+    {
+        panic("generate.c", "generateInitCode", "malloc: failed to init tempList");
+    }
+
     for (int i = 0; i < MAX; i++)
     {
         tempList[i] = false;
@@ -326,10 +339,37 @@ void generateInitCode(quad *q, int precision)
         if (tempList[i])
         {
             fprintf(output, "  mpc_t %s%d;", base, i);
-            fprintf(output, " mpc_init(%s%d, %d);\n", base, i, precision);
+            fprintf(output, " mpc_init2(%s%d, %d);\n", base, i, precision);
         }
     }
 
     fprintf(output, "\n");
 
+    return tempList;
+
+}
+
+void generateClearCode(bool *tempList)
+{
+    char *base = "C2MP___temp_";    
+
+    if (tempList == NULL)
+    {
+        fprintf(stderr, "generateClearCode warning: no templist given");
+        return;
+    }
+
+    for (int i = 0; i < MAX; i ++)
+    {
+        // if the field is true, it means the variable i has to be cleared
+        if (tempList[i])
+        {
+            fprintf(output, "  mpc_clear(%s%d);\n", base, i);
+        }
+    }
+
+    fprintf(output, "\n");
+    
+    // we don't need to use it again
+    free(tempList);
 }

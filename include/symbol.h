@@ -7,6 +7,7 @@
 
 #define MAX 1024*8
 
+// Type of a symbol
 typedef enum 
 {
     FLOAT_NUMBER,
@@ -14,6 +15,7 @@ typedef enum
     MPC_T
 } symbolType;
 
+// This structure describes a symbol
 typedef struct symbol_s
 {
     int reference;
@@ -23,10 +25,34 @@ typedef struct symbol_s
     symbolType type_symbol;
 } symbol;
 
-//#define SYMBOL_MAX_STRING 42
+/**
+ * @brief Creates a new symbol and adds it to the symbol table.
+ * @param name The name of the symbol
+ * @param isTemp Specify if the symbol created is a temporary variable
+ * @return Returns the instance of the new symbol created.
+ */
 symbol newSymbol(const char name[], bool isTemp);
+
+/**
+ * @brief This function return the reference of a symbol in the symbol table
+ * @param name The name of the symbol
+ * @return Returns the index of the symbol in the table, or -1 if not found.
+ */
 int getSymbolReference(const char name[]);
+
+/**
+ * @brief Returns the index in the symbol table of a given symbol. This function
+ * creates the symbol if it doesn't exist.
+ * @param The name of the symbol
+ * @return The index in the symbol table
+ */
 int getReferenceFromName(const char name[]);
+
+/**
+ * @brief Returns the name of a symbol with a given reference
+ * @param reference The index in the symbol table
+ * @return The name of the symbol
+ */
 const char *getNameFromReference(int reference);
 
 /**
@@ -42,30 +68,6 @@ symbol newTemp(void);
  * @return The symbol at the index specified as a parameter
  */
 symbol getSymbolFromReference(int ref);
-
-/*
-typedef enum 
-{
-    INTEGER,
-    LABEL,
-    STRING
-} symbolType;
-
-typedef struct symbol_s
-{
-    char *id;
-    bool isconstant;
-    int val;
-    type type_symbol;
-    struct symbol_s *next;
-} Symbol;
-
-Symbol *symbol_alloc(void);
-void symbol_free(Symbol *);
-Symbol *symbol_newtemp(Symbol **);
-Symbol *symbol_lookup(Symbol *, char *);
-Symbol *symbol_add(Symbol **, char *);
-void symbol_print(Symbol *);*/
 
 #endif // SYMBOL_H
 
