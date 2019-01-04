@@ -20,6 +20,13 @@ quadOperand createIntegerOperand(int value);
 quadOperand createFloatOperand(float value);
 quadOperand createVoidOperand(void);
 
+/**
+ * @brief Return the type of a symbol
+ * @param ope The operand from which we want to know the type
+ * @return The type of the symbol (cf. symbol.h)
+ */
+symbolType getSymbolTypeFromOperand(quadOperand ope);
+
 quad *createQuad(int assignment, char operator, quadOperand value1, quadOperand value2);
 quad *copySemiQuad(semiQuad *sq);
 quad *generateQuadsFromAST_2(expressionAST *expr);

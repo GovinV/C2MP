@@ -388,6 +388,25 @@ quad *concatQuads(quad *q1, quad *q2)
     return q1;
 }
 
+symbolType getSymbolTypeFromOperand(quadOperand ope)
+{
+    switch (ope.type)
+    {
+        case C2MP_QUAD_OPERAND_INTEGER:
+            return INTEGER_NUMBER;
+
+        case C2MP_QUAD_OPERAND_FLOAT:
+            return FLOAT_NUMBER;
+
+        case C2MP_QUAD_OPERAND_VARIABLE:
+            return getSymbolFromReference(ope.reference).type_symbol;
+
+        default:
+            panic("quad.c", "getSymbolTypeFromOperan", "Unknown symbol type");
+    }
+    return ERROR;
+}
+
 void printOperand(quadOperand operand)
 {
     switch(operand.type)

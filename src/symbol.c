@@ -84,11 +84,22 @@ void symbol_print(Symbol *sym)
 symbol variables[MAX];
 int variablesSize = 0;
 
-symbol newSymbol(const char name[])
+symbol newSymbol(const char name[], bool isTemp)
 {
     variables[variablesSize].name = strdup(name);
     variables[variablesSize].reference = variablesSize;
     variables[variablesSize].isConstant = 0;
+    variables[variablesSize].isTemp = isTemp;
+    
+    if (isTemp)
+    {
+        variables[variablesSize].type_symbol = MPC_T;
+    }
+    else
+    {   
+        // default value
+        variables[variablesSize].type_symbol = FLOAT_NUMBER;
+    }
 
     return variables[variablesSize++];
 }
@@ -106,13 +117,18 @@ int getSymbolReference(const char name[])
     return -1;
 }
 
+symbol getSymbolFromReference(int ref)
+{
+    return variables[ref];
+}
+
 // if the variable is found, returns a reference, else creates one and returns it
 int getReferenceFromName(const char name[])
 {
     int reference = getSymbolReference(name);
     if(reference == -1)
     {
-        return newSymbol(name).reference;
+        return newSymbol(name, false).reference;
     }
 
     return reference;
@@ -129,24 +145,8 @@ symbol newTemp(void)
     char buffer[1024];
     static int tempCount = 0;
     snprintf(buffer, 1024, "C2MP___temp_%d",tempCount);
-
+    
     ++tempCount;
 
-    return newSymbol(buffer);
-}
-
-
-char * type_symbol(symbolType type) 
-{
-    switch(type) 
-    {
-        case INTEGER_NUMBER:
-            return "integer";
-        case FLOAT_NUMBER:
-            return "float";
-        case STRING:
-            return "string";
-    }
-
-    return NULL;
+    return newSymbol(buffer, true);
 }

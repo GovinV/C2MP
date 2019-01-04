@@ -1,4 +1,4 @@
-#pragma MPC precision(128) rounding(MP_PSDF) 
+#pragma MPC precision(128)
 {
 
     a = x + y;

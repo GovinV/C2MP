@@ -237,7 +237,7 @@ P_EXTENSION:
         }
 	|                      
         { 
-            $$.rounding = strdup("MPC_RDNZZ");
+            $$.rounding = strdup("MPC_RNDZZ");
             $$.precision = 128; 
         }
 	;

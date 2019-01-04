@@ -11,7 +11,7 @@ typedef enum
 {
     FLOAT_NUMBER,
     INTEGER_NUMBER,
-    STRING
+    MPC_T
 } symbolType;
 
 typedef struct symbol_s
@@ -19,16 +19,29 @@ typedef struct symbol_s
     int reference;
     char *name;
     bool isConstant;
+    bool isTemp;
     symbolType type_symbol;
 } symbol;
 
 //#define SYMBOL_MAX_STRING 42
-symbol newSymbol(const char name[]);
+symbol newSymbol(const char name[], bool isTemp);
 int getSymbolReference(const char name[]);
 int getReferenceFromName(const char name[]);
 const char *getNameFromReference(int reference);
+
+/**
+ * @brief Generate a new temporary variable
+ * @return The symbol associated with the variable generated
+ */
 symbol newTemp(void);
-char * type_symbol(symbolType type);
+
+/**
+ * @brief This function returns the symbol from the symbol table at the index
+ * given as parameter.
+ * @param ref Index in the symbol table
+ * @return The symbol at the index specified as a parameter
+ */
+symbol getSymbolFromReference(int ref);
 
 /*
 typedef enum 

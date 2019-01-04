@@ -3,6 +3,8 @@
 
 void generateCode(quad *q, char *rounding)
 {
+    symbol ass;
+
     if (q == NULL)
     {
         printf("no quads\n");
@@ -115,26 +117,41 @@ void generateCode(quad *q, char *rounding)
             break;
 
         case C2MP_QUAD_ASSIGNMENT:
-            switch (currentQuad->operand1.type)
+            ass = getSymbolFromReference(currentQuad->assignment);
+            switch (ass.type_symbol)
             {
-                case C2MP_QUAD_OPERAND_VARIABLE:
-                    printf("mpc_set(");
-                    break;
-
-                case C2MP_QUAD_OPERAND_INTEGER:
-                    printf("mpc_set_si(");
+                case FLOAT_NUMBER:
+                case INTEGER_NUMBER:
+                    printf("%s = ", getNameFromReference(currentQuad->assignment));
+                    printf("mpc_get_ldc(");
                     break;
                 
-                // conflicts with float?
-                case C2MP_QUAD_OPERAND_FLOAT:
-                    printf("mpc_set_d(");
-                    break;
+                case MPC_T:
+                    switch (getSymbolTypeFromOperand(currentQuad->operand1))
+                    {
+                        case FLOAT_NUMBER:
+                            printf("mpc_set_d(");
+                            break;
+
+                        case INTEGER_NUMBER:
+                            printf("mpc_set_si(");
+                            break;
+
+                        case MPC_T:
+                            printf("mpc_set(");
+                            break;                           
                     
+                        default:
+                            panic("generate", "generateCode", "Unknown operand type");
+                    }
+                    // printed every time
+                    printf("%s, ", getNameFromReference(currentQuad->assignment));
+                    break;
+
                 default:
                     panic("generate", "generateCode", "Unknown operand type");
             }
-
-            printf("%s, ", getNameFromReference(currentQuad->assignment));
+            // this is printed every time
             printOperand(currentQuad->operand1);
             printf(", %s);", rounding);
             break;
