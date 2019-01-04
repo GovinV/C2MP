@@ -69,7 +69,7 @@ quad* removeCommonSubExpression(quad* quads, quad* firstQuad)
 		switch(q->operator)
 		{
 			case C2MP_QUAD_ASSIGNMENT:
-				operandOptimizationRef = getOperandOptimizationRef(q->operand1.reference);
+				operandOptimizationRef = getOperandOptimizationRef(q->operands[0].reference);
 
 				
 				if((refTableIndex = findRefTable(q->assignment)) < 0)
@@ -103,13 +103,13 @@ quad* removeCommonSubExpression(quad* quads, quad* firstQuad)
             case C2MP_OPERATOR_LOWER_OR_EQUAL:
             case C2MP_OPERATOR_GREATER_OR_EQUAL:
 
-				optimizationRefOp2 = getOperandOptimizationRef(q->operand2.reference);
+				optimizationRefOp2 = getOperandOptimizationRef(q->operands[1].reference);
                 __attribute__ ((fallthrough));
             case C2MP_OPERATOR_UNARY_MINUS:
             case C2MP_OPERATOR_UNARY_PLUS:
             case C2MP_OPERATOR_LOGICAL_NOT:
             case C2MP_OPERATOR_BITWISE_NOT:
-				optimizationRefOp1 = getOperandOptimizationRef(q->operand1.reference);
+				optimizationRefOp1 = getOperandOptimizationRef(q->operands[0].reference);
 
 
 				
@@ -236,8 +236,9 @@ quad* ignoreBlocForCommonSubExpression(quad* quads, quad* firstQuad)
 void optimizeExprToAssignment(quad* q, int reference)
 {
 	q->operator = C2MP_QUAD_ASSIGNMENT;
-	q->operand1 = createVariableOperand(reference);
-	q->operand2 = createVoidOperand();
+	q->operands[0] = createVariableOperand(reference);
+	q->operands[1] = createVoidOperand();
+	q->operandsNum = 2;
 }
 
 void assignNewOptimizationRef(int reference)

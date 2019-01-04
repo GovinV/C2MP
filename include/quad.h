@@ -40,6 +40,12 @@ symbolType getSymbolTypeFromOperand(quadOperand ope);
  */
 quad *createQuad(int assignment, char operator, char * name, int operandsNum, ...);
 
+/**
+ * @brief Free the memory from quads
+ * @param q A chained list of quads to be freed
+ */
+void freeQuads(quad *q);
+
 quad *copySemiQuad(semiQuad *sq);
 quad *generateQuadsFromAST_2(expressionAST *expr);
 quad *generateQuadsFromAST(expressionAST *expr);

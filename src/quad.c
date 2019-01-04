@@ -37,6 +37,7 @@ quad *createQuad(int assignment, char operator, char * name, int operandsNum, ..
     quad *q = malloc(sizeof(quad));
     q->assignment = assignment;
     q->operator = operator;
+    q->operandsNum = operandsNum;
 
     if (operator == C2MP_FUNCTION_UNKNOWN)
     {
@@ -57,6 +58,17 @@ quad *createQuad(int assignment, char operator, char * name, int operandsNum, ..
     q->previous = q;
 
     return q;
+}
+
+void freeQuads(quad *q)
+{
+    quad *currentQuad = q, *toFree;
+    do 
+    {
+        toFree = currentQuad;
+        currentQuad = currentQuad->next;
+        free(toFree);
+    } while(currentQuad != NULL); 
 }
 
 /* copy result */
@@ -361,17 +373,23 @@ quad *generateQuadsFromAST(expressionAST *expr)
                         createVariableOperand(expr->valueVariable));
             break;
 
-        // cutom function
+        // custom function
         case C2MP_FUNCTION_UNKNOWN:
-            finalQuads = generateQuadsFromAST(expr->customFunction.ags[0]);
+            finalQuads = generateQuadsFromAST(expr->customFunction.args[0]);
             for (int i = 1; i < expr->customFunction.argnum; i++)
             {
-                quadExpr = generateQuadsFromAST(expr->customFunction.ags[i]);
-                concat(finalQuads, quadExpr);
+                quadExpr = generateQuadsFromAST(expr->customFunction.args[i]);
+                concatQuads(finalQuads, quadExpr);
             }
+            // the reference is the assigned variable of the last quad
+            reference = quadExpr->previous->assignment;
+
+            /**
+             * I AM BLOCKED HERE! How to include all the operands in the call of createQuad?!
+             */
             finalQuads = concatQuads(finalQuads,
                                      createQuad(newTemp().reference, expr->operator,
-                                     NULL, C2MP_QUAD_UNARY,
+                                     expr->customFunction.name, expr->customFunction.argnum,
                                      createVariableOperand(reference)));
             return finalQuads;
 
@@ -505,9 +523,9 @@ void printQuads(quad* q)
             case C2MP_OPERATOR_LOGICAL_AND:
             case C2MP_OPERATOR_LOGICAL_OR:
                 printf("%s = ", getNameFromReference(currentQuad->assignment));
-                printOperand(currentQuad->operand1);
+                printOperand(currentQuad->operands[0]);
                 printf(" %c ", currentQuad->operator);
-                printOperand(currentQuad->operand2);
+                printOperand(currentQuad->operands[1]);
                 break;
             case C2MP_OPERATOR_UNARY_MINUS:
             case C2MP_OPERATOR_UNARY_PLUS:
@@ -516,16 +534,16 @@ void printQuads(quad* q)
                 printf("%s = %c ", 
                     getNameFromReference(currentQuad->assignment),
                     currentQuad->operator);
-                printOperand(currentQuad->operand1);
+                printOperand(currentQuad->operands[0]);
                 break;
             case C2MP_QUAD_ASSIGNMENT:
                 printf("%s = ", getNameFromReference(currentQuad->assignment));
-                printOperand(currentQuad->operand1);
+                printOperand(currentQuad->operands[0]);
                 break;
             case C2MP_QUAD_IF:
                 ++indent;
                 printf("if ");
-                printOperand(currentQuad->operand1);
+                printOperand(currentQuad->operands[0]);
                 break;
             case C2MP_QUAD_ELSE:
                 printf("\b\belse");
