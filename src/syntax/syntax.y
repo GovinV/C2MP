@@ -54,6 +54,9 @@ symbol newTemp(void);
 // generate.h
 void generateCode(quad* q, char *rounding);
 
+// optimization.h
+quad* removeCommonSubExpressions(quad* quads);
+
 %}
 
 %union
@@ -213,7 +216,10 @@ P_PRAGMA:
             printf("generated quads :\n");
             quad *quads = getQuadFromSemiQuad($4);
             printf("... :\n");
+            generateCode(quads, $2.rounding);
+            printf("\n\nOptimization... :\n");
             //printQuads(quads);
+            quads = removeCommonSubExpressions(quads);
             generateCode(quads, $2.rounding);
         }
 	;

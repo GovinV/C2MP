@@ -38,6 +38,8 @@ quad* optimizeQuad(quad* quads);
 quad* removeCommonSubExpressions(quad* quads);
 void resetTables(void);
 
+
+int createRefTableRow(int reference);
 int findOptimizationRefTable(int reference);
 int findRefTable(int reference);
 int findExprHashTable(char op, int operand1, int operand2);
