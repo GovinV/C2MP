@@ -11,116 +11,274 @@ constRow constTable[MAX];
 int constSize = 0;
 
 quad* optimizeQuad(quad* quads);
+/*
+	fun remove from reftable in 
 
-quad* removeCommonSubExpressions(quad* quads)
+
+*/
+
+
+quad* removeAllCommonSubExpressions(quad* quads)
+{
+    quad *firstQuad = quads;
+    quad* q = quads;
+
+    q = removeCommonSubExpression(q, firstQuad);
+
+    do
+    {
+        switch(q->operator)
+        {
+            case C2MP_QUAD_IF:
+            case C2MP_QUAD_WHILE:
+            case C2MP_QUAD_DOWHILE:
+                q = removeCommonSubExpression(q->next, firstQuad);
+                break;
+            default:
+                break;
+        }
+        q=q->next;
+    }while(q != firstQuad);
+
+    return firstQuad;
+}
+
+
+quad* removeCommonSubExpression(quad* quads, quad* firstQuad)
 {
 	if(quads == NULL)
     {
         printf("no quads for optimization\n");
     }
 	
-	quad *firstQuad = quads;
+    resetTables();
 	quad* q = quads;
-
+	int optimizationRefOp1;
+	int optimizationRefOp2;
+	int isCommutative;
+	int refTableIndex;
+	int operandOptimizationRef;
+	
 	do
 	{
 		/*ignoring quad which aren't expr or assignment,
 		 which means with voidOperand*/
-		/*Assignment*/
-		if(q->operator == C2MP_QUAD_ASSIGNMENT)
+		optimizationRefOp1 = -1;
+		optimizationRefOp2 = -1;
+		isCommutative = 0;
+		switch(q->operator)
 		{
-			printf("wshA\n");
+			case C2MP_QUAD_ASSIGNMENT:
+				operandOptimizationRef = getOperandOptimizationRef(q->operand1.reference);
 
-			int refOp1;
-			if((refOp1=findRefTable(q->operand1.reference)) < 0)
-			{
-				refOp1=createRefTableRow(q->operand1.reference);
-				refTable[refOp1].optimizationRef = refCount;
-				refCount++;
-			}
-
-			int refTableIndex;
-			if((refTableIndex = findRefTable(q->assignment)) < 0)
-			{
-				refTableIndex=createRefTableRow(q->assignment);
-			}
-			refTable[refTableIndex].optimizationRef = 
-				refTable[refOp1].optimizationRef; 
-
-		}
-		/*expression*/
-		if(q->operand1.type != -1 && q->operand2.type != -1)
-		{
-			printf("wsh\n");
-			/*  Create entry in refTable if reference don't exist
-				Example a = x + y;
-				have to create the entry for x and y before
-				*/
-			int refOp1, refOp2;
-			if((refOp1=findRefTable(q->operand1.reference)) < 0)
-			{
-				refOp1=createRefTableRow(q->operand1.reference);
-				refTable[refOp1].optimizationRef = refCount;
-				refCount++;
-			}
-			if((refOp2=findRefTable(q->operand2.reference)) < 0)
-			{
-				refOp2=createRefTableRow(q->operand2.reference);
-				refTable[refOp2].optimizationRef = refCount;
-				refCount++;
-			}
-
-			int refTableIndex;
-			if((refTableIndex = findRefTable(q->assignment)) < 0)
-			{
-				refTableIndex=createRefTableRow(q->assignment);
-			}
-			
-			int optimizationRefOp1 = refTable[refOp1].optimizationRef;
-			int optimizationRefOp2 = refTable[refOp2].optimizationRef;
-
-			/*handle commutativity*/
-			if(optimizationRefOp2 < optimizationRefOp1)
-			{
-				int temp = optimizationRefOp1;
-				optimizationRefOp1 = optimizationRefOp2;
-				optimizationRefOp2 = temp;
-			}
-
-			int exprHashTableIndex;
-			if((exprHashTableIndex = findExprHashTable(q->operator,
-										optimizationRefOp1,
-										optimizationRefOp2)) < 0)
-			{
-				exprHashTable[exprHashSize].operator = q->operator;
-				exprHashTable[exprHashSize].operand1 = optimizationRefOp1;
-				exprHashTable[exprHashSize].operand2 = optimizationRefOp2;
-				exprHashTable[exprHashSize].optimizationRef = refCount;
-				exprHashTableIndex = exprHashSize;
-				refCount++;
-				exprHashSize++;
-			}
-
-			refTable[refTableIndex].optimizationRef = 
-				exprHashTable[exprHashTableIndex].optimizationRef;
-
-			int optimizationRefUsed;
-			if((optimizationRefUsed = 
-					findOptimizationRefTable(refTable[refTableIndex].optimizationRef)) >= 0)
-			{
-				if(optimizationRefUsed != refTableIndex)
+				
+				if((refTableIndex = findRefTable(q->assignment)) < 0)
 				{
-					q->operator = C2MP_QUAD_ASSIGNMENT;
-					q->operand1.type = C2MP_QUAD_OPERAND_VARIABLE;
-					q->operand1.reference = refTable[optimizationRefUsed].reference;
-					q->operand2.type = -1;
+					refTableIndex=createRefTableRow(q->assignment);
 				}
-			}			
+
+				refTable[refTableIndex].optimizationRef = 
+					operandOptimizationRef;
+				break;
+
+
+
+            case C2MP_OPERATOR_BINARY_PLUS:
+            case C2MP_OPERATOR_BINARY_DOT:
+            case C2MP_OPERATOR_EQUAL:
+            case C2MP_OPERATOR_NOT_EQUAL:
+            case C2MP_OPERATOR_BITWISE_AND:
+            case C2MP_OPERATOR_BITWISE_OR:
+            case C2MP_OPERATOR_BITWISE_XOR:
+            case C2MP_OPERATOR_LOGICAL_AND:
+            case C2MP_OPERATOR_LOGICAL_OR:
+            case C2MP_FUNCTION_SQRT:
+            	isCommutative = 1;
+                __attribute__ ((fallthrough));
+                /*Remove GCC fallthrough warning)*/
+            case C2MP_OPERATOR_BINARY_MINUS:
+            case C2MP_OPERATOR_BINARY_DIVIDE:
+            case C2MP_OPERATOR_LOWER_THAN:
+            case C2MP_OPERATOR_GREATER_THAN:
+            case C2MP_OPERATOR_LOWER_OR_EQUAL:
+            case C2MP_OPERATOR_GREATER_OR_EQUAL:
+
+				optimizationRefOp2 = getOperandOptimizationRef(q->operand2.reference);
+                __attribute__ ((fallthrough));
+            case C2MP_OPERATOR_UNARY_MINUS:
+            case C2MP_OPERATOR_UNARY_PLUS:
+            case C2MP_OPERATOR_LOGICAL_NOT:
+            case C2MP_OPERATOR_BITWISE_NOT:
+				optimizationRefOp1 = getOperandOptimizationRef(q->operand1.reference);
+
+
+				
+				if((refTableIndex = findRefTable(q->assignment)) < 0)
+				{
+					refTableIndex=createRefTableRow(q->assignment);
+				}
+
+				/*handle commutativity*/
+				if(isCommutative)
+				{
+					if(optimizationRefOp2 < optimizationRefOp1)
+					{//todo pour les commutative op only
+						int temp = optimizationRefOp1;
+						optimizationRefOp1 = optimizationRefOp2;
+						optimizationRefOp2 = temp;
+					}
+				}
+
+				int exprHashTableIndex = findExprHashTable(q->operator,
+											optimizationRefOp1,
+											optimizationRefOp2);
+				if(exprHashTableIndex < 0)
+				{
+					exprHashTableIndex = createExprHash(q->operator,
+											optimizationRefOp1,
+											optimizationRefOp2);
+				}
+
+				setOptimizationRef(refTableIndex,exprHashTableIndex);
+
+				int optimizationRefUsed;
+				if((optimizationRefUsed = 
+						findOptimizationRefTable(refTable[refTableIndex].optimizationRef)) >= 0)
+				{
+					if(optimizationRefUsed != refTableIndex)
+					{
+						optimizeExprToAssignment(q,refTable[optimizationRefUsed].reference);
+					}
+				}	
+                break;
+
+            case C2MP_QUAD_IF:
+            case C2MP_QUAD_WHILE:
+            case C2MP_QUAD_DOWHILE:
+                q = ignoreBlocForCommonSubExpression(q->next, firstQuad);
+                break;
+            case C2MP_QUAD_ELSE:
+            case C2MP_QUAD_ENDIF:
+            case C2MP_QUAD_ENDWHILE:
+            case C2MP_QUAD_ENDDOWHILE:
+            	return q->next;
+                break; 
+            default:
+            	panic("optimization.c","removeCommonSubExpressions","Not recognized operator\n");
+            	break;
 		}
 		q = q->next;
 	} while(q != firstQuad);
 
-	return quads;
+	return firstQuad;
+}
+
+quad* ignoreBlocForCommonSubExpression(quad* quads, quad* firstQuad)
+{
+    if(quads == NULL)
+    {
+        printf("no quads for optimization\n");
+    }
+
+    quad* q = quads;
+    
+    do
+    {
+        switch(q->operator)
+        {
+            case C2MP_QUAD_ASSIGNMENT:
+            case C2MP_OPERATOR_BINARY_PLUS:
+            case C2MP_OPERATOR_BINARY_DOT:
+            case C2MP_OPERATOR_EQUAL:
+            case C2MP_OPERATOR_NOT_EQUAL:
+            case C2MP_OPERATOR_BITWISE_AND:
+            case C2MP_OPERATOR_BITWISE_OR:
+            case C2MP_OPERATOR_BITWISE_XOR:
+            case C2MP_OPERATOR_LOGICAL_AND:
+            case C2MP_OPERATOR_LOGICAL_OR:
+            case C2MP_FUNCTION_SQRT:
+            case C2MP_OPERATOR_BINARY_MINUS:
+            case C2MP_OPERATOR_BINARY_DIVIDE:
+            case C2MP_OPERATOR_LOWER_THAN:
+            case C2MP_OPERATOR_GREATER_THAN:
+            case C2MP_OPERATOR_LOWER_OR_EQUAL:
+            case C2MP_OPERATOR_GREATER_OR_EQUAL:
+            case C2MP_OPERATOR_UNARY_MINUS:
+            case C2MP_OPERATOR_UNARY_PLUS:
+            case C2MP_OPERATOR_LOGICAL_NOT:
+            case C2MP_OPERATOR_BITWISE_NOT:
+                printf("%s\n",getSymbolFromReference(q->assignment).name);
+                assignNewOptimizationRef(q->assignment);
+                break;
+            case C2MP_QUAD_IF:
+            case C2MP_QUAD_WHILE:
+            case C2MP_QUAD_DOWHILE:
+                q = ignoreBlocForCommonSubExpression(q->next, firstQuad);
+                break;
+            case C2MP_QUAD_ELSE:
+                // ignore
+                break;
+            case C2MP_QUAD_ENDIF:
+            case C2MP_QUAD_ENDWHILE:
+            case C2MP_QUAD_ENDDOWHILE:
+                return q;
+                break; 
+            default:
+                panic("optimization.c","ignoreBlocForCommonSubExpression","Not recognized operator\n");
+                break;
+        }
+        q = q->next;
+    } while(q != firstQuad);
+
+    return q;
+}
+
+void optimizeExprToAssignment(quad* q, int reference)
+{
+	q->operator = C2MP_QUAD_ASSIGNMENT;
+	q->operand1 = createVariableOperand(reference);
+	q->operand2 = createVoidOperand();
+}
+
+void assignNewOptimizationRef(int reference)
+{
+    int refOp = findRefTable(reference);
+    if((refOp) < 0)
+    {
+        refOp=createRefTableRow(reference);
+    }
+    refTable[refOp].optimizationRef = refCount;
+    refCount++;
+}
+
+void setOptimizationRef(int reference, int hashReference)
+{
+	refTable[reference].optimizationRef = 
+				exprHashTable[hashReference].optimizationRef;	
+}
+
+int getOperandOptimizationRef(int reference)
+{
+	int refOp = findRefTable(reference);
+	if((refOp) < 0)
+	{
+		refOp=createRefTableRow(reference);
+		refTable[refOp].optimizationRef = refCount;
+		refCount++;
+	}	
+	return refTable[refOp].optimizationRef;
+}
+
+int createExprHash(char op, int operand1, int operand2)
+{
+	exprHashTable[exprHashSize].operator = op;
+	exprHashTable[exprHashSize].operand1 = operand1;
+	exprHashTable[exprHashSize].operand2 = operand2;
+	exprHashTable[exprHashSize].optimizationRef = refCount;
+	int exprHashTableIndex = exprHashSize;
+	refCount++;
+	exprHashSize++;
+	return exprHashTableIndex;
 }
 
 int createRefTableRow(int reference)
