@@ -495,17 +495,23 @@ int main(int argc, char *argv[])
 {
 	if(argc < 2)
 	{
-		panic("syntax.y", "main", "Missing argument in main");
+		panic("syntax.y", "main", "Missing argument - usage : ./C2MP <file>.c");
 	}
 
     int opt,
         errflag,
         option_flag;
-    //FILE * output;
+
+    const char ch = '.';
+    char * ret;
 
     opt         = 0;
     errflag     = 0;
     option_flag = 0;
+
+    pragmaOn 		= 0;
+	pragmaBlocOn 	= 0;
+	pragmaBlocIndex = 0;
 
     /* utilisation de getopt pour gérer les arguments */
     while ( (opt = getopt(argc, argv, "o") ) != -1)
@@ -527,41 +533,25 @@ int main(int argc, char *argv[])
         panic("syntax.y", "main", "usage : ./C2MP <fichier> -o");
     }
 
+    ret = strrchr(argv[1], ch);
+    if (strcmp(ret, ".c") != 0)
+    {
+        panic("syntax.y", "main", "Extension File Error");
+    }
+
     open_file();
-    
-    /*semiQuad *bloc1 = createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(1));
-    bloc1 = concatSemiQuad(bloc1, createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(1)));
-    bloc1 = concatSemiQuad(bloc1, createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(2)));
-    bloc1 = concatSemiQuad(bloc1, createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(3)));
-
-    semiQuad *bloc2 = createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(1));
-    bloc2 = concatSemiQuad(bloc2, createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(4)));
-    bloc2 = concatSemiQuad(bloc2, createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(3)));
-    bloc2 = concatSemiQuad(bloc2, createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(2)));
-
-    semiQuad *code = createSemiQuad(C2MP_QUAD_IF, -1, createIntAST(1));
-    code = concatSemiQuad(code, bloc1);
-    code = concatSemiQuad(code, createSemiQuad(C2MP_QUAD_ELSE, -1, NULL));
-    code = concatSemiQuad(code, bloc2);
-    code = concatSemiQuad(code, createSemiQuad(C2MP_QUAD_ENDIF, -1, NULL));
-
-    printSemiQuads(code);*/
  
 	yyin = fopen(argv[1], "r");
     if(yyin == NULL)
         panic("syntax.y", "main", "Error open file\n");
 
+    
+
 	//yyout = stdout;
 	yyparse();
 
-    /*output = fopen("output.c", "w+");
-    if(output == NULL)
-        panic("syntax.y", "main", "Error open file\n");*/
-
     if ( fclose(yyin) != 0)
         panic("syntax.y", "main", "Error close file\n");
-    /*if ( fclose(output) != 0)
-        panic("syntax.y", "main", "Error close file\n");*/
 
     printf("End of parsing\n");
 

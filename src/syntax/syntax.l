@@ -2,10 +2,6 @@
 	#include <stdio.h>
 	#include "utils.h"
 	#include "y.tab.h"
-
-	pragmaOn 		= 0;
-	pragmaBlocOn 	= 0;
-	pragmaBlocIndex = 0;
 %}
 
 %%

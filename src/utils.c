@@ -5,6 +5,8 @@ void panic(char * file, char * function, char * error)
 {
     fprintf(stderr, "%s.c : Unexpected error occurred - function '%s'\n", file, function);
     fprintf(stderr, "\t%s\n", error);
+    if(output != NULL)
+        close_file();
     exit(EXIT_FAILURE);
 }
 
