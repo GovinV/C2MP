@@ -23,7 +23,7 @@ void generateCode(quad *q, char *rounding, int precision)
         for (int i = 0; i < indent + 1; ++i)
         { 
             // indent quads
-            fprintf(output, "  ");
+            fprintf(output, "    ");
         }
 
         switch (currentQuad->operator)
@@ -162,7 +162,7 @@ void generateCode(quad *q, char *rounding, int precision)
 
         case C2MP_QUAD_IF:
             ++indent;
-            fprintf(output, "if (");
+            fprintf(output, "\n%*sif (",indent*4," ");
             printOperand(currentQuad->operand1);
             fprintf(output, ") {");
             break;
@@ -173,12 +173,12 @@ void generateCode(quad *q, char *rounding, int precision)
 
         case C2MP_QUAD_ENDIF:
             --indent;
-            fprintf(output, "}");
+            fprintf(output, "\b\b\b\b}\n");
             break;
 
         case C2MP_QUAD_WHILE:
             ++indent;
-            fprintf(output, "while (%s) {", getNameFromReference(currentQuad->assignment));
+            fprintf(output, "\n%*swhile (%s)\n%*s{",indent*4," ", getNameFromReference(currentQuad->assignment),indent*4," ");
             break;
 
         case C2MP_QUAD_DOWHILE:
@@ -187,12 +187,12 @@ void generateCode(quad *q, char *rounding, int precision)
 
         case C2MP_QUAD_ENDWHILE:
             --indent;
-            fprintf(output, "}   // %s", getNameFromReference(currentQuad->assignment));
+            fprintf(output, "\b\b\b\b}   // %s\n", getNameFromReference(currentQuad->assignment));
             break;
 
         case C2MP_QUAD_ENDDOWHILE:
             --indent;
-            fprintf(output, " while (%s);", getNameFromReference(currentQuad->assignment));
+            fprintf(output, " while (%s);\n", getNameFromReference(currentQuad->assignment));
             break;
 
         case C2MP_FUNCTION_POW:
@@ -338,7 +338,7 @@ bool * generateInitCode(quad *q, int precision)
     {
         if (tempList[i])
         {
-            fprintf(output, "  mpc_t %s%d;", base, i);
+            fprintf(output, "    mpc_t %s%d;", base, i);
             fprintf(output, " mpc_init2(%s%d, %d);\n", base, i, precision);
         }
     }
@@ -364,11 +364,10 @@ void generateClearCode(bool *tempList)
         // if the field is true, it means the variable i has to be cleared
         if (tempList[i])
         {
-            fprintf(output, "  mpc_clear(%s%d);\n", base, i);
+            fprintf(output, "    mpc_clear(%s%d);\n", base, i);
         }
     }
 
-    fprintf(output, "\n");
     
     // we don't need to use it again
     free(tempList);
