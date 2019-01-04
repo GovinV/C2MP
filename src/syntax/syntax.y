@@ -178,6 +178,7 @@ quad* removeCommonSubExpressions(quad* quads);
 %type <extension>       EXTENSION
 %type <p_extension>     P_EXTENSION
 %type <expressionAST>   RVALUE
+%type <expressionAST>   FCT
 %type <expressionAST>   EXPR
 %type <number>          NUMBER
 %type <variable>        VAR
@@ -465,15 +466,31 @@ EXPR:
     ;
 
 FCT:
-    SYMBOL '(' EXPR ARG ')' /* PEUTETRE QUON SEN FOUT DES ARGUMENTS */
-        { 
-            printf("FCT %s\n", $1); 
-            if (parseFct($1) == UNKNOWN)
-            {
-                printf("Unknown function\n"); 
-                return UNKNOWN;
-            }  
+    SYMBOL '(' EXPR ')'
+      {
+        int type;
+        if ((type = parseFct($1)) == UNKNOWN)
+        {
+            printf("Unknown function\n"); 
+            $$ = NULL;
         }
+        else {
+            $$ = createExpressionAST(type, $3, NULL);
+        }
+      }
+    | SYMBOL '(' EXPR ',' EXPR ')'
+      {
+        int type;
+        if ((type = parseFct($1)) == UNKNOWN)
+        {
+            printf("Unknown function\n"); 
+            $$ = NULL;
+        }
+        else {
+            $$ = createExpressionAST(type, $3, $5);
+        }
+      }
+    | SYMBOL '(' EXPR ',' EXPR ARG ')' { printf("not supported function %s\n", $1); $$ = NULL; }
     ;
 
 VAR:

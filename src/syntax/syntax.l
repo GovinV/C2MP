@@ -7,9 +7,10 @@
 %%
 
 
-"/*"((\*+[^/*])|([^*]))*\**"*/"		{}
+"/*"((\*+[^/*])|([^*]))*\**"*/"		{ 
+									}
 
-"//"[^\n]*"\n"						{}
+"//"[^\n]*"\n"						{ }
 
 #pragma[ \t]+MPC[ \t]+				{
 										pragmaOn = 1;
@@ -205,7 +206,7 @@ rounding  							{
 										}
 									} // cOUNT ONLY FIRST AFTER PRAGMA
 [ \t]+								{
-										write_file(yytext);
+											write_file(yytext);
 									} 
 .									{ 
 										if ((pragmaBlocOn) || (pragmaOn))

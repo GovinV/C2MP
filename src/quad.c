@@ -412,13 +412,13 @@ void printOperand(quadOperand operand)
     switch(operand.type)
     {
         case C2MP_QUAD_OPERAND_INTEGER:
-            printf("%d", operand.valueInt);
+            fprintf(output, "%d", operand.valueInt);
             break;
         case C2MP_QUAD_OPERAND_FLOAT:
-            printf("%f", operand.valueFloat);
+            fprintf(output, "%f", operand.valueFloat);
             break;
         case C2MP_QUAD_OPERAND_VARIABLE:
-            printf("%s", getNameFromReference(operand.reference));
+            fprintf(output, "%s", getNameFromReference(operand.reference));
             break;
         default:
             fprintf(stderr, "Warning, unknown operand type : %d\n", operand.type);
