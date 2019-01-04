@@ -13,8 +13,15 @@
 "//"[^\n]*"\n"						{ }
 
 #pragma[ \t]+MPC[ \t]+				{
-										pragmaOn = 1;
-										return PRAGMA; 
+										if (pragmaMet == 0)
+										{
+											pragmaOn = 1;
+											return PRAGMA;
+										}
+										else 
+										{
+											write_file(yytext);
+										}
 									}
 
 [0-9]*\.[0-9]*[fd]?([eE][-+]?[0-9]+)? {
@@ -45,6 +52,7 @@
 											pragmaBlocIndex--;
 											if (pragmaBlocIndex == 0)
 											{
+												pragmaMet = 1;
 												pragmaBlocOn = 0;
 											}
 											return yytext[0];
@@ -206,6 +214,7 @@ rounding  							{
 										}
 									} // cOUNT ONLY FIRST AFTER PRAGMA
 [ \t]+								{
+										if (!(pragmaBlocOn || pragmaOn))
 											write_file(yytext);
 									} 
 .									{ 

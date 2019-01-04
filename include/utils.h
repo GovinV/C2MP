@@ -85,7 +85,9 @@ int pragmaOn;
 int pragmaBlocOn;
 int pragmaBlocIndex;
 int option_flag;
+int pragmaMet;
 FILE * output;
+FILE * finput;
 
 void panic(char *, char * , char *);
 
@@ -112,4 +114,5 @@ int parseFct(char *);
 int open_file(void);
 int close_file(void);
 int write_file(const char * expr);
+int open_file2(char * name);
 #endif // __UTILS_C

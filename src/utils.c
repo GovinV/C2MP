@@ -5,8 +5,7 @@ void panic(char * file, char * function, char * error)
 {
     fprintf(stderr, "%s.c : Unexpected error occurred - function '%s'\n", file, function);
     fprintf(stderr, "\t%s\n", error);
-    if(output != NULL)
-        close_file();
+    
     exit(EXIT_FAILURE);
 }
 
@@ -50,21 +49,33 @@ int parseFct(char *symbol)
 
 int open_file(void)
 {
-    output = fopen("output.c", "w+");
+    output = fopen("output0.c", "w+");
 	if(output == NULL)
-	    panic("utils.c", "open_file", "Error open file\n");
+	    panic("utils", "open_file", "Error open file\n");
     return 0;
 }
 
 int close_file(void)
 {
     if ( fclose(output) != 0)
-        panic("utils.c", "close_file", "Error close file\n");
+        panic("utils", "close_file", "Error Close File\n");
     return 0;                             
 }
+
+int open_file2(char * name)
+{
+    output = fopen(name, "rw+");
+	if(output == NULL)
+	    panic("utils", "open_file2", "Error Open File\n");
+    return 0;
+}
+
 
 int write_file(const char * expr)
 {
     fprintf(output, "%s", expr);
     return 0;
 }
+
+
+
