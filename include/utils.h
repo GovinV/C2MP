@@ -76,6 +76,7 @@ p : unary +
 int pragmaOn;
 int pragmaBlocOn;
 int pragmaBlocIndex;
+int option_flag;
 FILE * output;
 
 void panic(char *, char * , char *);

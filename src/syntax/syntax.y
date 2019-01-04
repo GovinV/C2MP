@@ -217,9 +217,12 @@ P_PRAGMA:
             quad *quads = getQuadFromSemiQuad($4);
             printf("... :\n");
             generateCode(quads, $2.rounding);
-            printf("\n\nOptimization... :\n");
+            if (option_flag == 1)
+            {
+                printf("\n\nOptimization... :\n");
             //printQuads(quads);
-            quads = removeCommonSubExpressions(quads);
+                quads = removeCommonSubExpressions(quads);
+            }
             generateCode(quads, $2.rounding);
         }
 	;
@@ -495,31 +498,42 @@ int main(int argc, char *argv[])
 {
 	if(argc < 2)
 	{
-		panic("syntax.y", "main", "Missing argument - usage : ./C2MP <file>.c");
+		panic("syntax.y", "main", "Missing argument - usage : ./C2MP <file>.c -o");
 	}
 
     int opt,
-        errflag,
-        option_flag;
+        errflag;
 
-    const char ch = '.';
+    char ch;
     char * ret;
 
     opt         = 0;
     errflag     = 0;
     option_flag = 0;
+    ch          = '.';
 
     pragmaOn 		= 0;
 	pragmaBlocOn 	= 0;
 	pragmaBlocIndex = 0;
 
+    ret = strrchr(argv[1], ch);
+    if (strncmp(ret, ".c", 2) != 0)
+    {
+        panic("syntax.y", "main", "Extension File Error");
+    }
+
+    yyin = fopen(argv[1], "r");
+    if(yyin == NULL)
+        panic("syntax.y", "main", "Error open file\n");
+    
+    
     /* utilisation de getopt pour gérer les arguments */
     while ( (opt = getopt(argc, argv, "o") ) != -1)
     {
         switch (opt) 
         {
             case 'o':
-                option_flag++;
+                option_flag = 1;
                 break;
             /* getopt ne reconnait pas un caractère */
             case '?':
@@ -533,19 +547,7 @@ int main(int argc, char *argv[])
         panic("syntax.y", "main", "usage : ./C2MP <fichier> -o");
     }
 
-    ret = strrchr(argv[1], ch);
-    if (strcmp(ret, ".c") != 0)
-    {
-        panic("syntax.y", "main", "Extension File Error");
-    }
-
-    open_file();
- 
-	yyin = fopen(argv[1], "r");
-    if(yyin == NULL)
-        panic("syntax.y", "main", "Error open file\n");
-
-    
+    open_file();    
 
 	//yyout = stdout;
 	yyparse();
