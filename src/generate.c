@@ -208,6 +208,54 @@ void generateCode(quad *q, char *rounding, int precision)
             fprintf(output, ", %s);", rounding);
             break;
 
+        case C2MP_FUNCTION_ABS:
+            fprintf(output, "mpc_abs(%s, ", getNameFromReference(currentQuad->assignment));
+            printOperand(currentQuad->operand1);
+            fprintf(output, ", %s);", rounding);
+            break;
+        
+        case C2MP_FUNCTION_EXP:
+            fprintf(output, "mpc_exp(%s, ", getNameFromReference(currentQuad->assignment));
+            printOperand(currentQuad->operand1);
+            fprintf(output, ", %s);", rounding);
+            break;
+        
+        case C2MP_FUNCTION_LOG:
+            fprintf(output, "mpc_log(%s, ", getNameFromReference(currentQuad->assignment));
+            printOperand(currentQuad->operand1);
+            fprintf(output, ", %s);", rounding);
+            break;
+        
+        case C2MP_FUNCTION_LOG10:
+            fprintf(output, "mpc_log10(%s, ", getNameFromReference(currentQuad->assignment));
+            printOperand(currentQuad->operand1);
+            fprintf(output, ", %s);", rounding);
+            break;
+        
+        case C2MP_FUNCTION_COS:
+            fprintf(output, "mpc_cos(%s, ", getNameFromReference(currentQuad->assignment));
+            printOperand(currentQuad->operand1);
+            fprintf(output, ", %s);", rounding);
+            break;
+
+        case C2MP_FUNCTION_SIN:
+            fprintf(output, "mpc_sin(%s, ", getNameFromReference(currentQuad->assignment));
+            printOperand(currentQuad->operand1);
+            fprintf(output, ", %s);", rounding);
+            break;
+        
+        case C2MP_FUNCTION_COSH:
+            fprintf(output, "mpc_cosh(%s, ", getNameFromReference(currentQuad->assignment));
+            printOperand(currentQuad->operand1);
+            fprintf(output, ", %s);", rounding);
+            break;
+
+        case C2MP_FUNCTION_SINH:
+            fprintf(output, "mpc_sinh(%s, ", getNameFromReference(currentQuad->assignment));
+            printOperand(currentQuad->operand1);
+            fprintf(output, ", %s);", rounding);
+            break;
+        
         // not supported yet
         case C2MP_OPERATOR_BITWISE_AND:
         case C2MP_OPERATOR_BITWISE_OR:

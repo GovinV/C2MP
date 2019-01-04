@@ -234,6 +234,46 @@ void printExpressionAST(expressionAST *expr)
             printExpressionAST(expr->expression.e1);
             printf(")");
             break;
+        case C2MP_FUNCTION_ABS:
+            printf("abs(");
+            printExpressionAST(expr->expression.e1);
+            printf(")");
+            break;
+        case C2MP_FUNCTION_EXP:
+            printf("exp(");
+            printExpressionAST(expr->expression.e1);
+            printf(")");
+            break;
+        case C2MP_FUNCTION_LOG:
+            printf("log(");
+            printExpressionAST(expr->expression.e1);
+            printf(")");
+            break;
+        case C2MP_FUNCTION_LOG10:
+            printf("log10(");
+            printExpressionAST(expr->expression.e1);
+            printf(")");
+            break;
+        case C2MP_FUNCTION_COS:
+            printf("cos(");
+            printExpressionAST(expr->expression.e1);
+            printf(")");
+            break;
+        case C2MP_FUNCTION_COSH:
+            printf("cosh(");
+            printExpressionAST(expr->expression.e1);
+            printf(")");
+            break;
+        case C2MP_FUNCTION_SIN:
+            printf("sin(");
+            printExpressionAST(expr->expression.e1);
+            printf(")");
+            break;
+        case C2MP_FUNCTION_SINH:
+            printf("sinh(");
+            printExpressionAST(expr->expression.e1);
+            printf(")");
+            break;
         default:
             fprintf(stderr, "Warning, unknown expression operation : %c\n", expr->operator);
     }
