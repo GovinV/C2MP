@@ -114,7 +114,8 @@ void printSemiQuads(semiQuad *q)
                 printExpressionAST(currentQuad->expression);
                 break;
             default:
-                fprintf(stderr, "Warning, unknown semi quad operation : %d (%c)\n", currentQuad->operator, currentQuad->operator);
+                fprintf(stderr, "Warning, unknown semi quad operation : %d (%c)\n",
+                    currentQuad->operator, currentQuad->operator);
         }
         printf("\n");
 
