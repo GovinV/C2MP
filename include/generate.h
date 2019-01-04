@@ -11,11 +11,6 @@ typedef struct quadOperand quadOperand;
 typedef struct quad quad;
 
 
-void create_file(void);
-void create_variable(quad * quad);
-void create_operation(quad * quad);
-void close_file(void);
-
 /**
  * @brief Generate MPC instructions
  * @param q The list of the quads parsed previously

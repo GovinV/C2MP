@@ -5,6 +5,8 @@ void panic(char * file, char * function, char * error)
 {
     fprintf(stderr, "%s.c : Unexpected error occurred - function '%s'\n", file, function);
     fprintf(stderr, "\t%s\n", error);
+    if(output != NULL)
+        close_file();
     exit(EXIT_FAILURE);
 }
 
@@ -28,4 +30,25 @@ int parseFct(char *symbol)
     if (strncmp(symbol, "pow", 4) == 0)
         return C2MP_FUNCTION_POW;
     return UNKNOWN;
+}
+
+int open_file(void)
+{
+    output = fopen("output.c", "w+");
+	if(output == NULL)
+	    panic("utils.c", "open_file", "Error open file\n");
+    return 0;
+}
+
+int close_file(void)
+{
+    if ( fclose(output) != 0)
+        panic("utils.c", "close_file", "Error close file\n");
+    return 0;                             
+}
+
+int write_file(const char * expr)
+{
+    fprintf(output, "%s", expr);
+    return 0;
 }

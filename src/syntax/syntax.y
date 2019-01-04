@@ -179,7 +179,6 @@ quad* removeCommonSubExpressions(quad* quads);
 %type <p_extension>     P_EXTENSION
 %type <expressionAST>   RVALUE
 %type <expressionAST>   EXPR
-%type <expressionAST>   FCT
 %type <number>          NUMBER
 %type <variable>        VAR
 %type <semiQuad>        INSTRUCTION
@@ -218,9 +217,12 @@ P_PRAGMA:
             quad *quads = getQuadFromSemiQuad($4);
             printf("... :\n");
             generateCode(quads, $2.rounding);
-            printf("\n\nOptimization... :\n");
+            if (option_flag == 1)
+            {
+                printf("\n\nOptimization... :\n");
             //printQuads(quads);
-            quads = removeCommonSubExpressions(quads);
+                quads = removeCommonSubExpressions(quads);
+            }
             generateCode(quads, $2.rounding);
         }
 	;
@@ -348,7 +350,7 @@ BLOC:
 	;
 
 INSTRUCTION:
-    ASSIGNMENT                                                    
+    ASSIGNMENT                                                   
         { $$ = $1; }
 	|                                                              
         { $$ = NULL; }
@@ -459,35 +461,19 @@ EXPR:
             }
         }
 	| FCT               
-        { $$ = $1; }
+        { printf("EXPR = FUNCTION\n"); }
     ;
 
 FCT:
-      SYMBOL '(' EXPR ')'
-      {
-        int type;
-        if ((type = parseFct($1)) == UNKNOWN)
-        {
-            printf("Unknown function\n"); 
-            $$ = NULL;
+    SYMBOL '(' EXPR ARG ')' /* PEUTETRE QUON SEN FOUT DES ARGUMENTS */
+        { 
+            printf("FCT %s\n", $1); 
+            if (parseFct($1) == UNKNOWN)
+            {
+                printf("Unknown function\n"); 
+                return UNKNOWN;
+            }  
         }
-        else {
-            $$ = createExpressionAST(type, $3, NULL);
-        }
-      }
-    | SYMBOL '(' EXPR ',' EXPR ')'
-      {
-        int type;
-        if ((type = parseFct($1)) == UNKNOWN)
-        {
-            printf("Unknown function\n"); 
-            $$ = NULL;
-        }
-        else {
-            $$ = createExpressionAST(type, $3, $5);
-        }
-      }
-    | SYMBOL '(' EXPR ',' EXPR ARG ')' { printf("not supported function %s\n", $1); $$ = NULL; }
     ;
 
 VAR:
@@ -512,25 +498,42 @@ int main(int argc, char *argv[])
 {
 	if(argc < 2)
 	{
-		panic("syntax.y", "main", "Missing argument in main");
+		panic("syntax.y", "main", "Missing argument - usage : ./C2MP <file>.c -O");
 	}
 
     int opt,
-        errflag,
-        option_flag;
-    //FILE * output;
+        errflag;
+
+    char ch;
+    char * ret;
 
     opt         = 0;
     errflag     = 0;
     option_flag = 0;
+    ch          = '.';
+
+    pragmaOn 		= 0;
+	pragmaBlocOn 	= 0;
+	pragmaBlocIndex = 0;
+
+    ret = strrchr(argv[1], ch);
+    if (strncmp(ret, ".c", 2) != 0)
+    {
+        panic("syntax.y", "main", "Extension File Error");
+    }
+
+    yyin = fopen(argv[1], "r");
+    if(yyin == NULL)
+        panic("syntax.y", "main", "Error open file\n");
+    
 
     /* utilisation de getopt pour gérer les arguments */
-    while ( (opt = getopt(argc, argv, "o") ) != -1)
+    while ( (opt = getopt(argc, argv, "O") ) != -1)
     {
         switch (opt) 
         {
-            case 'o':
-                option_flag++;
+            case 'O':
+                option_flag = 1;
                 break;
             /* getopt ne reconnait pas un caractère */
             case '?':
@@ -543,41 +546,18 @@ int main(int argc, char *argv[])
     {
         panic("syntax.y", "main", "usage : ./C2MP <fichier> -o");
     }
-    /*semiQuad *bloc1 = createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(1));
-    bloc1 = concatSemiQuad(bloc1, createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(1)));
-    bloc1 = concatSemiQuad(bloc1, createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(2)));
-    bloc1 = concatSemiQuad(bloc1, createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(3)));
 
-    semiQuad *bloc2 = createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(1));
-    bloc2 = concatSemiQuad(bloc2, createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(4)));
-    bloc2 = concatSemiQuad(bloc2, createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(3)));
-    bloc2 = concatSemiQuad(bloc2, createSemiQuad(C2MP_QUAD_ASSIGNMENT, 0, createIntAST(2)));
-
-    semiQuad *code = createSemiQuad(C2MP_QUAD_IF, -1, createIntAST(1));
-    code = concatSemiQuad(code, bloc1);
-    code = concatSemiQuad(code, createSemiQuad(C2MP_QUAD_ELSE, -1, NULL));
-    code = concatSemiQuad(code, bloc2);
-    code = concatSemiQuad(code, createSemiQuad(C2MP_QUAD_ENDIF, -1, NULL));
-
-    printSemiQuads(code);*/
- 
-	yyin = fopen(argv[1], "r");
-    if(yyin == NULL)
-        panic("syntax.y", "main", "Error open file\n");
+    open_file();    
 
 	//yyout = stdout;
 	yyparse();
 
-    /*output = fopen("output.c", "w+");
-    if(output == NULL)
-        panic("syntax.y", "main", "Error open file\n");*/
-
     if ( fclose(yyin) != 0)
         panic("syntax.y", "main", "Error close file\n");
-    /*if ( fclose(output) != 0)
-        panic("syntax.y", "main", "Error close file\n");*/
 
     printf("End of parsing\n");
+
+    close_file();
 
 	return 0;
 }

@@ -72,6 +72,13 @@ p : unary +
 
 #define ERROR      -1
 
+
+int pragmaOn;
+int pragmaBlocOn;
+int pragmaBlocIndex;
+int option_flag;
+FILE * output;
+
 void panic(char *, char * , char *);
 
 /**
@@ -94,4 +101,7 @@ int checkExtension(char *);
  */
 int parseFct(char *);
 
+int open_file(void);
+int close_file(void);
+int write_file(const char * expr);
 #endif // __UTILS_C
