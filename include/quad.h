@@ -12,6 +12,9 @@
 #define C2MP_QUAD_OPERAND_INTEGER 1
 #define C2MP_QUAD_OPERAND_FLOAT 2
 
+#define C2MP_QUAD_BINARY 2
+#define C2MP_QUAD_UNARY  1
+
 typedef struct quadOperand quadOperand;
 typedef struct quad quad;
 
@@ -27,7 +30,16 @@ quadOperand createVoidOperand(void);
  */
 symbolType getSymbolTypeFromOperand(quadOperand ope);
 
-quad *createQuad(int assignment, char operator, quadOperand value1, quadOperand value2);
+/**
+ * @brief Creates a quad structure
+ * @param assignement The symbol (index in the table) to which assign the quad
+ * @param operator the operator type
+ * @param name The name of the function associated with the quad (optional)
+ * @param operandsNum The number of operands used in the quad
+ * @return The quad generated
+ */
+quad *createQuad(int assignment, char operator, char * name, int operandsNum, ...);
+
 quad *copySemiQuad(semiQuad *sq);
 quad *generateQuadsFromAST_2(expressionAST *expr);
 quad *generateQuadsFromAST(expressionAST *expr);

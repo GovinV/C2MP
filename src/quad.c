@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include "quad.h"
 
 quadOperand createVariableOperand(int reference)
@@ -31,13 +32,26 @@ quadOperand createVoidOperand(void)
     return operand;
 }
 
-quad *createQuad(int assignment, char operator, quadOperand value1, quadOperand value2)
+quad *createQuad(int assignment, char operator, char * name, int operandsNum, ...)
 {
     quad *q = malloc(sizeof(quad));
     q->assignment = assignment;
     q->operator = operator;
-    q->operand1 = value1;
-    q->operand2 = value2;
+
+    if (operator == C2MP_FUNCTION_UNKNOWN)
+    {
+        q->fctName = strdup(name);
+    }
+    
+    va_list operandsList;
+    va_start(operandsList, operandsNum);
+
+    for (int i = 0; i < operandsNum; i ++)
+    {
+        q->operands[i] = va_arg(operandsList, quadOperand);
+    }
+
+    va_end(operandsList);
 
     q->next = q;
     q->previous = q;
@@ -61,29 +75,29 @@ quad *copySemiQuad(semiQuad *sq)
         case C2MP_QUAD_IF:
             generatedQuads = generateQuadsFromAST(sq->expression);
             return concatQuads(generatedQuads, 
-                        createQuad(sq->assignment, sq->operator,
-                            createVariableOperand(generatedQuads->previous->assignment),
-                             createVoidOperand()));
+                        createQuad(sq->assignment, sq->operator, NULL, C2MP_QUAD_UNARY, 
+                            createVariableOperand(generatedQuads->previous->assignment)));
             break;
+
         case C2MP_QUAD_ELSE:
         case C2MP_QUAD_ENDIF:
-            return createQuad(-1, sq->operator, createVoidOperand(), createVoidOperand());
+            return createQuad(-1, sq->operator, NULL, 0);
             break;
+
         case C2MP_QUAD_WHILE:
             generatedQuads = generateQuadsFromAST(sq->expression);
             generatedQuads = concatQuads(generatedQuads, 
                                 createQuad(sq->assignment,
-                                    C2MP_QUAD_ASSIGNMENT, 
-                                    createVariableOperand(generatedQuads->previous->assignment),
-                                    createVoidOperand()));
+                                    C2MP_QUAD_ASSIGNMENT,
+                                    NULL,
+                                    C2MP_QUAD_UNARY,
+                                    createVariableOperand(generatedQuads->previous->assignment)));
             generatedQuads = concatQuads(generatedQuads, 
-                                    createQuad(sq->assignment, sq->operator,
-                                    createVoidOperand(), createVoidOperand()));
+                                    createQuad(sq->assignment, sq->operator, NULL, 0));
             return generatedQuads;
             break;
         case C2MP_QUAD_DOWHILE:
-            return createQuad(-1, sq->operator,
-                        createVoidOperand(), createVoidOperand());
+            return createQuad(-1, sq->operator, NULL, 0);
             break;
         case C2MP_QUAD_ENDWHILE:
         case C2MP_QUAD_ENDDOWHILE:
@@ -91,11 +105,11 @@ quad *copySemiQuad(semiQuad *sq)
             generatedQuads = concatQuads(generatedQuads, 
                                 createQuad(sq->assignment,
                                     C2MP_QUAD_ASSIGNMENT,
-                                    createVariableOperand(generatedQuads->previous->assignment),
-                                    createVoidOperand()));
+                                    NULL,
+                                    C2MP_QUAD_UNARY,
+                                    createVariableOperand(generatedQuads->previous->assignment)));
             generatedQuads = concatQuads(generatedQuads, 
-                                createQuad(sq->assignment, sq->operator,
-                                    createVoidOperand(), createVoidOperand()));
+                                createQuad(sq->assignment, sq->operator, NULL, 0));
             return generatedQuads;
             break;
         default:
@@ -127,7 +141,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
         return NULL;
     }
 
-    quad *quadExpr1, *quadExpr2, *quadExpr, *finalQuads;
+    quad *quadExpr1, *quadExpr2, *quadExpr, *finalQuads = NULL;
     int reference1, reference2, reference;
     int resultTemporary;
     switch(expr->operator)
@@ -161,36 +175,34 @@ quad *generateQuadsFromAST(expressionAST *expr)
             finalQuads = concatQuads(quadExpr1,
                             createQuad(resultTemporary,
                                 C2MP_OPERATOR_NOT_EQUAL,
+                                NULL,
+                                C2MP_QUAD_BINARY,
                                 createVariableOperand(reference1),
                                 createIntegerOperand(0))); // if expr1 == 0
             finalQuads = concatQuads(finalQuads,
-                            createQuad(-1, C2MP_QUAD_IF,
-                                createVariableOperand(resultTemporary),
-                                createVoidOperand())); // if resultTemporary != 0
+                            createQuad(-1, C2MP_QUAD_IF, NULL, 
+                                C2MP_QUAD_UNARY,
+                                createVariableOperand(resultTemporary))); // if resultTemporary != 0
             finalQuads = concatQuads(finalQuads, quadExpr2);
             finalQuads = concatQuads(finalQuads,
                             createQuad(resultTemporary,
                                 C2MP_QUAD_ASSIGNMENT,
-                                createVariableOperand(reference2),
-                                createVoidOperand())); // t = expr2
-            finalQuads = concatQuads(quadExpr1,
-                            createQuad(-1, C2MP_QUAD_ELSE,
-                                createVoidOperand(),
-                                createVoidOperand())); // else
+                                NULL,
+                                C2MP_QUAD_UNARY,
+                                createVariableOperand(reference2))); // t = expr2
+            finalQuads = concatQuads(quadExpr1, 
+                                     createQuad(-1, C2MP_QUAD_ELSE, NULL, 0)); // else
             finalQuads = concatQuads(finalQuads,
                             createQuad(resultTemporary,
-                                C2MP_QUAD_ASSIGNMENT,
-                                createIntegerOperand(0),
-                                createVoidOperand())); // t = 0
+                                C2MP_QUAD_ASSIGNMENT, NULL, 
+                                C2MP_QUAD_UNARY,
+                                createIntegerOperand(0))); // t = 0
             finalQuads = concatQuads(quadExpr1,
-                            createQuad(-1, C2MP_QUAD_ENDIF,
-                                createVoidOperand(),
-                                createVoidOperand())); // endif
+                            createQuad(-1, C2MP_QUAD_ENDIF, NULL, 0)); // endif
             finalQuads = concatQuads(finalQuads,
                             createQuad(resultTemporary,
-                                C2MP_QUAD_ASSIGNMENT,
-                                createVariableOperand(resultTemporary),
-                                createVoidOperand()));
+                                C2MP_QUAD_ASSIGNMENT, NULL, C2MP_QUAD_UNARY,
+                                createVariableOperand(resultTemporary)));
                     // t = t, needed for generation and will be optimized
 
             return finalQuads;
@@ -225,39 +237,41 @@ quad *generateQuadsFromAST(expressionAST *expr)
             finalQuads = concatQuads(quadExpr1,
                             createQuad(resultTemporary,
                                 C2MP_OPERATOR_EQUAL,
+                                NULL,
+                                C2MP_QUAD_BINARY,
                                 createVariableOperand(reference1),
                                 createIntegerOperand(0))); // if expr1 == 0
             finalQuads = concatQuads(finalQuads,
                             createQuad(-1,
                                 C2MP_QUAD_IF,
-                                createVariableOperand(resultTemporary),
-                                createVoidOperand())); // if resultTemporary == 0
+                                NULL,
+                                C2MP_QUAD_UNARY,
+                                // if resultTemporary == 0
+                                createVariableOperand(resultTemporary))); 
             finalQuads = concatQuads(finalQuads, quadExpr2);
             finalQuads = concatQuads(finalQuads,
                             createQuad(resultTemporary,
                                 C2MP_QUAD_ASSIGNMENT,
-                                createVariableOperand(reference2),
-                                createVoidOperand())); // t = expr2
+                                NULL,
+                                C2MP_QUAD_UNARY,
+                                createVariableOperand(reference2))); // t = expr2
             finalQuads = concatQuads(quadExpr1,
-                            createQuad(-1,
-                                C2MP_QUAD_ELSE,
-                                createVoidOperand(), 
-                                createVoidOperand())); // else
+                            createQuad(-1, C2MP_QUAD_ELSE, NULL, 0)); // else
             finalQuads = concatQuads(finalQuads,
                             createQuad(resultTemporary,
                                 C2MP_QUAD_ASSIGNMENT,
-                                createIntegerOperand(1),
-                                createVoidOperand())); // t = 1
+                                NULL,
+                                C2MP_QUAD_UNARY,
+                                createIntegerOperand(1))); // t = 1
             finalQuads = concatQuads(quadExpr1,
                             createQuad(-1,
-                                C2MP_QUAD_ENDIF,
-                                createVoidOperand(), 
-                                createVoidOperand())); // endif
+                                C2MP_QUAD_ENDIF, NULL, 0)); // endif
             finalQuads = concatQuads(finalQuads,
                             createQuad(resultTemporary,
                                 C2MP_QUAD_ASSIGNMENT,
-                                createVariableOperand(resultTemporary),
-                                createVoidOperand()));
+                                NULL,
+                                C2MP_QUAD_UNARY,
+                                createVariableOperand(resultTemporary)));
                     // t = t, needed for generation and will be optimized
 
             return finalQuads;
@@ -288,6 +302,8 @@ quad *generateQuadsFromAST(expressionAST *expr)
             finalQuads = concatQuads(quadExpr1, quadExpr2);
             finalQuads = concatQuads(finalQuads, 
                             createQuad(newTemp().reference, expr->operator,
+                                NULL,
+                                C2MP_QUAD_BINARY,
                                 createVariableOperand(reference1), 
                                 createVariableOperand(reference2)));
 
@@ -316,58 +332,54 @@ quad *generateQuadsFromAST(expressionAST *expr)
 
             finalQuads = concatQuads(quadExpr, 
                             createQuad(newTemp().reference, expr->operator,
-                                createVariableOperand(reference),
-                                createVoidOperand()));
+                                NULL,
+                                C2MP_QUAD_UNARY,
+                                createVariableOperand(reference)));
 
             return finalQuads;
             break;
 
         case C2MP_CHARACTER_INTEGER: // number
             return createQuad(newTemp().reference, C2MP_QUAD_ASSIGNMENT,
-                        createIntegerOperand(expr->valueInt),
-                        createVoidOperand());
+                        NULL,
+                        C2MP_QUAD_UNARY,
+                        createIntegerOperand(expr->valueInt));
             break;
 
         case C2MP_CHARACTER_FLOAT: // float
 
             return createQuad(newTemp().reference, C2MP_QUAD_ASSIGNMENT,
-                        createFloatOperand(expr->valueFloat),
-                        createVoidOperand());
+                        NULL,
+                        C2MP_QUAD_UNARY,
+                        createFloatOperand(expr->valueFloat));
             break;
 
         case C2MP_CHARACTER_VARIABLE: // variable
             return createQuad(newTemp().reference, C2MP_QUAD_ASSIGNMENT,
-                        createVariableOperand(expr->valueVariable),
-                        createVoidOperand());
+                        NULL,
+                        C2MP_QUAD_UNARY,
+                        createVariableOperand(expr->valueVariable));
             break;
 
         // cutom function
         case C2MP_FUNCTION_UNKNOWN:
-            for (int i = 0; i < expr->customFunction.argnum; i++)
+            finalQuads = generateQuadsFromAST(expr->customFunction.ags[0]);
+            for (int i = 1; i < expr->customFunction.argnum; i++)
             {
-                generateQuadsFromAST(expr->customFunction.ags[i]);
+                quadExpr = generateQuadsFromAST(expr->customFunction.ags[i]);
+                concat(finalQuads, quadExpr);
             }
-            break;
+            finalQuads = concatQuads(finalQuads,
+                                     createQuad(newTemp().reference, expr->operator,
+                                     NULL, C2MP_QUAD_UNARY,
+                                     createVariableOperand(reference)));
+            return finalQuads;
 
         default:
             fprintf(stderr, "Warning, unknown expression operation : %c\n", expr->operator);
     }
 
     return NULL;
-}
-
-quad *createCustomFctQuad(int assignment, char operator, quadOperand value1, quadOperand value2)
-{
-    quad *q = malloc(sizeof(quad));
-    q->assignment = assignment;
-    q->operator = operator;
-    q->operand1 = value1;
-    q->operand2 = value2;
-
-    q->next = q;
-    q->previous = q;
-
-    return q;
 }
 
 quad *getQuadFromSemiQuad(semiQuad *sq)

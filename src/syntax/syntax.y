@@ -27,7 +27,7 @@ quadOperand createIntegerOperand(int value);
 quadOperand createFloatOperand(float value);
 quadOperand createVoidOperand(void);
 
-quad *createQuad(int assignment, char operator, quadOperand value1, quadOperand value2);
+quad *createQuad(int assignment, char operator, char * name, int operandsNum, ...);
 quad *copySemiQuad(semiQuad *sq);
 quad *generateQuadsFromAST(expressionAST *expr);
 quad *getQuadFromSemiQuad(semiQuad *sq);
@@ -155,10 +155,9 @@ quad* removeCommonSubExpressions(quad* quads);
     {
         int assignment; // variable to which the operation is affected
         char operator;
-
-        struct quadOperand operand1;
-        struct quadOperand operand2;
-
+        char *fctName; // used if the quad represents a function
+        struct quadOperand operands[MAX_FCT_ARGS];
+        int operandsNum;
         struct quad *previous;
         struct quad *next;
     } *quad;
