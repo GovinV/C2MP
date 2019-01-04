@@ -45,7 +45,7 @@ int parseFct(char *symbol)
         return C2MP_FUNCTION_COSH;
     if (strncmp(symbol, "sinh", 5) == 0)
         return C2MP_FUNCTION_SINH;
-    return UNKNOWN;
+    return C2MP_FUNCTION_UNKNOWN;
 }
 
 int open_file(void)

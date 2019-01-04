@@ -18,6 +18,7 @@ typedef struct quadOperand quadOperand;
 typedef struct semiQuad semiQuad;
 typedef struct quad quad;
 typedef struct expressionAST expressionAST;
+typedef struct argType argType;
 
 expressionAST *copyExpressionAST(expressionAST *expressionAST);
 
@@ -35,9 +36,11 @@ void printOperand(quadOperand operand);
 void printQuads(quad* q);
 
 expressionAST *createExpressionAST(char operator, expressionAST *expr1, expressionAST *expr2);
+expressionAST *createCustonFunctionAST(char *name, int argNum, ...);
 expressionAST *createIntAST(int integer);
 expressionAST *createFloatAST(float number);
 expressionAST *createVariableAST(int variable);
+expressionAST *createStringAST(const char *string);
 void freeExpressionAST(expressionAST *expr);
 void printExpressionAST(expressionAST *expr);
 
@@ -112,6 +115,12 @@ quad* removeCommonSubExpressions(quad* quads);
             int valueInt;
             float valueFloat;
             int valueVariable;
+            char *valueString;
+            struct{
+                char *name;
+                int argnum;
+                struct expressionAST *args[MAX_FCT_ARGS];
+            } customFunction;
         };
 	} *expressionAST;
 	
@@ -153,6 +162,7 @@ quad* removeCommonSubExpressions(quad* quads);
         struct quad *previous;
         struct quad *next;
     } *quad;
+
 }
 
 %token <string>         ID
@@ -160,6 +170,7 @@ quad* removeCommonSubExpressions(quad* quads);
 %token <fvalue>         FLOAT
 %token <string>         PRAGMA
 %token <string>         SYMBOL
+%token <string>         STRING
 %token 				    OR
 %token 				    AND
 %token 				    GTE
@@ -178,8 +189,9 @@ quad* removeCommonSubExpressions(quad* quads);
 %type <extension>       EXTENSION
 %type <p_extension>     P_EXTENSION
 %type <expressionAST>   RVALUE
-%type <expressionAST>   FCT
 %type <expressionAST>   EXPR
+%type <expressionAST>   FCT
+%type <expressionAST>   PARAM
 %type <number>          NUMBER
 %type <variable>        VAR
 %type <semiQuad>        INSTRUCTION
@@ -465,31 +477,36 @@ EXPR:
     ;
 
 FCT:
-    SYMBOL '(' EXPR ')'
+    SYMBOL '(' PARAM ')'
       {
         int type;
-        if ((type = parseFct($1)) == UNKNOWN)
+        if ((type = parseFct($1)) == C2MP_FUNCTION_UNKNOWN)
         {
-            printf("Unknown function\n"); 
-            $$ = NULL;
+            printf("Unknown function %s\n", $1);
+            $$ = createCustonFunctionAST($1, 1, $3);
         }
         else {
             $$ = createExpressionAST(type, $3, NULL);
         }
       }
-    | SYMBOL '(' EXPR ',' EXPR ')'
+    | SYMBOL '(' PARAM ',' PARAM ')'
       {
         int type;
-        if ((type = parseFct($1)) == UNKNOWN)
+        if ((type = parseFct($1)) == C2MP_FUNCTION_UNKNOWN)
         {
-            printf("Unknown function\n"); 
-            $$ = NULL;
+            printf("Unknown function %s\n", $1); 
+            $$ = createCustonFunctionAST($1, 2, $3, $5);
         }
         else {
             $$ = createExpressionAST(type, $3, $5);
         }
       }
-    | SYMBOL '(' EXPR ',' EXPR ARG ')' { printf("not supported function %s\n", $1); $$ = NULL; }
+    | SYMBOL '(' PARAM ',' PARAM ARG ')' 
+      { 
+        printf("not supported function %s: over 2 arguments\n", $1); 
+        // we still need to get the parameters from ARG !
+        $$ = createCustonFunctionAST($1, 2, $3, $5); 
+      }
     ;
 
 VAR:
@@ -501,10 +518,20 @@ VAR:
     ;
 
 ARG:
-      ',' EXPR ARG
+      ',' PARAM ARG
     | 
     ;
 
+PARAM:
+      EXPR      
+      { 
+        $$ = $1;
+      }
+    | STRING
+      {
+        $$ = createStringAST($1);
+      }
+    ;
 
 %%
 

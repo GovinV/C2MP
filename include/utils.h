@@ -49,6 +49,7 @@ p : unary +
 #define C2MP_CHARACTER_INTEGER          'n'
 #define C2MP_CHARACTER_FLOAT            'f'
 #define C2MP_CHARACTER_VARIABLE         'v'
+#define C2MP_CHARACTER_STRING           'S'
 
 
 
@@ -72,7 +73,10 @@ p : unary +
 #define C2MP_FUNCTION_SIN               8
 #define C2MP_FUNCTION_COSH              9
 #define C2MP_FUNCTION_SINH              10
-#define UNKNOWN                         -1
+#define C2MP_FUNCTION_UNKNOWN           -1
+
+// max args for a function
+#define MAX_FCT_ARGS 10
 
 #include <string.h>
 #include <stdlib.h>

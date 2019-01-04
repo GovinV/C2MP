@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include "ast.h"
 
 /*ast* ast_new_operation(char* op, ast* left, ast* right) 
@@ -54,10 +55,40 @@ expressionAST *createExpressionAST(char operator, expressionAST *expr1, expressi
     return expr;
 }
 
+expressionAST *createCustonFunctionAST(char *name, int argNum, ...)
+{
+    expressionAST *expr = malloc(sizeof(expressionAST));
+    expr->operator = C2MP_FUNCTION_UNKNOWN;
+
+    expr->customFunction.name = strdup(name);
+    expr->customFunction.argnum = argNum;
+
+    va_list argList;
+    va_start(argList, argNum);
+
+    for (int i = 0; i < argNum; i++)
+    {
+        expr->customFunction.args[i] = va_arg(argList, expressionAST*);
+    }
+
+    va_end(argList);
+
+    return expr;
+
+}
+
+expressionAST *createStringAST(const char *string)
+{
+    expressionAST *expr = malloc(sizeof(expressionAST));
+    expr->operator = C2MP_CHARACTER_STRING;
+    expr->valueString = strdup(string);
+    return expr;
+}
+
 expressionAST *createIntAST(int integer)
 {
     expressionAST *expr = malloc(sizeof(expressionAST));
-    expr->operator = 'n';
+    expr->operator = C2MP_CHARACTER_INTEGER;
     expr->valueInt = integer;
     return expr;
 }
@@ -65,7 +96,7 @@ expressionAST *createIntAST(int integer)
 expressionAST *createFloatAST(float number)
 {
     expressionAST *expr = malloc(sizeof(expressionAST));
-    expr->operator = 'f';
+    expr->operator = C2MP_CHARACTER_FLOAT;
     expr->valueFloat = number;
     return expr;
 }
@@ -73,7 +104,7 @@ expressionAST *createFloatAST(float number)
 expressionAST *createVariableAST(int variable)
 {
     expressionAST *expr = malloc(sizeof(expressionAST));
-    expr->operator = 'v';
+    expr->operator = C2MP_CHARACTER_VARIABLE;
     expr->valueVariable = variable;
     return expr;
 }
@@ -274,9 +305,14 @@ void printExpressionAST(expressionAST *expr)
             printExpressionAST(expr->expression.e1);
             printf(")");
             break;
+        case C2MP_FUNCTION_UNKNOWN:
+            printf("%s(", expr->customFunction.name);
+            for (int i = 0; i < expr->customFunction.argnum; i++)
+            {
+                printExpressionAST(expr->customFunction.args[i]);
+            }
+            break;
         default:
             fprintf(stderr, "Warning, unknown expression operation : %c\n", expr->operator);
     }
 }
-
-
