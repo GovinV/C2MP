@@ -113,10 +113,12 @@ void printSemiQuads(semiQuad *q)
                 printf("sqrt");
                 printExpressionAST(currentQuad->expression);
                 break;
-            case C2MP_FUNCTION_ABS:
+            /**
+             * Not supported yet: needs mpfr_t type!
+             * case C2MP_FUNCTION_ABS:
                 printf("abs");
                 printExpressionAST(currentQuad->expression);
-                break;
+                break;*/
             case C2MP_FUNCTION_EXP:
                 printf("exp");
                 printExpressionAST(currentQuad->expression);

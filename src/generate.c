@@ -223,13 +223,15 @@ void generateCode(quad *q, char *rounding, int precision)
             printOperand(currentQuad->operands[0]);
             fprintf(output, ", %s);", rounding);
             break;
-
+        /**
+         * Not supporting ABS because MPC is 
         case C2MP_FUNCTION_ABS:
             fprintf(output, "mpc_abs(%s, ", getNameFromReference(currentQuad->assignment));
             printOperand(currentQuad->operands[0]);
             fprintf(output, ", %s);", rounding);
             break;
-        
+        */
+
         case C2MP_FUNCTION_EXP:
             fprintf(output, "mpc_exp(%s, ", getNameFromReference(currentQuad->assignment));
             printOperand(currentQuad->operands[0]);

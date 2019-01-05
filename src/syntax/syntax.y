@@ -517,7 +517,7 @@ FCT:
                     break;
                 // unary functions
                 case C2MP_FUNCTION_SQRT:
-                case C2MP_FUNCTION_ABS:
+                //case C2MP_FUNCTION_ABS:
                 case C2MP_FUNCTION_EXP:
                 case C2MP_FUNCTION_LOG:
                 case C2MP_FUNCTION_LOG10:

@@ -65,7 +65,7 @@ p : unary +
 // Known functions
 #define C2MP_FUNCTION_POW               1
 #define C2MP_FUNCTION_SQRT              2
-#define C2MP_FUNCTION_ABS               3
+//#define C2MP_FUNCTION_ABS               3
 #define C2MP_FUNCTION_EXP               4
 #define C2MP_FUNCTION_LOG               5
 #define C2MP_FUNCTION_LOG10             6

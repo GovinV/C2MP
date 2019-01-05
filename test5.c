@@ -8,6 +8,7 @@ int main()
 
     #pragma MPC 
     {
+        d = pow(-a, -b);
         d = pow(pow(a, sqrt(a)), c);
         d = pow(a+b, a);
         d = lol("lol", y+x);

@@ -208,7 +208,7 @@ void freeExpressionAST(expressionAST *expr)
             free(expr);
             break;
         case C2MP_FUNCTION_SQRT:
-        case C2MP_FUNCTION_ABS:
+        //case C2MP_FUNCTION_ABS:
         case C2MP_FUNCTION_EXP:
         case C2MP_FUNCTION_LOG:
         case C2MP_FUNCTION_LOG10:
@@ -295,7 +295,7 @@ void printExpressionAST(expressionAST *expr)
             printExpressionAST(expr->expression.e1);
             printf(")");
             break;
-        case C2MP_FUNCTION_ABS:
+        //case C2MP_FUNCTION_ABS:
             printf("abs(");
             printExpressionAST(expr->expression.e1);
             printf(")");

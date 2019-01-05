@@ -28,8 +28,8 @@ int parseFct(char *symbol)
         return C2MP_FUNCTION_SQRT;
     if (strncmp(symbol, "pow", 4) == 0)
         return C2MP_FUNCTION_POW;
-    if (strncmp(symbol, "fabs", 5) == 0)
-        return C2MP_FUNCTION_ABS;
+    /*if (strncmp(symbol, "fabs", 5) == 0)
+        return C2MP_FUNCTION_ABS;*/
     if (strncmp(symbol, "exp", 4) == 0)
         return C2MP_FUNCTION_EXP;
     if (strncmp(symbol, "log", 4) == 0)

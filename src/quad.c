@@ -361,7 +361,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
         case C2MP_OPERATOR_LOGICAL_NOT:
         case C2MP_OPERATOR_BITWISE_NOT:
         /******************** FUNCTIONS ********************/
-        case C2MP_FUNCTION_ABS:
+        //case C2MP_FUNCTION_ABS:
         case C2MP_FUNCTION_EXP:
         case C2MP_FUNCTION_COS:
         case C2MP_FUNCTION_COSH:
@@ -433,7 +433,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
                     case C2MP_CHARACTER_VARIABLE:
                         opeList[i] = createVariableOperand(opeAST->valueVariable);
                         break;
-                    case C2MP_FUNCTION_ABS:
+                    //case C2MP_FUNCTION_ABS:
                     case C2MP_FUNCTION_COS:
                     case C2MP_FUNCTION_COSH:
                     case C2MP_FUNCTION_EXP:
