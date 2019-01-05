@@ -1,6 +1,7 @@
 #pragma MPC precision(128)
 {
 
+    z = g + j;
     a = x + y;
     b = y + x;
     while(a<b)
@@ -9,6 +10,7 @@
     	while(s>r)
     	{
     		w = w-1;
+
 
     	}
     	t=r+m;
