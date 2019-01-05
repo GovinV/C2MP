@@ -36,8 +36,8 @@ referenceList *concatReferenceList(referenceList *list1, referenceList *list2)
 
 quad* optimizeQuads(quad* quads)
 {
-    quads = removeAllCommonSubExpressions(quads);
-    quads = removeUselessTemp(quads);
+    //quads = removeAllCommonSubExpressions(quads);
+    //quads = removeUselessTemp(quads);
     quads = removeLoopsInvariants(quads);
     
     return quads;
@@ -59,6 +59,13 @@ quad* removeLoopsInvariants(quad* quads)
 {
     getModifiedVariablesInBloc(quads);
     return quads;
+}
+
+quad* removeLoopInvariants(quad* quads)
+{
+    quad *firstQuad = quads;
+    
+    return firstQuad;
 }
 
 referenceList *getModifiedVariablesInBloc(quad* quads)
