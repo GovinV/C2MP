@@ -55,7 +55,7 @@ semiQuad *createSemiQuad(char operator, int assignment, expressionAST *expressio
 semiQuad *concatSemiQuad(semiQuad *q1, semiQuad *q2);
 void printSemiQuads(semiQuad *q1);
 
-symbol newTemp(void);
+symbol newTemp(symbolType type);
 
 // generate.h
 void generateCode(quad* q, char *rounding, int precision);
@@ -327,7 +327,7 @@ BLOC:
         }
 	| WHILE '(' EXPR ')' BLOC            
         {
-            int conditionVariable = newTemp().reference; 
+            int conditionVariable = newTemp(INTEGER_NUMBER).reference; 
             /* loops need to know which variable they are looping on */
             semiQuad *whileQuad = createSemiQuad(C2MP_QUAD_WHILE, 
                                                  conditionVariable, $3);
@@ -341,7 +341,7 @@ BLOC:
         }
 	| DO BLOC WHILE '(' EXPR ')' ';'     
         {
-            int conditionVariable = newTemp().reference;
+            int conditionVariable = newTemp(INTEGER_NUMBER).reference;
             semiQuad *doWhileQuad = createSemiQuad(C2MP_QUAD_DOWHILE,
                                                    conditionVariable,
                                                    $5);
@@ -363,7 +363,7 @@ BLOC:
         }
 	| FOR '(' INSTRUCTION ';' EXPR ';' INSTRUCTION ')' BLOC  
         {
-            int conditionVariable = newTemp().reference;
+            int conditionVariable = newTemp(INTEGER_NUMBER).reference;
             semiQuad *whileQuad = createSemiQuad(C2MP_QUAD_WHILE,
                                                  conditionVariable,
                                                  $5);

@@ -16,7 +16,7 @@ int main()
         pi = pi*sqrt(12);
     }
 
-    printf("d = %d\n", i);
+    printf("d = %d\n", pi);
 
     return 0;
 }

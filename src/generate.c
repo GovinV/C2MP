@@ -313,7 +313,6 @@ bool * generateInitCode(quad *q, int precision)
 {
     int index;
     bool *tempList;
-    char *base = "C2MP___temp_";
     const char *varName;
     quad *firstQuad = q;
     quad *currentQuad = q;
@@ -347,11 +346,7 @@ bool * generateInitCode(quad *q, int precision)
     {
         if (getSymbolFromReference(currentQuad->assignment).isTemp)
         {
-            varName = getNameFromReference(currentQuad->assignment);
-            varName = strrchr(varName, '_');
-            varName++; // varName points to "_xx"
-            index = atoi(varName); 
-            tempList[index] = true;
+            tempList[currentQuad->assignment] = true;
         }
         currentQuad = currentQuad->next;
     } while(currentQuad != firstQuad);
@@ -361,8 +356,21 @@ bool * generateInitCode(quad *q, int precision)
     {
         if (tempList[i])
         {
-            fprintf(output, "    mpc_t %s%d;", base, i);
-            fprintf(output, " mpc_init2(%s%d, %d);\n", base, i, precision);
+            switch(getSymbolFromReference(i).type_symbol)
+            {
+                case INTEGER_NUMBER:
+                    fprintf(output, "    int %s;\n", getSymbolFromReference(i).name);
+                    break;
+                case FLOAT_NUMBER:
+                    fprintf(output, "    float %s;\n", getSymbolFromReference(i).name);
+                    break;
+                case MPC_T:
+                    fprintf(output, "    mpc_t %s;", getSymbolFromReference(i).name);
+                    fprintf(output, " mpc_init2(%s, %d);\n", getSymbolFromReference(i).name, precision);
+                    break;
+                default:
+                    panic("generate", "generateInitCode", "unknown type");
+            }
         }
     }
 
@@ -374,7 +382,6 @@ bool * generateInitCode(quad *q, int precision)
 
 void generateClearCode(bool *tempList)
 {
-    char *base = "C2MP___temp_";    
 
     if (tempList == NULL)
     {
@@ -387,7 +394,18 @@ void generateClearCode(bool *tempList)
         // if the field is true, it means the variable i has to be cleared
         if (tempList[i])
         {
-            fprintf(output, "    mpc_clear(%s%d);\n", base, i);
+            switch(getSymbolFromReference(i).type_symbol)
+            {
+                case INTEGER_NUMBER:
+                    break;
+                case FLOAT_NUMBER:
+                    break;
+                case MPC_T:
+                    fprintf(output, "    mpc_clear(%s);\n", getSymbolFromReference(i).name);
+                    break;
+                default:
+                    panic("generate", "generateClearCode", "unknown type");
+            }
         }
     }
 

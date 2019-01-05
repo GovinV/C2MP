@@ -31,7 +31,7 @@ typedef struct symbol_s
  * @param isTemp Specify if the symbol created is a temporary variable
  * @return Returns the instance of the new symbol created.
  */
-symbol newSymbol(const char name[], bool isTemp);
+symbol newSymbol(const char name[], symbolType type, bool isTemp);
 
 /**
  * @brief This function return the reference of a symbol in the symbol table
@@ -59,7 +59,7 @@ const char *getNameFromReference(int reference);
  * @brief Generate a new temporary variable
  * @return The symbol associated with the variable generated
  */
-symbol newTemp(void);
+symbol newTemp(symbolType type);
 
 /**
  * @brief This function returns the symbol from the symbol table at the index

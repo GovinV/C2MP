@@ -7,22 +7,25 @@
 symbol variables[MAX];
 int variablesSize = 0;
 
-symbol newSymbol(const char name[], bool isTemp)
+symbol newSymbol(const char name[], symbolType type, bool isTemp)
 {
     variables[variablesSize].name = strdup(name);
     variables[variablesSize].reference = variablesSize;
     variables[variablesSize].isConstant = 0;
     variables[variablesSize].isTemp = isTemp;
     
-    if (isTemp)
+    variables[variablesSize].type_symbol = type;
+    
+    
+    /*if (isTemp)
     {
         variables[variablesSize].type_symbol = MPC_T;
     }
     else
-    {   
+    {
         // default value
         variables[variablesSize].type_symbol = FLOAT_NUMBER;
-    }
+    }*/
 
     return variables[variablesSize++];
 }
@@ -51,7 +54,7 @@ int getReferenceFromName(const char name[])
     int reference = getSymbolReference(name);
     if(reference == -1)
     {
-        return newSymbol(name, false).reference;
+        return newSymbol(name, FLOAT_NUMBER, false).reference;
     }
 
     return reference;
@@ -63,7 +66,7 @@ const char *getNameFromReference(int reference)
     return variables[reference].name;
 }
 
-symbol newTemp(void)
+symbol newTemp(symbolType type)
 {
     char buffer[1024];
     static int tempCount = 0;
@@ -71,5 +74,5 @@ symbol newTemp(void)
     
     ++tempCount;
 
-    return newSymbol(buffer, true);
+    return newSymbol(buffer, type, true);
 }
