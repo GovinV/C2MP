@@ -93,30 +93,46 @@ int pragmaMet;
 FILE * output;
 FILE * finput;
 
+/**
+ * @brief Function Error Output.
+ */
+
 void panic(char *, char * , char *);
 
 /**
- * @brief Cette structure décrit une extension pour un pragma. Contient le nom
- * de l'extension (precision ou rounding) ainsi que la valeur, soit un int soit
- * une chaine de caractère.
- */
-
-
-/**
- * @brief Vérifie l'existance de l'extension du pragma entrée en paramètre.
- * @return Renvoie PRECISION si c'est une extension precision, ROUNDING si
- * c'est une extension rounding, ERROR (-1) sinon.
+ * @brief Verify if the pragma exists in params.
+ * @return Return PRECISION if the extension is precision, 
+ * return ROUNDING if extension is rounding, ERROR (-1) if error.
  */
 int checkExtension(char *);
 
 /**
- * @brief Vérifie si le symbole en argument représente une fonction mathématique
- * connue que l'on peut traduire pour MPC.
+ * @brief Verifiy if the symbol in argument exists and if we can translate to MPC.
+ * @return math function match
  */
 int parseFct(char *);
 
+/**
+ * @brief Open file output.
+ * @return 0 if SUCESS
+ */
 int open_file(void);
+
+/**
+ * @brief Close file output.
+ * @return 0 if SUCESS
+ */
 int close_file(void);
+
+/**
+ * @brief Write the expression in argument in file output.
+ * @return 0 if SUCESS
+ */
 int write_file(const char * expr);
+
+/**
+ * @brief Open file input.
+ * @return 0 if SUCESS
+ */
 int open_file2(char * name);
 #endif // __UTILS_C
