@@ -9,7 +9,14 @@ int main()
     {
         while(b < 10.)
         {
-            a = c;
+            a = b + c;
+            d = b + c;
+            while(a < 10.)
+            {
+            	c = a + d;
+            	b = a + d;
+            	a = a + b;
+            }
             b = b+a;
         }
     }

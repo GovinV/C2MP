@@ -36,7 +36,7 @@ referenceList *concatReferenceList(referenceList *list1, referenceList *list2)
 
 quad* optimizeQuads(quad* quads)
 {
-    //quads = removeAllCommonSubExpressions(quads);
+    // quads = removeAllCommonSubExpressions(quads);
     //quads = removeUselessTemp(quads);
     quads = removeLoopsInvariants(quads);
     
@@ -172,7 +172,7 @@ quad* removeUselessTemp(quad* quads)
                 }
                 if(!refOccurence)
                 {
-                    /*We can delete this temp*/
+                    /*We can delete this temp TODO firstc*/
                     quad * toFree = q;
                     q->next->previous = q->previous;
                     q->previous->next = q->next;
@@ -340,7 +340,7 @@ quad* removeCommonSubExpression(quad* quads, quad* firstQuad)
             case C2MP_QUAD_ENDIF:
             case C2MP_QUAD_ENDWHILE:
             case C2MP_QUAD_ENDDOWHILE:
-            	return q->next;
+            	return quads;
                 break; 
             default:
             	panic("optimization.c","removeCommonSubExpressions","Not recognized operator\n");
@@ -349,7 +349,7 @@ quad* removeCommonSubExpression(quad* quads, quad* firstQuad)
 		q = q->next;
 	} while(q != firstQuad);
 
-	return firstQuad;
+	return quads;
 }
 
 quad* ignoreBlocForCommonSubExpression(quad* quads, quad* firstQuad)
