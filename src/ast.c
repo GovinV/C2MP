@@ -187,17 +187,44 @@ void freeExpressionAST(expressionAST *expr)
         case C2MP_OPERATOR_LOGICAL_OR:
             freeExpressionAST(expr->expression.e1);
             freeExpressionAST(expr->expression.e2);
+            free(expr);
             break;
         case C2MP_OPERATOR_UNARY_MINUS: // unary minus
         case C2MP_OPERATOR_UNARY_PLUS: // unary plus
         case C2MP_OPERATOR_LOGICAL_NOT:
         case C2MP_OPERATOR_BITWISE_NOT:
             freeExpressionAST(expr->expression.e1);
+            free(expr);
             break;
         case C2MP_CHARACTER_INTEGER: // number
         case C2MP_CHARACTER_FLOAT: // float
         case C2MP_CHARACTER_VARIABLE: // variable
         case C2MP_CHARACTER_STRING: // string
+            free(expr);
+            break;
+        case C2MP_FUNCTION_POW:
+            freeExpressionAST(expr->expression.e1);
+            freeExpressionAST(expr->expression.e2);
+            free(expr);
+            break;
+        case C2MP_FUNCTION_SQRT:
+        case C2MP_FUNCTION_ABS:
+        case C2MP_FUNCTION_EXP:
+        case C2MP_FUNCTION_LOG:
+        case C2MP_FUNCTION_LOG10:
+        case C2MP_FUNCTION_COS:
+        case C2MP_FUNCTION_SIN:
+        case C2MP_FUNCTION_COSH:
+        case C2MP_FUNCTION_SINH:
+            freeExpressionAST(expr->expression.e1);
+            free(expr);
+            break;
+        case C2MP_FUNCTION_UNKNOWN:
+            for (int i = 0; i < expr->customFunction.argnum; i++)
+            {
+                freeExpressionAST(expr->customFunction.args[i]);
+            }
+            free(expr->customFunction.name);
             free(expr);
             break;
         default:

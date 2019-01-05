@@ -154,3 +154,23 @@ void printSemiQuads(semiQuad *q)
         currentQuad = currentQuad->next;
     }while(currentQuad != firstQuad);
 }
+
+void freeSemiQuad(semiQuad *sq)
+{
+    if(sq == NULL)
+    {
+        return;
+    }
+
+    semiQuad *firstSemiQuad = sq, *toFree;
+    semiQuad *currentSemiQuad = sq->next;
+
+    while(currentSemiQuad != firstSemiQuad)
+    {
+        toFree = currentSemiQuad; 
+        currentSemiQuad = currentSemiQuad->next;
+        freeExpressionAST(toFree->expression);
+        free(toFree);
+    }
+    free(firstSemiQuad);
+}

@@ -73,13 +73,25 @@ quad *createQuad(int assignment, char operator, char * name, int operandsNum, ..
 
 void freeQuads(quad *q)
 {
-    quad *currentQuad = q, *toFree;
-    do 
+    quad *firstQuad = q;
+    quad *currentQuad = q->next, *toFree;
+
+    if (q == NULL)
+    {
+        return;
+    }
+
+    while(currentQuad != firstQuad)
     {
         toFree = currentQuad;
         currentQuad = currentQuad->next;
+        if (toFree->operator == C2MP_FUNCTION_UNKNOWN)
+        {
+            free(toFree->fctName);
+        }
         free(toFree);
-    } while(currentQuad != NULL); 
+    }
+    free(firstQuad);
 }
 
 /* copy result */
@@ -90,23 +102,7 @@ quad *copySemiQuad(semiQuad *sq)
         fprintf(stderr, "Warning, tried to copy quads from NULL semiQuad\n");
         return NULL;
     }
-/*
-	struct semiQuad
-    { // quad that can have an AST expression for val1
-		int assignment;
-		char operator;
 
-        union
-        { // depending on the operator
-            struct expressionAST *expression; // example : "="
-            int variable; // example "if"
-        };
-        struct expressionAST *expression;
-
-        struct semiQuad *previous;
-        struct semiQuad *next;
-    } *semiQuad;
-*/
     quad *generatedQuads;
     switch(sq->operator)
     {
@@ -527,6 +523,9 @@ quad *getQuadFromSemiQuad(semiQuad *sq)
 
         currentSemiQuad = currentSemiQuad->next;
     }
+
+    // now we can free the semiQuads !
+    freeSemiQuad(sq);
 
     return currentQuad;
 }

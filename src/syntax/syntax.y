@@ -13,12 +13,14 @@
  
 	FILE *yyin, *yyout;
 	int commentNum = 0;
-
+    
 typedef struct quadOperand quadOperand;
 typedef struct semiQuad semiQuad;
 typedef struct quad quad;
 typedef struct expressionAST expressionAST;
 typedef struct argType argType;
+
+quad *quads;    // the list of the quads we will create
 
 expressionAST *copyExpressionAST(expressionAST *expressionAST);
 
@@ -34,6 +36,7 @@ quad *getQuadFromSemiQuad(semiQuad *sq);
 quad *concatQuads(quad *q1, quad *q2);
 void printOperand(quadOperand operand);
 void printQuads(quad* q);
+void freeQuads(quad *q);
 
 expressionAST *createExpressionAST(char operator, expressionAST *expr1, expressionAST *expr2);
 expressionAST *createCustomFunctionAST(char *name, int argNum, struct expressionAST **list);
@@ -63,6 +66,7 @@ quad* removeCommonSubExpressions(quad* quads);
 quad* removeAllCommonSubExpressions(quad* quads);
 quad* removeUselessTemp(quad* quads);
 
+
 %}
 
 %union
@@ -70,7 +74,7 @@ quad* removeUselessTemp(quad* quads);
 	char  * string;
 	int     value;
 	float   fvalue;
-	
+
 	struct  pragmaExt 
 	{
 		enum {ROUNDING_T, PRECISION_T} type;
@@ -239,7 +243,7 @@ P_PRAGMA:
             printf("generated semi quads :\n");
             printSemiQuads($4);
             printf("Quads generation:\n");
-            quad *quads = getQuadFromSemiQuad($4);
+            quads = getQuadFromSemiQuad($4);
             printf("End of quads generation\n");
             if (option_flag == 1)
             {
@@ -250,6 +254,9 @@ P_PRAGMA:
             }
             generateCode(quads, $2.rounding, $2.precision);
             printf("\n");
+            // some memory frees
+            freeQuads(quads);
+            free($2.rounding); // strdup of rounding
         }
 	;
 
@@ -680,7 +687,7 @@ int main(int argc, char *argv[])
         panic("syntax.y", "main", "Error Close File\n");
  
     printf("End of parsing\n");
- 
+
     close_file();
  
     return 0;

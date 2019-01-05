@@ -13,5 +13,11 @@ semiQuad *createSemiQuad(char operator, int assignment, expressionAST *expressio
 semiQuad *concatSemiQuad(semiQuad *q1, semiQuad *q2);
 void printSemiQuads(semiQuad *q1);
 
+/**
+ * @brief Frees the memory of the list of semi quads specified
+ * @param sq A list of semiQuads
+ */
+void freeSemiQuad(semiQuad *sq);
+
 #endif // SEMIQUAD_H
 
