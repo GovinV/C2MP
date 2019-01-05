@@ -17,7 +17,7 @@ quadOperand createIntegerOperand(int value)
     return operand;
 }
 
-quadOperand createFloatOperand(float value)
+quadOperand createFloatOperand(double value)
 {
     quadOperand operand;
     operand.type = C2MP_QUAD_OPERAND_FLOAT;

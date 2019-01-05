@@ -26,7 +26,7 @@ expressionAST *copyExpressionAST(expressionAST *expressionAST);
 
 quadOperand createVariableOperand(int reference);
 quadOperand createIntegerOperand(int value);
-quadOperand createFloatOperand(float value);
+quadOperand createFloatOperand(double value);
 quadOperand createStringOperand(char *string);
 
 quad *createQuad(int assignment, char operator, char * name, int operandsNum, ...);
@@ -41,7 +41,7 @@ void freeQuads(quad *q);
 expressionAST *createExpressionAST(char operator, expressionAST *expr1, expressionAST *expr2);
 expressionAST *createCustomFunctionAST(char *name, int argNum, struct expressionAST **list);
 expressionAST *createIntAST(int integer);
-expressionAST *createFloatAST(float number);
+expressionAST *createFloatAST(double number);
 expressionAST *createVariableAST(int variable);
 expressionAST *createStringAST(const char *string);
 void freeExpressionAST(expressionAST *expr);
@@ -73,7 +73,7 @@ quad* removeUselessTemp(quad* quads);
 {
 	char  * string;
 	int     value;
-	float   fvalue;
+	double   fvalue;
 
 	struct  pragmaExt 
 	{
@@ -92,11 +92,11 @@ quad* removeUselessTemp(quad* quads);
 
     struct number
     {
-        char type; // C2MP_NUM_TYPE_INTEGER = int, C2MP_NUM_TYPE_FLOAT = float
+        char type; // C2MP_NUM_TYPE_INTEGER = int, C2MP_NUM_TYPE_FLOAT = double
         union 
         {
           int valueInt;
-          float valueFloat;
+          double valueFloat;
         };
     } number;
 
@@ -106,7 +106,7 @@ quad* removeUselessTemp(quad* quads);
         int reference;
         /*union{
             int valueInt;
-            float valueFloat;
+            double valueFloat;
         };*/
     } variable;
 	
@@ -120,7 +120,7 @@ quad* removeUselessTemp(quad* quads);
 		        struct expressionAST *e2;
             } expression;
             int valueInt;
-            float valueFloat;
+            double valueFloat;
             int valueVariable;
             char *valueString;
             struct{
@@ -159,7 +159,7 @@ quad* removeUselessTemp(quad* quads);
         {
             int reference;
             int valueInt;
-            float valueFloat;
+            double valueFloat;
             char *valueString;
         };
     } quadOperand;

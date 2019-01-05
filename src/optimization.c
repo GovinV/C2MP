@@ -143,7 +143,7 @@ quad* removeLoopInvariants(quad* quads)
             case C2MP_OPERATOR_LOGICAL_NOT:
             case C2MP_OPERATOR_BITWISE_NOT:
             case C2MP_FUNCTION_SQRT:
-            //case C2MP_FUNCTION_ABS:
+            case C2MP_FUNCTION_ABS:
             case C2MP_FUNCTION_EXP:
             case C2MP_FUNCTION_LOG:
             case C2MP_FUNCTION_LOG10:
@@ -247,7 +247,7 @@ referenceList *getModifiedVariablesInBloc(quad* quads)
             case C2MP_OPERATOR_LOGICAL_NOT:
             case C2MP_OPERATOR_BITWISE_NOT:
             case C2MP_FUNCTION_SQRT:
-            //case C2MP_FUNCTION_ABS:
+            case C2MP_FUNCTION_ABS:
             case C2MP_FUNCTION_EXP:
             case C2MP_FUNCTION_LOG:
             case C2MP_FUNCTION_LOG10:
@@ -309,7 +309,7 @@ quad* removeUselessTempFromBloc(quad* quads, quad* firstQuad, int assignment, in
             case C2MP_OPERATOR_LOGICAL_OR:
             case C2MP_FUNCTION_SQRT:
             case C2MP_FUNCTION_POW:
-            //case C2MP_FUNCTION_ABS:
+            case C2MP_FUNCTION_ABS:
             case C2MP_FUNCTION_EXP:
             case C2MP_FUNCTION_LOG:
             case C2MP_FUNCTION_LOG10:
@@ -399,7 +399,7 @@ quad* removeUselessTemp(quad* quads)
             case C2MP_OPERATOR_LOGICAL_OR:
             case C2MP_FUNCTION_SQRT:
             case C2MP_FUNCTION_POW:
-            //case C2MP_FUNCTION_ABS:
+            case C2MP_FUNCTION_ABS:
             case C2MP_FUNCTION_EXP:
             case C2MP_FUNCTION_LOG:
             case C2MP_FUNCTION_LOG10:
@@ -598,7 +598,7 @@ quad* removeCommonSubExpression(quad* quads, quad* firstQuad)
             case C2MP_OPERATOR_LOGICAL_NOT:
             case C2MP_OPERATOR_BITWISE_NOT:
             case C2MP_FUNCTION_SQRT:
-            //case C2MP_FUNCTION_ABS:
+            case C2MP_FUNCTION_ABS:
             case C2MP_FUNCTION_EXP:
             case C2MP_FUNCTION_LOG:
             case C2MP_FUNCTION_LOG10:
@@ -696,7 +696,7 @@ quad* ignoreBlocForCommonSubExpression(quad* quads, quad* firstQuad)
             case C2MP_OPERATOR_LOGICAL_OR:
             case C2MP_FUNCTION_SQRT:
             case C2MP_FUNCTION_POW:
-            //case C2MP_FUNCTION_ABS:
+            case C2MP_FUNCTION_ABS:
             case C2MP_FUNCTION_EXP:
             case C2MP_FUNCTION_LOG:
             case C2MP_FUNCTION_LOG10:

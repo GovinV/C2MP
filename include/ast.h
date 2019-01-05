@@ -32,7 +32,7 @@ expressionAST *createIntAST(int integer);
  * @param number value of the float
  * @return The created expressionAST
  */
-expressionAST *createFloatAST(float number);
+expressionAST *createFloatAST(double number);
 /**
  * @brief Creates an AST containing a variable (leaf)
  * @param variable reference of the variable (int)

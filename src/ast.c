@@ -25,7 +25,7 @@ expressionAST *createIntAST(int integer)
     return expr;
 }
 
-expressionAST *createFloatAST(float number)
+expressionAST *createFloatAST(double number)
 {
     expressionAST *expr = malloc(sizeof(expressionAST));
     expr->operator = C2MP_CHARACTER_FLOAT;
