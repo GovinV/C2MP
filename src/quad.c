@@ -331,6 +331,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
         case C2MP_OPERATOR_BITWISE_OR:
         case C2MP_OPERATOR_BITWISE_XOR:
             tempType = INTEGER_NUMBER;
+            __attribute__ ((fallthrough));
         case C2MP_OPERATOR_BINARY_PLUS:
         case C2MP_OPERATOR_BINARY_MINUS:
         case C2MP_OPERATOR_BINARY_DOT:

@@ -4,7 +4,7 @@
 
 int main()
 {
-    float pi=0.f, k;
+    float pi=0.f, k=0;
 
     #pragma MPC precision(255) rounding(MPC_RNDZZ)
     {
@@ -12,11 +12,13 @@ int main()
         for(k=0;k<100;k=k+1)
         {
             pi=pi+pow(-3, -k)/(2*k+1);
+            k = k + 1;
         }
         pi = pi*sqrt(12);
     }
 
-    printf("d = %d\n", pi);
+    printf("k = %f\n", k);
+    printf("pi = %f\n", pi);
 
     return 0;
 }
