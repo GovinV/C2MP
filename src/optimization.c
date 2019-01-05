@@ -10,6 +10,39 @@ int exprHashSize = 0;
 constRow constTable[MAX];
 int constSize = 0;
 
+referenceList *addReference(referenceList *list, int ref)
+{
+    referenceList *element = malloc(sizeof(referenceList));
+    element->next = list;
+    element->ref = ref;
+    return element;
+}
+
+referenceList *concatReferenceList(referenceList *list1, referenceList *list2)
+{
+    if(list1 == NULL)
+    {
+        return list2;
+    }
+    
+    referenceList *element = list1;
+    while(element->next != NULL)
+    {
+        element = element->next;
+    }
+    element->next = list2;
+    return list1;
+}
+
+quad* optimizeQuads(quad* quads)
+{
+    //quads = removeAllCommonSubExpressions(quads);
+    //quads = removeUselessTemp(quads);
+    quads = removeLoopsInvariants(quads);
+    
+    return quads;
+}
+
 /*
     for (int i = 0; i < n; i++) {
         x = y + z;
@@ -22,9 +55,91 @@ int constSize = 0;
         a[i] = 6 * i + temp1;
     }
 */
-quad* removeLoopInvariant(quad* quads)
+quad* removeLoopsInvariants(quad* quads)
 {
+    getModifiedVariablesInBloc(quads);
     return quads;
+}
+
+quad* removeLoopInvariants(quad* quads)
+{
+    quad *firstQuad = quads;
+    
+    return firstQuad;
+}
+
+referenceList *getModifiedVariablesInBloc(quad* quads)
+{
+    if(quads == NULL)
+    {
+        printf("no quads for optimization\n");
+    }
+    
+    referenceList *modifiedVariables = NULL;
+	
+	quad* q = quads;
+	quad *firstQuad = quads;
+	int blocDepth = 0;
+	
+	do
+	{
+		switch(q->operator)
+		{
+			case C2MP_QUAD_ASSIGNMENT:
+            case C2MP_OPERATOR_BINARY_PLUS:
+            case C2MP_OPERATOR_BINARY_DOT:
+            case C2MP_OPERATOR_EQUAL:
+            case C2MP_OPERATOR_NOT_EQUAL:
+            case C2MP_OPERATOR_BITWISE_AND:
+            case C2MP_OPERATOR_BITWISE_OR:
+            case C2MP_OPERATOR_BITWISE_XOR:
+            case C2MP_OPERATOR_LOGICAL_AND:
+            case C2MP_OPERATOR_LOGICAL_OR:
+            case C2MP_OPERATOR_BINARY_MINUS:
+            case C2MP_OPERATOR_BINARY_DIVIDE:
+            case C2MP_OPERATOR_LOWER_THAN:
+            case C2MP_OPERATOR_GREATER_THAN:
+            case C2MP_OPERATOR_LOWER_OR_EQUAL:
+            case C2MP_OPERATOR_GREATER_OR_EQUAL:
+            case C2MP_FUNCTION_POW:
+            case C2MP_OPERATOR_UNARY_MINUS:
+            case C2MP_OPERATOR_UNARY_PLUS:
+            case C2MP_OPERATOR_LOGICAL_NOT:
+            case C2MP_OPERATOR_BITWISE_NOT:
+            case C2MP_FUNCTION_SQRT:
+            case C2MP_FUNCTION_ABS:
+            case C2MP_FUNCTION_EXP:
+            case C2MP_FUNCTION_LOG:
+            case C2MP_FUNCTION_LOG10:
+            case C2MP_FUNCTION_COS:
+            case C2MP_FUNCTION_SIN:
+            case C2MP_FUNCTION_COSH:
+            case C2MP_FUNCTION_SINH:
+            case C2MP_FUNCTION_UNKNOWN:
+                printf("%s is modified\n", getNameFromReference(q->assignment));
+                modifiedVariables = addReference(modifiedVariables, q->assignment);
+                break;
+            case C2MP_QUAD_IF:
+            case C2MP_QUAD_WHILE:
+            case C2MP_QUAD_DOWHILE:
+                ++blocDepth;
+                break;
+            case C2MP_QUAD_ELSE:
+                // nothing
+                break;
+            case C2MP_QUAD_ENDIF:
+            case C2MP_QUAD_ENDWHILE:
+            case C2MP_QUAD_ENDDOWHILE:
+            	--blocDepth;
+                break; 
+            default:
+            	panic("optimization.c","getModifiedVariablesInBloc","Not recognized operator\n");
+            	break;
+		}
+		q = q->next;
+	} while(q != firstQuad && blocDepth >=0);
+	
+	return modifiedVariables;
 }
 
 quad* removeUselessTemp(quad* quads)
@@ -86,7 +201,7 @@ quad* removeAllCommonSubExpressions(quad* quads)
             case C2MP_QUAD_IF:
             case C2MP_QUAD_WHILE:
             case C2MP_QUAD_DOWHILE:
-                q = removeCommonSubExpression(q->next, firstQuad);
+                q = removeCommonSubExpression(q->next, firstQuad)->previous; // not having ->previous makes it loop infinitely on test_invariant.c
                 break;
             default:
                 break;

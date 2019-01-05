@@ -58,6 +58,7 @@ symbol newTemp(void);
 void generateCode(quad* q, char *rounding, int precision);
 
 // optimization.h
+quad* optimizeQuads(quad* quads);
 quad* removeCommonSubExpressions(quad* quads);
 quad* removeAllCommonSubExpressions(quad* quads);
 quad* removeUselessTemp(quad* quads);
@@ -238,8 +239,7 @@ P_PRAGMA:
             {
                 printf("Optimization:\n");
                 //printQuads(quads);
-                quads = removeAllCommonSubExpressions(quads);
-                quads = removeUselessTemp(quads);
+                quads = optimizeQuads(quads);
                 printf("End of Optimization.\n");
             }
             generateCode(quads, $2.rounding, $2.precision);

@@ -34,8 +34,20 @@ typedef struct constantRow
 	int flag;
 } constRow;
 
+typedef struct referenceList
+{
+	int ref;
+	struct referenceList *next;
+} referenceList;
 
-quad* removeLoopInvariant(quad* quads);
+referenceList *addReference(referenceList *list, int ref);
+referenceList *concatReferenceList(referenceList *list1, referenceList *list2);
+
+
+quad* optimizeQuads(quad* quads);
+quad* removeLoopsInvariants(quad* quads);
+quad* removeLoopInvariants(quad* quads); // removes invariants from ONE loop, returns the FIRST quad of the bloc
+referenceList *getModifiedVariablesInBloc(quad* quads); // returns a list of reference which can be modified in this bloc
 quad* removeUselessTemp(quad* quads);
 quad* removeAllCommonSubExpressions(quad* quads);
 quad* removeCommonSubExpression(quad* quads, quad* firstQuad);
