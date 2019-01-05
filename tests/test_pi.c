@@ -9,7 +9,7 @@ int main()
     #pragma MPC precision(255) rounding(MPC_RNDZZ)
     {
         
-        for(k=0;k<100;k=k+1)
+        for(k=0;k<100000;k=k+1)
         {
             pi=pi+pow(-3, -k)/(2*k+1);
         }

@@ -24,20 +24,6 @@ semiQuad *concatSemiQuad(semiQuad *q1, semiQuad *q2)
         return q2;
     }
 
-    /*if(q2->next == q2)
-    {
-        q2->next = q1;
-        q2->previous = q1->previous;
-        q1->previous->next = q2;
-        q1->previous = q2;
-    }
-    else
-    {
-        q1->previous->next = q2;
-        q2->previous->next = q1;
-        q1->previous = q2->previous;
-        q2->previous = q1->previous;
-    }*/
     semiQuad *head1 = q1;
     semiQuad *head2 = q2;
     semiQuad *tail1 = q1->previous;
@@ -49,6 +35,26 @@ semiQuad *concatSemiQuad(semiQuad *q1, semiQuad *q2)
     tail2->next = head1;
 
     return q1;
+}
+
+void freeSemiQuad(semiQuad *sq)
+{
+    if(sq == NULL)
+    {
+        return;
+    }
+
+    semiQuad *firstSemiQuad = sq, *toFree;
+    semiQuad *currentSemiQuad = sq->next;
+
+    while(currentSemiQuad != firstSemiQuad)
+    {
+        toFree = currentSemiQuad; 
+        currentSemiQuad = currentSemiQuad->next;
+        freeExpressionAST(toFree->expression);
+        free(toFree);
+    }
+    free(firstSemiQuad);
 }
 
 void printSemiQuads(semiQuad *q)
@@ -155,24 +161,4 @@ void printSemiQuads(semiQuad *q)
 
         currentQuad = currentQuad->next;
     }while(currentQuad != firstQuad);
-}
-
-void freeSemiQuad(semiQuad *sq)
-{
-    if(sq == NULL)
-    {
-        return;
-    }
-
-    semiQuad *firstSemiQuad = sq, *toFree;
-    semiQuad *currentSemiQuad = sq->next;
-
-    while(currentSemiQuad != firstSemiQuad)
-    {
-        toFree = currentSemiQuad; 
-        currentSemiQuad = currentSemiQuad->next;
-        freeExpressionAST(toFree->expression);
-        free(toFree);
-    }
-    free(firstSemiQuad);
 }

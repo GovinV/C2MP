@@ -1,50 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
 #include "ast.h"
-
-/*ast* ast_new_operation(char* op, ast* left, ast* right) 
-{
-	ast* new = malloc(sizeof(ast));
-	new->type = strdup(op);
-	new->u.operation.left  = left;
-	new->u.operation.right = right;
-	return new;
-}
-
-ast* ast_new_number(int number) 
-{
-	ast* new = malloc(sizeof(ast));
-	new->type = strdup("number");
-	new->u.number = number;
-	return new;
-}
-
-ast* ast_new_id(char* id) 
-{
-	ast* new = malloc(sizeof(ast));
-	new->type = strdup("id");
-	new->u.id = strdup(id);
-	return new;
-}
-
-void ast_print(ast* ast, int indent)
-{
-	for (int i = 0; i < indent; i++)
-		printf("    ");
-	printf("%s", ast->type);
-	if (strcmp(ast->type, "number") == 0)
-		printf(" (%d)\n", ast->u.number);
-	else if (strcmp(ast->type, "id") == 0)
-		printf(" (%s)\n", ast->u.id);
-	else 
-	{
-		printf("\n");
-		ast_print(ast->u.operation.left, indent + 1);
-		ast_print(ast->u.operation.right, indent + 1);
-	}
-}*/
 
 expressionAST *createExpressionAST(char operator, expressionAST *expr1, expressionAST *expr2)
 {
@@ -53,24 +7,6 @@ expressionAST *createExpressionAST(char operator, expressionAST *expr1, expressi
     expr->expression.e1 = expr1;
     expr->expression.e2 = expr2;
     return expr;
-}
-
-expressionAST *createCustomFunctionAST(char *name, int argNum, struct expressionAST **list)
-{
-    expressionAST *expr = malloc(sizeof(expressionAST));
-    expr->operator = C2MP_FUNCTION_UNKNOWN;
-
-    expr->customFunction.name = strdup(name);
-    expr->customFunction.argnum = argNum;
-
-    // the arguments are stored in inverted order, we have to permut them
-    for (int i = argNum-1; i >= 0; i--)
-    {
-        expr->customFunction.args[argNum-i-1] = list[i];
-    }
-
-    return expr;
-
 }
 
 expressionAST *createStringAST(const char *string)
@@ -102,6 +38,23 @@ expressionAST *createVariableAST(int variable)
     expressionAST *expr = malloc(sizeof(expressionAST));
     expr->operator = C2MP_CHARACTER_VARIABLE;
     expr->valueVariable = variable;
+    return expr;
+}
+
+expressionAST *createCustomFunctionAST(char *name, int argNum, struct expressionAST **list)
+{
+    expressionAST *expr = malloc(sizeof(expressionAST));
+    expr->operator = C2MP_FUNCTION_UNKNOWN;
+
+    expr->customFunction.name = strdup(name);
+    expr->customFunction.argnum = argNum;
+
+    // the arguments are stored in inverted order, we have to permut them
+    for (int i = argNum-1; i >= 0; i--)
+    {
+        expr->customFunction.args[argNum-i-1] = list[i];
+    }
+
     return expr;
 }
 
@@ -168,6 +121,7 @@ void freeExpressionAST(expressionAST *expr)
         fprintf(stderr, "Warning, tried to free a NULL expression\n");
         return;
     }
+
     switch(expr->operator)
     {
         case C2MP_OPERATOR_BINARY_PLUS:

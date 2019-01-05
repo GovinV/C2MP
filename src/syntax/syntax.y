@@ -32,7 +32,7 @@ quadOperand createStringOperand(char *string);
 quad *createQuad(int assignment, char operator, char * name, int operandsNum, ...);
 quad *copySemiQuad(semiQuad *sq);
 quad *generateQuadsFromAST(expressionAST *expr);
-quad *getQuadFromSemiQuad(semiQuad *sq);
+quad *getQuadFromSemiQuads(semiQuad *sq);
 quad *concatQuads(quad *q1, quad *q2);
 void printOperand(quadOperand operand);
 void printQuads(quad* q);

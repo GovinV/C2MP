@@ -56,11 +56,15 @@ quad *createQuad(int assignment, char operator, char * name, int operandsNum, ..
     va_start(operandsList, operandsNum);
 
     for (int i = 0; i < MAX_FCT_ARGS; i++)
-    {
+    { // fills the quad arguments
         if (i < operandsNum)
+        {
             q->operands[i] = va_arg(operandsList, quadOperand);
+        }
         else
+        {
             q->operands[i].reference = -1;
+        }
     }
 
     va_end(operandsList);
@@ -91,10 +95,10 @@ void freeQuads(quad *q)
         }
         free(toFree);
     }
+
     free(firstQuad);
 }
 
-/* copy result */
 quad *copySemiQuad(semiQuad *sq)
 {
     if(sq == NULL)
@@ -505,7 +509,7 @@ quad *createQuadFromOperandList(int assignment, char operator, char *name, int a
     }
 }
 
-quad *getQuadFromSemiQuad(semiQuad *sq)
+quad *getQuadFromSemiQuads(semiQuad *sq)
 {
     if(sq == NULL)
     {

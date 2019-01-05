@@ -21,21 +21,42 @@
 typedef struct quadOperand quadOperand;
 typedef struct quad quad;
 
+/**
+ * @brief Creates an quad operand related to a variable
+ * @param reference reference of the variable
+ * @return The created operand
+ */
 quadOperand createVariableOperand(int reference);
+/**
+ * @brief Creates an quad operand related to an integer constant
+ * @param value value of the constant
+ * @return The created operand
+ */
 quadOperand createIntegerOperand(int value);
+/**
+ * @brief Creates an quad operand related to an float constant
+ * @param value value of the constant
+ * @return The created operand
+ */
 quadOperand createFloatOperand(float value);
+/**
+ * @brief Creates an quad operand related to nothing (example : operand2 of sqrt)
+ * @return The created operand
+ */
 quadOperand createVoidOperand(void);
 
 /**
  * @brief Creates a string operand for a quad. Used by custom functions.
- * @param string The string (with quotes)
- * @return Retuns the created operand
+ * @param string the string (with quotes)
+ * @return the created operand
  */
 quadOperand createStringOperand(char *string);
 
 /**
- * @brief Return the type of a symbol
- * @param ope The operand from which we want to know the type
+ * @brief Returns the type of an operand.
+ * An operand can be a constant, in this case it is the type of the constant (int/float)
+ * or a variable, in this case it returns the type of the variable
+ * @param ope the operand from which we want to know the type
  * @return The type of the symbol (cf. symbol.h)
  */
 symbolType getSymbolTypeFromOperand(quadOperand ope);
@@ -46,7 +67,7 @@ symbolType getSymbolTypeFromOperand(quadOperand ope);
  * @param operator the operator type
  * @param name The name of the function associated with the quad (optional)
  * @param operandsNum The number of operands used in the quad
- * @return The quad generated
+ * @return The generated quad
  */
 quad *createQuad(int assignment, char operator, char * name, int operandsNum, ...);
 
@@ -63,50 +84,57 @@ quad *createQuadFromOperandList(int assignment, char operator, char *name, int a
 
 
 /**
- * @brief Free the memory from quads
- * @param q A chained list of quads to be freed
+ * @brief Frees the memory from quads
+ * @param q a chained list of quads to be freed
  */
 void freeQuads(quad *q);
 
+
+/**
+ * @brief Gets a quad list from a single semiQuad.
+ * Example : the semiQuad a=x+b could be converted to the following quads :
+ * t1=x, t2=b, a=t1+t2
+ * @param sq semiQuad to be translated into quads
+ * @return The created quad list
+ */
 quad *copySemiQuad(semiQuad *sq);
-quad *generateQuadsFromAST_2(expressionAST *expr);
+
+/**
+ * @brief Generates a list of quads matching the given AST
+ * @param expr expressionAST to be read
+ * @return The created quad list
+ */
 quad *generateQuadsFromAST(expressionAST *expr);
-quad *getQuadFromSemiQuad(semiQuad *sq);
+
+/**
+ * @brief Generates a list of quads matching a list of semiQuads
+ * @param sq semiQuad list
+ * @return The created quad list
+ */
+quad *getQuadFromSemiQuads(semiQuad *sq);
+
+
+/**
+ * @brief Concatenates two lists of suads
+ * (careful ! The two lists are modified by this operation)
+ * @param q1 first list
+ * @param q2 second list
+ * @return concatenated lists
+ */
 quad *concatQuads(quad *q1, quad *q2);
+
+/**
+ * @brief Prints an operand
+ * @param operand operand
+ */
 void printOperand(quadOperand operand);
+
+/**
+ * @brief Prints a list of quads
+ * @param g quads
+ */
 void printQuads(quad* q);
 
 
-
-/*typedef enum 
-{
-    OP_ADD,
-    OP_SUBTRACT,
-    OP_MULTIPLY,
-    OP_DIVIDE,
-    OP_LE,
-    OP_LTE,
-    OP_EQ,
-    OP_NEQ,
-    OP_GE,
-    OP_GTE,
-    OP_ASSIGN
-    //OP_LABEL
-} operation;
-
-typedef struct quad_s
-{
-    operation op;
-    Symbol* arg1;
-    Symbol* arg2;
-    Symbol* res;
-    struct quad_s *next;
-} Quad;
-
-Quad* quad_init(char * op, Symbol* arg1, Symbol* arg2, Symbol* res);
-operation quad_operation(char* op);
-void quad_free(Quad *quad);
-void quad_add(Quad **dest, Quad *src);
-void quad_print(Quad *quad);*/
 
 #endif
