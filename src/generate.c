@@ -277,12 +277,17 @@ void generateCode(quad *q, char *rounding, int precision)
             fprintf(output, ");");
             break;
 
+        case C2MP_OPERATOR_UNARY_MINUS:
+            fprintf(output, "mpc_neg(%s, ", getNameFromReference(currentQuad->assignment));
+            printOperand(currentQuad->operands[0]);
+            fprintf(output, ", %s);", rounding);
+            break;
+
         // not supported yet
         case C2MP_OPERATOR_BITWISE_AND:
         case C2MP_OPERATOR_BITWISE_OR:
         case C2MP_OPERATOR_BITWISE_NOT:
         case C2MP_OPERATOR_BITWISE_XOR:
-        case C2MP_OPERATOR_UNARY_MINUS:
         case C2MP_OPERATOR_UNARY_PLUS:
         case C2MP_OPERATOR_LOGICAL_OR:
         case C2MP_OPERATOR_LOGICAL_AND:
