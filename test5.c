@@ -9,7 +9,8 @@ int main()
     #pragma MPC 
     {
         d = pow(pow(a, sqrt(a)), c);
-        c = lol(x, y);
+        d = pow(a+b, a);
+        d = lol("lol", y);
     }
 
     printf("d = %d\n", d);

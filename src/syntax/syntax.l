@@ -216,7 +216,17 @@ rounding  							{
 											write_file(yytext);
 										}
 									}
-
+\"(\\.|[^"\\])*\"					{	// regex from stack overflow
+										if ((pragmaBlocOn) || (pragmaOn))
+										{
+											yylval.string = strdup(yytext);
+											return STRING;
+										}
+										else
+										{
+											write_file(yytext);
+										}
+									}
 [_a-zA-Z][_a-zA-Z0-9]*				{
 										if ((pragmaBlocOn) || (pragmaOn))
 										{

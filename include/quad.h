@@ -11,6 +11,9 @@
 #define C2MP_QUAD_OPERAND_VARIABLE 0
 #define C2MP_QUAD_OPERAND_INTEGER 1
 #define C2MP_QUAD_OPERAND_FLOAT 2
+#define C2MP_QUAD_OPERAND_STRING 3
+
+#define C2MP_QUAD_NO_ASSIGNEMENT -2
 
 #define C2MP_QUAD_BINARY 2
 #define C2MP_QUAD_UNARY  1
@@ -22,6 +25,13 @@ quadOperand createVariableOperand(int reference);
 quadOperand createIntegerOperand(int value);
 quadOperand createFloatOperand(float value);
 quadOperand createVoidOperand(void);
+
+/**
+ * @brief Creates a string operand for a quad. Used by custom functions.
+ * @param string The string (with quotes)
+ * @return Retuns the created operand
+ */
+quadOperand createStringOperand(char *string);
 
 /**
  * @brief Return the type of a symbol
@@ -39,6 +49,18 @@ symbolType getSymbolTypeFromOperand(quadOperand ope);
  * @return The quad generated
  */
 quad *createQuad(int assignment, char operator, char * name, int operandsNum, ...);
+
+/**
+ * @brief Creates a quad from an operand list
+ * @param assignement The assignement to which belongs the resulting quad
+ * @param operator The type of the quad
+ * @param name The name of the function (optional), if it is one
+ * @param argsNum The number of quad operands in the tab
+ * @param list The list of the operands (a tab)
+ * @return The created quad 
+ */
+quad *createQuadFromOperandList(int assignment, char operator, char *name, int argsNum, quadOperand *list);
+
 
 /**
  * @brief Free the memory from quads

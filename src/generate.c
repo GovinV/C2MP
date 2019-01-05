@@ -131,6 +131,7 @@ void generateCode(quad *q, char *rounding, int precision)
                     break;
                 
                 case MPC_T:
+                    // switching the operand 1 => the rvalue of the assignment
                     switch (getSymbolTypeFromOperand(currentQuad->operands[0]))
                     {
                         case FLOAT_NUMBER:
@@ -259,7 +260,13 @@ void generateCode(quad *q, char *rounding, int precision)
             fprintf(output, ", %s);", rounding);
             break;
         
+        // custom function (not converted into a MPC function)
         case C2MP_FUNCTION_UNKNOWN:
+            if (currentQuad->assignment != C2MP_QUAD_NO_ASSIGNEMENT)
+            {
+                // we have to assign the function a lvalue !
+                fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
+            }
             fprintf(output, "%s(", currentQuad->fctName);
             for (int i = 0; i < currentQuad->operandsNum; i++)
             {

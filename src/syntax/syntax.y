@@ -25,7 +25,7 @@ expressionAST *copyExpressionAST(expressionAST *expressionAST);
 quadOperand createVariableOperand(int reference);
 quadOperand createIntegerOperand(int value);
 quadOperand createFloatOperand(float value);
-quadOperand createVoidOperand(void);
+quadOperand createStringOperand(char *string);
 
 quad *createQuad(int assignment, char operator, char * name, int operandsNum, ...);
 quad *copySemiQuad(semiQuad *sq);
@@ -150,6 +150,7 @@ quad* removeUselessTemp(quad* quads);
             int reference;
             int valueInt;
             float valueFloat;
+            char *valueString;
         };
     } quadOperand;
 
@@ -527,11 +528,12 @@ ARG:
 
 PARAM:
       EXPR      
-      { 
+      {
         $$ = $1;
       }
     | STRING
       {
+        printf("Matched: %s string;\n", $1);
         $$ = createStringAST($1);
       }
     ;

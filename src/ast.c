@@ -154,6 +154,9 @@ expressionAST *copyExpressionAST(expressionAST *expressionAST)
         case C2MP_CHARACTER_VARIABLE: // variable
             currentAST->valueVariable = expressionAST->valueVariable;
             break;
+        case C2MP_CHARACTER_STRING: // string
+            currentAST->valueString = strdup(expressionAST->valueString);
+            break;
         default:
             fprintf(stderr, "Warning, unknown expression operation : %c\n", expressionAST->operator);
     }
@@ -198,6 +201,7 @@ void freeExpressionAST(expressionAST *expr)
         case C2MP_CHARACTER_INTEGER: // number
         case C2MP_CHARACTER_FLOAT: // float
         case C2MP_CHARACTER_VARIABLE: // variable
+        case C2MP_CHARACTER_STRING: // string
             free(expr);
             break;
         default:
@@ -253,6 +257,9 @@ void printExpressionAST(expressionAST *expr)
         case C2MP_CHARACTER_VARIABLE: // variable
             printf("(%s)", getNameFromReference(expr->valueVariable));
             break;
+        case C2MP_CHARACTER_STRING: // string
+            printf("%s", expr->valueString);
+            break;
         case C2MP_FUNCTION_POW:
             printf("pow("); 
             printExpressionAST(expr->expression.e1);
@@ -307,10 +314,13 @@ void printExpressionAST(expressionAST *expr)
             break;
         case C2MP_FUNCTION_UNKNOWN:
             printf("%s(", expr->customFunction.name);
-            for (int i = 0; i < expr->customFunction.argnum; i++)
+            printExpressionAST(expr->customFunction.args[0]);
+            for (int i = 1; i < expr->customFunction.argnum; i++)
             {
+                printf(", ");
                 printExpressionAST(expr->customFunction.args[i]);
             }
+            printf(")");
             break;
         default:
             fprintf(stderr, "Warning, unknown expression operation : %c\n", expr->operator);
