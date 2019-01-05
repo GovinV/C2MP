@@ -34,7 +34,8 @@ typedef struct constantRow
 	int flag;
 } constRow;
 
-quad* optimizeQuad(quad* quads);
+
+quad* removeLoopInvariant(quad* quads);
 quad* removeUselessTemp(quad* quads);
 quad* removeAllCommonSubExpressions(quad* quads);
 quad* removeCommonSubExpression(quad* quads, quad* firstQuad);

@@ -10,12 +10,22 @@ int exprHashSize = 0;
 constRow constTable[MAX];
 int constSize = 0;
 
-quad* optimizeQuad(quad* quads);
 /*
-	fun remove from reftable in 
-
-
+    for (int i = 0; i < n; i++) {
+        x = y + z;
+        a[i] = 6 * i + x * x;
+    }
+    ->
+    x = y + z;
+    temp1 = x * x;
+    for (int i = 0; i < n; i++) {
+        a[i] = 6 * i + temp1;
+    }
 */
+quad* removeLoopInvariant(quad* quads)
+{
+    return quads;
+}
 
 quad* removeUselessTemp(quad* quads)
 {
@@ -33,9 +43,9 @@ quad* removeUselessTemp(quad* quads)
                 quadPtr = q->next;
                 while (quadPtr != firstQuad)
                 {
-                    if(  quadPtr->operator == C2MP_QUAD_ASSIGNMENT 
-                      && quadPtr->assignment == q->assignment)
-                        break;
+                    // if(  quadPtr->operator == C2MP_QUAD_ASSIGNMENT 
+                    //   && quadPtr->assignment == q->assignment)
+                    //     break;
 
                     if(  quadPtr->operands[0].reference == q->assignment
                       || quadPtr->operands[1].reference == q->assignment)

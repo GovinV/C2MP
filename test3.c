@@ -7,6 +7,7 @@ int main()
 {
     mpc_t T0;
     mpc_init2(T0,128);
+    int a = 1, b = 2, c = 3, d, x = 1, y = 1, i = 3;
     if(1)
     {
 
@@ -15,7 +16,7 @@ int main()
     {
         int a=1;
     }
-    #pragma MPC precision(128) rounding(MP_RNDZZ)
+    #pragma MPC precision(128) rounding(MPC_RNDZZ)
     {
         a = x + y;
         b = x + y;
@@ -31,13 +32,20 @@ int main()
         c = cosh(c);
         i = sinh(i);
     }
+    printf("a = %d\n", a);
+    printf("b = %d\n", b);
+    printf("c = %d\n", c);
+    printf("d = %d\n", d);
+    printf("i = %d\n", i);
+    printf("x = %d\n", x);
+    printf("y = %d\n", y);
 
     if(5)
     {
         int z = 5;
     }
 
-    #pragma MPC precision(128) rounding(MP_RNDZZ)
+    #pragma MPC precision(128) rounding(MPC_RNDZZ)
     {
         a = x + y;
         b = x + y;
