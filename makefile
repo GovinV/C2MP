@@ -112,7 +112,8 @@ clean:
 	@echo "Deleting directories"
 	@$(RM) -r $(BUILD_PATH)
 	@$(RM) -r $(BIN_PATH)
-
+	@$(RM) output*.c
+	@$(RM) result.c
 none:
 	@echo "les obj"
 	@echo $(OBJECTS)
