@@ -127,7 +127,18 @@ void generateCode(quad *q, char *rounding, int precision)
                 case FLOAT_NUMBER:
                 case INTEGER_NUMBER:
                     fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
-                    fprintf(output, "mpc_get_ldc(");
+                    switch(currentQuad->operands[0].type)
+                    {
+                        case INTEGER_NUMBER:
+                        case FLOAT_NUMBER:
+                            fprintf(output, "%s;", getNameFromReference(currentQuad->operands[0].reference));
+                            break;
+                        case MPC_T:
+                            fprintf(output, "mpc_get_ldc(");
+                            printOperand(currentQuad->operands[0]);
+                            fprintf(output, ", %s);", rounding);
+                            break;
+                    }
                     break;
                 
                 case MPC_T:
@@ -151,14 +162,13 @@ void generateCode(quad *q, char *rounding, int precision)
                     }
                     // printed every time
                     fprintf(output, "%s, ", getNameFromReference(currentQuad->assignment));
+                    printOperand(currentQuad->operands[0]);
+                    fprintf(output, ", %s);", rounding);
                     break;
 
                 default:
                     panic("generate", "generateCode", "Unknown operand type");
             }
-            // this is printed every time
-            printOperand(currentQuad->operands[0]);
-            fprintf(output, ", %s);", rounding);
             break;
 
         case C2MP_QUAD_IF:
