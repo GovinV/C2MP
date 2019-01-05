@@ -578,7 +578,7 @@ int main(int argc, char *argv[])
     }
  
     int opt,
-        i,
+        i, j,
         errflag;
  
     char ch, 
@@ -689,6 +689,15 @@ int main(int argc, char *argv[])
     printf("End of parsing\n");
 
     close_file();
- 
+
+    for( j = 0 ; j < i-1 ; j++)
+    {
+        snprintf(ret, 10, "output%d.c", j); 
+        if ( remove(ret) != 0 )
+        {
+            panic("syntax.y", "main", "Error Remove File\n");
+        }
+    }
+
     return 0;
 }
