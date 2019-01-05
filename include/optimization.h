@@ -42,11 +42,12 @@ typedef struct referenceList
 
 referenceList *addReference(referenceList *list, int ref);
 referenceList *concatReferenceList(referenceList *list1, referenceList *list2);
+bool referenceIsIn(int reference, referenceList *list);
 
 
 quad* optimizeQuads(quad* quads);
 quad* removeLoopsInvariants(quad* quads);
-quad* removeLoopInvariants(quad* quads); // removes invariants from ONE loop, returns the FIRST quad of the bloc
+quad* removeLoopInvariants(quad* quads); // removes invariants from ONE loop, returns the LAST quad of the bloc
 referenceList *getModifiedVariablesInBloc(quad* quads); // returns a list of reference which can be modified in this bloc
 quad* removeUselessTemp(quad* quads);
 quad* removeAllCommonSubExpressions(quad* quads);

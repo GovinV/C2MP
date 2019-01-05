@@ -43,6 +43,27 @@ quad* optimizeQuads(quad* quads)
     return quads;
 }
 
+bool referenceIsIn(int reference, referenceList *list)
+{
+    if(list == NULL)
+    {
+        return false;
+    }
+    
+    referenceList *current = list;
+    
+    do
+    {
+        if(reference == current->ref)
+        {
+            return true;
+        }
+        current = current->next;
+    }while(current != NULL);
+    
+    return false;
+}
+
 /*
     for (int i = 0; i < n; i++) {
         x = y + z;
@@ -57,15 +78,134 @@ quad* optimizeQuads(quad* quads)
 */
 quad* removeLoopsInvariants(quad* quads)
 {
-    getModifiedVariablesInBloc(quads);
-    return quads;
+    quad *firstQuad = quads;
+    quad* q = quads;
+
+    do
+    {
+        switch(q->operator)
+        {
+            case C2MP_QUAD_WHILE:
+            case C2MP_QUAD_DOWHILE:
+                if(q == firstQuad)
+                {
+                    firstQuad = removeLoopInvariants(q);
+                    q = firstQuad;
+                }
+                else
+                {
+                    q = removeLoopInvariants(q);
+                }
+                break;
+            default:
+                break;
+        }
+        q=q->next;
+    }while(q != firstQuad);
+    
+    return firstQuad;
 }
 
 quad* removeLoopInvariants(quad* quads)
 {
-    quad *firstQuad = quads;
+    quad *firstQuadInBloc = quads;
+    quad *firstQuadReturn = quads->previous;
+    quad *q = quads;
     
-    return firstQuad;
+    referenceList *modifiedVariables = getModifiedVariablesInBloc(firstQuadInBloc);
+    
+    int blocDepth = 0;
+	
+	do
+	{
+	    bool isInvariant;
+		switch(q->operator)
+		{
+			case C2MP_QUAD_ASSIGNMENT:
+            case C2MP_OPERATOR_BINARY_PLUS:
+            case C2MP_OPERATOR_BINARY_DOT:
+            case C2MP_OPERATOR_EQUAL:
+            case C2MP_OPERATOR_NOT_EQUAL:
+            case C2MP_OPERATOR_BITWISE_AND:
+            case C2MP_OPERATOR_BITWISE_OR:
+            case C2MP_OPERATOR_BITWISE_XOR:
+            case C2MP_OPERATOR_LOGICAL_AND:
+            case C2MP_OPERATOR_LOGICAL_OR:
+            case C2MP_OPERATOR_BINARY_MINUS:
+            case C2MP_OPERATOR_BINARY_DIVIDE:
+            case C2MP_OPERATOR_LOWER_THAN:
+            case C2MP_OPERATOR_GREATER_THAN:
+            case C2MP_OPERATOR_LOWER_OR_EQUAL:
+            case C2MP_OPERATOR_GREATER_OR_EQUAL:
+            case C2MP_FUNCTION_POW:
+            case C2MP_OPERATOR_UNARY_MINUS:
+            case C2MP_OPERATOR_UNARY_PLUS:
+            case C2MP_OPERATOR_LOGICAL_NOT:
+            case C2MP_OPERATOR_BITWISE_NOT:
+            case C2MP_FUNCTION_SQRT:
+            case C2MP_FUNCTION_ABS:
+            case C2MP_FUNCTION_EXP:
+            case C2MP_FUNCTION_LOG:
+            case C2MP_FUNCTION_LOG10:
+            case C2MP_FUNCTION_COS:
+            case C2MP_FUNCTION_SIN:
+            case C2MP_FUNCTION_COSH:
+            case C2MP_FUNCTION_SINH:
+            case C2MP_FUNCTION_UNKNOWN:
+                isInvariant = true;
+                for(int i=0;i<q->operandsNum;++i)
+                {
+                    if(q->operands[i].type == C2MP_QUAD_OPERAND_INTEGER || q->operands[i].type == C2MP_QUAD_OPERAND_FLOAT)
+                    {
+                        continue;
+                    }
+                    if(q->operands[i].type == C2MP_QUAD_OPERAND_VARIABLE)
+                    {
+                        if(referenceIsIn(q->operands[i].reference, modifiedVariables))
+                        {
+                            isInvariant = false;
+                        }
+                    }
+                    else
+                    { // not integer or float or variable
+                        isInvariant = false;
+                    }
+                }
+                if(isInvariant)
+                {printf("invariant detectte\n");
+                    
+                    quad *quadToInsert = q;
+                    q=q->previous;
+                    q->next = quadToInsert->next;
+                    q->next->previous = q;
+                    
+                    quadToInsert->previous = firstQuadInBloc->previous;
+                    quadToInsert->next = firstQuadInBloc;
+                    firstQuadInBloc->previous->next = quadToInsert;
+                    firstQuadInBloc->previous = quadToInsert;
+                }
+                break;
+            case C2MP_QUAD_IF:
+            case C2MP_QUAD_WHILE:
+            case C2MP_QUAD_DOWHILE:
+                ++blocDepth;
+                break;
+            case C2MP_QUAD_ELSE:
+                // nothing
+                break;
+            case C2MP_QUAD_ENDIF:
+            case C2MP_QUAD_ENDWHILE:
+            case C2MP_QUAD_ENDDOWHILE:
+            	--blocDepth;
+                break; 
+            default:
+            	panic("optimization.c","getModifiedVariablesInBloc","Not recognized operator\n");
+            	break;
+		}
+		q = q->next;
+	} while(blocDepth > 0);
+    
+    return firstQuadReturn->next;
 }
 
 referenceList *getModifiedVariablesInBloc(quad* quads)
@@ -137,7 +277,7 @@ referenceList *getModifiedVariablesInBloc(quad* quads)
             	break;
 		}
 		q = q->next;
-	} while(q != firstQuad && blocDepth >=0);
+	} while(q != firstQuad && blocDepth > 0);
 	
 	return modifiedVariables;
 }
