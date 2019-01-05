@@ -415,8 +415,9 @@ quad *generateQuadsFromAST(expressionAST *expr)
         case C2MP_FUNCTION_UNKNOWN:  // custom function
             // At the moment, we do NOT generate quads for the arguments !
             for (int i = 0; i < expr->customFunction.argnum; i++)
-            {
+            {                
                 opeAST = expr->customFunction.args[i];
+                printf("gen quad operator: %d;\n", opeAST->operator);
                 switch (opeAST->operator)
                 {
                     case C2MP_CHARACTER_STRING:
@@ -431,19 +432,44 @@ quad *generateQuadsFromAST(expressionAST *expr)
                     case C2MP_CHARACTER_VARIABLE:
                         opeList[i] = createVariableOperand(opeAST->valueVariable);
                         break;
+                    case C2MP_FUNCTION_ABS:
+                    case C2MP_FUNCTION_COS:
+                    case C2MP_FUNCTION_COSH:
+                    case C2MP_FUNCTION_EXP:
+                    case C2MP_FUNCTION_LOG:
+                    case C2MP_FUNCTION_LOG10:
+                    case C2MP_FUNCTION_POW:
+                    case C2MP_FUNCTION_SIN:
+                    case C2MP_FUNCTION_SQRT:
+                    case C2MP_OPERATOR_BINARY_DIVIDE:
+                    case C2MP_OPERATOR_BINARY_PLUS:
+                    case C2MP_OPERATOR_BINARY_MINUS:
+                    case C2MP_OPERATOR_BINARY_DOT:
+                        quadExpr = generateQuadsFromAST(expr->customFunction.args[i]);
+                        reference = quadExpr->previous->assignment;
+                        opeList[i] = createVariableOperand(reference);
+                        finalQuads = concatQuads(quadExpr, 
+                                     createQuad(newTemp().reference, C2MP_QUAD_ASSIGNMENT,
+                                     NULL,
+                                     C2MP_QUAD_UNARY,
+                                     opeList[i]));
+                        break;
                     default:
-                        fprintf(stderr, "Warning: unknown function argument!");
+                        fprintf(stderr, "Warning: unknown function argument!\n");
                         break;
                 }
             }
-            // Default behaviour with no assignement to the function !
+            // Default behaviour with assignement to the function !
             // we need to know if there is an assignment or not...
-            // GET THE REFERENCE FROM THE LVALUE !
-            return createQuadFromOperandList(newTemp().reference,
+            quadExpr1 = createQuadFromOperandList(newTemp().reference,
                                              C2MP_FUNCTION_UNKNOWN, 
                                              expr->customFunction.name,
                                              expr->customFunction.argnum,
                                              opeList);
+            if (finalQuads != NULL)                    
+                return concatQuads(finalQuads, quadExpr1);
+            else
+                return quadExpr1;
             break;
 
         default:
