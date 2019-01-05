@@ -32,7 +32,7 @@ quadOperand createStringOperand(char *string);
 quad *createQuad(int assignment, char operator, char * name, int operandsNum, ...);
 quad *copySemiQuad(semiQuad *sq);
 quad *generateQuadsFromAST(expressionAST *expr);
-quad *getQuadFromSemiQuads(semiQuad *sq);
+quad *getQuadsFromSemiQuads(semiQuad *sq);
 quad *concatQuads(quad *q1, quad *q2);
 void printOperand(quadOperand operand);
 void printQuads(quad* q);
@@ -243,7 +243,7 @@ P_PRAGMA:
             printf("generated semi quads :\n");
             printSemiQuads($4);
             printf("Quads generation:\n");
-            quads = getQuadFromSemiQuad($4);
+            quads = getQuadsFromSemiQuads($4);
             printf("End of quads generation\n");
             if (option_flag == 1)
             {

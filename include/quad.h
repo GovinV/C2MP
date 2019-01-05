@@ -111,7 +111,7 @@ quad *generateQuadsFromAST(expressionAST *expr);
  * @param sq semiQuad list
  * @return The created quad list
  */
-quad *getQuadFromSemiQuads(semiQuad *sq);
+quad *getQuadsFromSemiQuads(semiQuad *sq);
 
 
 /**

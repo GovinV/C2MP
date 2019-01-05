@@ -509,7 +509,7 @@ quad *createQuadFromOperandList(int assignment, char operator, char *name, int a
     }
 }
 
-quad *getQuadFromSemiQuads(semiQuad *sq)
+quad *getQuadsFromSemiQuads(semiQuad *sq)
 {
     if(sq == NULL)
     {
