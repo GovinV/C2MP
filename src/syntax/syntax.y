@@ -36,7 +36,7 @@ void printOperand(quadOperand operand);
 void printQuads(quad* q);
 
 expressionAST *createExpressionAST(char operator, expressionAST *expr1, expressionAST *expr2);
-expressionAST *createCustonFunctionAST(char *name, int argNum, ...);
+expressionAST *createCustomFunctionAST(char *name, int argNum, struct expressionAST **list);
 expressionAST *createIntAST(int integer);
 expressionAST *createFloatAST(float number);
 expressionAST *createVariableAST(int variable);
@@ -126,6 +126,11 @@ quad* removeUselessTemp(quad* quads);
             } customFunction;
         };
 	} *expressionAST;
+
+    struct{
+        int argsNum;
+        struct expressionAST *tabAST[MAX_FCT_ARGS]; 
+    } argumentsAST; // for functions arguments
 	
 	struct semiQuad
     { // quad that can have an AST expression for val1
@@ -189,6 +194,7 @@ quad* removeUselessTemp(quad* quads);
 %token 				    ROUNDING
 %token                  BACKSLASH
 
+%type <argumentsAST>    ARG
 %type <extension>       EXTENSION
 %type <p_extension>     P_EXTENSION
 %type <expressionAST>   RVALUE
@@ -484,33 +490,42 @@ EXPR:
     ;
 
 FCT:
-    SYMBOL '(' PARAM ')'
-      {
+    SYMBOL '(' PARAM ARG ')'
+    {
         int type;
         if ((type = parseFct($1)) == C2MP_FUNCTION_UNKNOWN)
         {
-            $$ = createCustonFunctionAST($1, 1, $3);
+            // we need to add the first param to the tab of ARG
+            $4.argsNum++;
+            $4.tabAST[$4.argsNum-1] = $3;
+            $$ = createCustomFunctionAST($1, $4.argsNum, $4.tabAST);
         }
         else {
-            $$ = createExpressionAST(type, $3, NULL);
+            // known function (we use a switch to avoid creating a new function)
+            switch (type)
+            {
+                // binary functions
+                case C2MP_FUNCTION_POW:
+                    $$ = createExpressionAST(type, $3, $4.tabAST[0]);
+                    break;
+                // unary functions
+                case C2MP_FUNCTION_SQRT:
+                case C2MP_FUNCTION_ABS:
+                case C2MP_FUNCTION_EXP:
+                case C2MP_FUNCTION_LOG:
+                case C2MP_FUNCTION_LOG10:
+                case C2MP_FUNCTION_COS:
+                case C2MP_FUNCTION_SIN:
+                case C2MP_FUNCTION_COSH:
+                case C2MP_FUNCTION_SINH:
+                    $$ = createExpressionAST(type, $3, NULL);
+                    break;
+                // this should not happen...
+                default:
+                    panic("syntax.y", "parsing", "recognized unknown fct?!");
+            }
         }
-      }
-    | SYMBOL '(' PARAM ',' PARAM ')'
-      {
-        int type;
-        if ((type = parseFct($1)) == C2MP_FUNCTION_UNKNOWN)
-        {
-            $$ = createCustonFunctionAST($1, 2, $3, $5);
-        }
-        else {
-            $$ = createExpressionAST(type, $3, $5);
-        }
-      }
-    | SYMBOL '(' PARAM ',' PARAM ARG ')' 
-      { 
-        // we still need to get the parameters from ARG !
-        $$ = createCustonFunctionAST($1, 2, $3, $5); 
-      }
+    }
     ;
 
 VAR:
@@ -523,17 +538,24 @@ VAR:
 
 ARG:
       ',' PARAM ARG
+      {
+          $$ = $3;
+          $$.argsNum = $$.argsNum + 1;
+          $$.tabAST[$$.argsNum-1] = $2;
+      }
     | 
+      { 
+          $$.argsNum = 0;
+      }
     ;
 
 PARAM:
-      EXPR      
+      EXPR
       {
         $$ = $1;
       }
     | STRING
       {
-        printf("Matched: %s string;\n", $1);
         $$ = createStringAST($1);
       }
     ;

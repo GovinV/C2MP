@@ -51,11 +51,10 @@ void printExpressionAST(expressionAST *expr);
  * @brief 
  * @param name
  * @param argNum
- * @param ... 
+ * @param list The list
  * @return The AST expression created
  */
-expressionAST *createCustonFunctionAST(char *name, int argNum, ...);
-
+expressionAST *createCustomFunctionAST(char *name, int argNum, struct expressionAST **list);
 
 #endif // AST_H_DEFINED
 

@@ -55,9 +55,12 @@ quad *createQuad(int assignment, char operator, char * name, int operandsNum, ..
     va_list operandsList;
     va_start(operandsList, operandsNum);
 
-    for (int i = 0; i < operandsNum; i ++)
+    for (int i = 0; i < MAX_FCT_ARGS; i++)
     {
-        q->operands[i] = va_arg(operandsList, quadOperand);
+        if (i < operandsNum)
+            q->operands[i] = va_arg(operandsList, quadOperand);
+        else
+            q->operands[i].reference = -1;
     }
 
     va_end(operandsList);
@@ -417,7 +420,6 @@ quad *generateQuadsFromAST(expressionAST *expr)
             for (int i = 0; i < expr->customFunction.argnum; i++)
             {                
                 opeAST = expr->customFunction.args[i];
-                printf("gen quad operator: %d;\n", opeAST->operator);
                 switch (opeAST->operator)
                 {
                     case C2MP_CHARACTER_STRING:
@@ -455,7 +457,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
                                      opeList[i]));
                         break;
                     default:
-                        fprintf(stderr, "Warning: unknown function argument!\n");
+                        panic("quad.c", "generateQuadsFromAST", "unparsed function argument");
                         break;
                 }
             }

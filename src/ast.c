@@ -55,7 +55,7 @@ expressionAST *createExpressionAST(char operator, expressionAST *expr1, expressi
     return expr;
 }
 
-expressionAST *createCustonFunctionAST(char *name, int argNum, ...)
+expressionAST *createCustomFunctionAST(char *name, int argNum, struct expressionAST **list)
 {
     expressionAST *expr = malloc(sizeof(expressionAST));
     expr->operator = C2MP_FUNCTION_UNKNOWN;
@@ -63,15 +63,11 @@ expressionAST *createCustonFunctionAST(char *name, int argNum, ...)
     expr->customFunction.name = strdup(name);
     expr->customFunction.argnum = argNum;
 
-    va_list argList;
-    va_start(argList, argNum);
-
-    for (int i = 0; i < argNum; i++)
+    // the arguments are stored in inverted order, we have to permut them
+    for (int i = argNum-1; i >= 0; i--)
     {
-        expr->customFunction.args[i] = va_arg(argList, expressionAST*);
+        expr->customFunction.args[argNum-i-1] = list[i];
     }
-
-    va_end(argList);
 
     return expr;
 
