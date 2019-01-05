@@ -482,7 +482,6 @@ FCT:
         int type;
         if ((type = parseFct($1)) == C2MP_FUNCTION_UNKNOWN)
         {
-            printf("Unknown function %s\n", $1);
             $$ = createCustonFunctionAST($1, 1, $3);
         }
         else {
@@ -494,7 +493,6 @@ FCT:
         int type;
         if ((type = parseFct($1)) == C2MP_FUNCTION_UNKNOWN)
         {
-            printf("Unknown function %s\n", $1); 
             $$ = createCustonFunctionAST($1, 2, $3, $5);
         }
         else {
@@ -503,7 +501,6 @@ FCT:
       }
     | SYMBOL '(' PARAM ',' PARAM ARG ')' 
       { 
-        printf("not supported function %s: over 2 arguments\n", $1); 
         // we still need to get the parameters from ARG !
         $$ = createCustonFunctionAST($1, 2, $3, $5); 
       }

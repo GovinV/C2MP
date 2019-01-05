@@ -296,7 +296,7 @@ void generateCode(quad *q, char *rounding, int precision)
     generateClearCode(listTemps);
 
     // The code has been generated, We do not need the quads anymore.
-    freeQuads(q);
+    //freeQuads(q);
 
 }
 
