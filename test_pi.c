@@ -12,7 +12,6 @@ int main()
         for(k=0;k<100;k=k+1)
         {
             pi=pi+pow(-3, -k)/(2*k+1);
-            k = k + 1;
         }
         pi = pi*sqrt(12);
     }
