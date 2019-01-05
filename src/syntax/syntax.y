@@ -216,6 +216,10 @@ quad* removeAllCommonSubExpressions(quad* quads);
 
 
 %%
+axiom : 
+     /* empty */
+     | P_PRAGMA
+     ;
 
 P_PRAGMA:
 	PRAGMA P_EXTENSION BACKSLASH BLOC

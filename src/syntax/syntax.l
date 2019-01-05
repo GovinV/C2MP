@@ -255,10 +255,8 @@ rounding  							{
 											//printf("yytext carac spec : %s\n", yytext);
 											write_file(yytext);
 										}
-									}/*
-<<EOF>> 							{
-										return END_OF_FILE;
-									}*/
+									}
+
 
 %%
 
