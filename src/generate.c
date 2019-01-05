@@ -173,7 +173,8 @@ void generateCode(quad *q, char *rounding, int precision)
 
         case C2MP_QUAD_ENDIF:
             --indent;
-            fprintf(output, "\b\b\b\b}\n");
+            fseeko(output,-4,SEEK_END);
+            fprintf(output, "}\n");
             break;
 
         case C2MP_QUAD_WHILE:
@@ -182,12 +183,13 @@ void generateCode(quad *q, char *rounding, int precision)
             break;
 
         case C2MP_QUAD_DOWHILE:
-            fprintf(output, "do {");
+            fprintf(output, "\n%*sdo\n%*s{",indent*4," ",indent*4," ");
             break;
 
         case C2MP_QUAD_ENDWHILE:
             --indent;
-            fprintf(output, "\b\b\b\b}   // %s\n", getNameFromReference(currentQuad->assignment));
+            fseeko(output,-4,SEEK_END);
+            fprintf(output, "}   // %s\n", getNameFromReference(currentQuad->assignment));
             break;
 
         case C2MP_QUAD_ENDDOWHILE:

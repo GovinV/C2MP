@@ -17,6 +17,50 @@ quad* optimizeQuad(quad* quads);
 
 */
 
+quad* removeUselessTemp(quad* quads)
+{
+    quad *firstQuad = quads;
+    quad* q = quads;
+    quad* quadPtr;
+    int refOccurence;
+    do
+    {
+        if(q->operator == C2MP_QUAD_ASSIGNMENT)
+        {
+            if(getSymbolFromReference(q->assignment).isTemp)
+            {
+                refOccurence = 0;
+                quadPtr = q->next;
+                while (quadPtr != firstQuad)
+                {
+                    if(  quadPtr->operator == C2MP_QUAD_ASSIGNMENT 
+                      && quadPtr->assignment == q->assignment)
+                        break;
+
+                    if(  quadPtr->operands[0].reference == q->assignment
+                      || quadPtr->operands[1].reference == q->assignment)
+                    {
+                        refOccurence = 1;
+                        break;
+                    }
+                    quadPtr = quadPtr->next;
+                }
+                if(!refOccurence)
+                {
+                    /*We can delete this temp*/
+                    quad * toFree = q;
+                    q->next->previous = q->previous;
+                    q->previous->next = q->next;
+                    q = q->previous;
+                    free(toFree);
+                }
+            }
+        }
+        q = q->next;
+    }while(q != firstQuad);
+
+    return quads;
+}
 
 quad* removeAllCommonSubExpressions(quad* quads)
 {
@@ -81,8 +125,6 @@ quad* removeCommonSubExpression(quad* quads, quad* firstQuad)
 					operandOptimizationRef;
 				break;
 
-
-
             case C2MP_OPERATOR_BINARY_PLUS:
             case C2MP_OPERATOR_BINARY_DOT:
             case C2MP_OPERATOR_EQUAL:
@@ -92,7 +134,7 @@ quad* removeCommonSubExpression(quad* quads, quad* firstQuad)
             case C2MP_OPERATOR_BITWISE_XOR:
             case C2MP_OPERATOR_LOGICAL_AND:
             case C2MP_OPERATOR_LOGICAL_OR:
-            case C2MP_FUNCTION_SQRT:
+            
             	isCommutative = 1;
                 __attribute__ ((fallthrough));
                 /*Remove GCC fallthrough warning)*/
@@ -102,16 +144,26 @@ quad* removeCommonSubExpression(quad* quads, quad* firstQuad)
             case C2MP_OPERATOR_GREATER_THAN:
             case C2MP_OPERATOR_LOWER_OR_EQUAL:
             case C2MP_OPERATOR_GREATER_OR_EQUAL:
+            case C2MP_FUNCTION_POW:
 
 				optimizationRefOp2 = getOperandOptimizationRef(q->operands[1].reference);
                 __attribute__ ((fallthrough));
+
             case C2MP_OPERATOR_UNARY_MINUS:
             case C2MP_OPERATOR_UNARY_PLUS:
             case C2MP_OPERATOR_LOGICAL_NOT:
             case C2MP_OPERATOR_BITWISE_NOT:
+            case C2MP_FUNCTION_SQRT:
+            case C2MP_FUNCTION_ABS:
+            case C2MP_FUNCTION_EXP:
+            case C2MP_FUNCTION_LOG:
+            case C2MP_FUNCTION_LOG10:
+            case C2MP_FUNCTION_COS:
+            case C2MP_FUNCTION_SIN:
+            case C2MP_FUNCTION_COSH:
+            case C2MP_FUNCTION_SINH:
+
 				optimizationRefOp1 = getOperandOptimizationRef(q->operands[0].reference);
-
-
 				
 				if((refTableIndex = findRefTable(q->assignment)) < 0)
 				{
@@ -152,6 +204,8 @@ quad* removeCommonSubExpression(quad* quads, quad* firstQuad)
 				}	
                 break;
 
+            case C2MP_FUNCTION_UNKNOWN:
+                break;
             case C2MP_QUAD_IF:
             case C2MP_QUAD_WHILE:
             case C2MP_QUAD_DOWHILE:
@@ -197,6 +251,15 @@ quad* ignoreBlocForCommonSubExpression(quad* quads, quad* firstQuad)
             case C2MP_OPERATOR_LOGICAL_AND:
             case C2MP_OPERATOR_LOGICAL_OR:
             case C2MP_FUNCTION_SQRT:
+            case C2MP_FUNCTION_POW:
+            case C2MP_FUNCTION_ABS:
+            case C2MP_FUNCTION_EXP:
+            case C2MP_FUNCTION_LOG:
+            case C2MP_FUNCTION_LOG10:
+            case C2MP_FUNCTION_COS:
+            case C2MP_FUNCTION_SIN:
+            case C2MP_FUNCTION_COSH:
+            case C2MP_FUNCTION_SINH:
             case C2MP_OPERATOR_BINARY_MINUS:
             case C2MP_OPERATOR_BINARY_DIVIDE:
             case C2MP_OPERATOR_LOWER_THAN:
@@ -209,6 +272,8 @@ quad* ignoreBlocForCommonSubExpression(quad* quads, quad* firstQuad)
             case C2MP_OPERATOR_BITWISE_NOT:
                 // printf("%s\n",getSymbolFromReference(q->assignment).name);
                 assignNewOptimizationRef(q->assignment);
+                break;
+            case C2MP_FUNCTION_UNKNOWN:
                 break;
             case C2MP_QUAD_IF:
             case C2MP_QUAD_WHILE:
