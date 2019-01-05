@@ -346,7 +346,6 @@ quad* removeUselessTempFromBloc(quad* quads, quad* firstQuad, int assignment, in
                     assignmentUsed = 1;
                 q = removeUselessTempFromBloc(q->next, firstQuad,assignment,usedInBloc)->previous;
                 break;
-            case C2MP_QUAD_ELSE:
             case C2MP_QUAD_ENDIF:
             case C2MP_QUAD_ENDWHILE:
             case C2MP_QUAD_ENDDOWHILE:
@@ -355,7 +354,8 @@ quad* removeUselessTempFromBloc(quad* quads, quad* firstQuad, int assignment, in
                 return q->next;
                 break; 
 
-
+            default:
+                break;
         } 
         if(assignmentUsed == -1)
         {
