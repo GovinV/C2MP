@@ -206,6 +206,7 @@ void generateCode(quad *q, char *rounding, int precision)
 
         case C2MP_QUAD_ENDDOWHILE:
             --indent;
+            fseeko(output,-4,SEEK_END);            
             fprintf(output, "} while (%s);\n", getNameFromReference(currentQuad->assignment));
             break;
 
