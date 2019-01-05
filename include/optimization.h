@@ -35,6 +35,7 @@ typedef struct constantRow
 } constRow;
 
 
+quad* optimizeQuads(quad* quads);
 quad* removeLoopInvariant(quad* quads);
 quad* removeUselessTemp(quad* quads);
 quad* removeAllCommonSubExpressions(quad* quads);

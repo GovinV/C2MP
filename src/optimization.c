@@ -10,6 +10,14 @@ int exprHashSize = 0;
 constRow constTable[MAX];
 int constSize = 0;
 
+quad* optimizeQuads(quad* quads)
+{
+    quads = removeAllCommonSubExpressions(quads);
+    quads = removeUselessTemp(quads);
+    
+    return quads;
+}
+
 /*
     for (int i = 0; i < n; i++) {
         x = y + z;
