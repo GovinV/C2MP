@@ -295,7 +295,7 @@ quad* removeUselessTempFromBloc(quad* quads, quad* firstQuad, int assignment, in
             case C2MP_QUAD_ASSIGNMENT:
                 if(assignmentUsed)
                     break;
-                if(q->assignment == assignment)
+                if(q->assignment == assignment)  
                     assignmentUsed = -1;
                 break;
             case C2MP_OPERATOR_BINARY_PLUS:
@@ -342,12 +342,16 @@ quad* removeUselessTempFromBloc(quad* quads, quad* firstQuad, int assignment, in
             case C2MP_QUAD_IF:
             case C2MP_QUAD_WHILE:
             case C2MP_QUAD_DOWHILE:
-                q = removeUselessTempFromBloc(q, firstQuad,assignment,usedInBloc);
+                if(q->assignment == assignment)
+                    assignmentUsed = 1;
+                q = removeUselessTempFromBloc(q->next, firstQuad,assignment,usedInBloc)->previous;
                 break;
             case C2MP_QUAD_ELSE:
             case C2MP_QUAD_ENDIF:
             case C2MP_QUAD_ENDWHILE:
             case C2MP_QUAD_ENDDOWHILE:
+                if(q->assignment == assignment)
+                    *usedInBloc = *usedInBloc || 1;
                 return q->next;
                 break; 
 
@@ -429,20 +433,39 @@ quad* removeUselessTemp(quad* quads)
                 refOccurence = 0;
                 quadPtr = q->next;
                 assignment = q->assignment;
+                // if(quadPtr->operator == C2MP_QUAD_ENDWHILE || quadPtr->operator == C2MP_QUAD_ENDDOWHILE )
+                // {
+                //     refOccurence = 1;
+                //     quadPtr = firstQuad;
+                // }    
                 while (quadPtr != firstQuad)
                 {
-                    switch(q->operator)
+                    switch(quadPtr->operator)
                     {
 
                         case C2MP_QUAD_ASSIGNMENT:
-                            if(quadPtr->assignment == q->assignment)
+
+                            if(quadPtr->assignment == assignment)
                                 refOccurence = -1;
                             break;
                         case C2MP_QUAD_IF:
                         case C2MP_QUAD_WHILE:
                         case C2MP_QUAD_DOWHILE:
-                            quadPtr = removeUselessTempFromBloc(quadPtr, firstQuad, assignment, &usedInBloc)->previous;
+                            if(quadPtr->assignment == assignment)
+                            {
+                                refOccurence = 1;
+                                break;
+                            }
+                            quadPtr = removeUselessTempFromBloc(quadPtr->next, firstQuad, assignment, &usedInBloc)->previous;
                             break;
+                        case C2MP_QUAD_ENDIF:
+                        case C2MP_QUAD_ENDWHILE:
+                        case C2MP_QUAD_ENDDOWHILE:
+                            if(quadPtr->assignment == assignment)
+                            {
+                                refOccurence = 1;
+                                break;
+                            }
                         default:
                             break;
                     }
@@ -459,6 +482,8 @@ quad* removeUselessTemp(quad* quads)
                             break;
                         }
                     }
+                    if(refOccurence)
+                        break;
 
                     quadPtr = quadPtr->next;
                 }
@@ -469,6 +494,8 @@ quad* removeUselessTemp(quad* quads)
                     q->next->previous = q->previous;
                     q->previous->next = q->next;
                     q = q->previous;
+                    if(toFree == firstQuad)
+                        firstQuad = toFree->next;
                     free(toFree);
                 }
             }
