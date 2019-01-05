@@ -60,18 +60,8 @@ void generateCode(quad *q, char *rounding, int precision)
             fprintf(output, ", %s);", rounding);
             break;
 
-        // result of mpc_cmp must be < 0
-        case C2MP_OPERATOR_LOWER_THAN:
-            fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
-            fprintf(output, "mpc_cmp(");
-            printOperand(currentQuad->operands[0]);
-            fprintf(output, ", ");
-            printOperand(currentQuad->operands[1]);
-            fprintf(output, ") < 0;");
-            break;
-
         // result of mpc_cmp must be > 0
-        case C2MP_OPERATOR_GREATER_THAN:
+        case C2MP_OPERATOR_LOWER_THAN:
             fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
             fprintf(output, "mpc_cmp(");
             printOperand(currentQuad->operands[0]);
@@ -80,24 +70,34 @@ void generateCode(quad *q, char *rounding, int precision)
             fprintf(output, ") > 0;");
             break;
 
-        // result of mpc_cmp must be <= 0
+        // result of mpc_cmp must be < 0
+        case C2MP_OPERATOR_GREATER_THAN:
+            fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
+            fprintf(output, "mpc_cmp(");
+            printOperand(currentQuad->operands[0]);
+            fprintf(output, ", ");
+            printOperand(currentQuad->operands[1]);
+            fprintf(output, ") < 0;");
+            break;
+
+        // result of mpc_cmp must be >= 0
         case C2MP_OPERATOR_LOWER_OR_EQUAL:
             fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
             fprintf(output, "mpc_cmp(");
             printOperand(currentQuad->operands[0]);
             fprintf(output, ", ");
             printOperand(currentQuad->operands[1]);
-            fprintf(output, ") <= 0;");
+            fprintf(output, ") >= 0;");
             break;
 
-        // result of mpc_cmp must be >= 0
+        // result of mpc_cmp must be <= 0
         case C2MP_OPERATOR_GREATER_OR_EQUAL:
             fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
             fprintf(output, "mpc_cmp(");
             printOperand(currentQuad->operands[0]);
             fprintf(output, ", ");
             printOperand(currentQuad->operands[1]);
-            fprintf(output, ") >= 0;");
+            fprintf(output, ") <= 0;");
             break;
 
         // result of mpc_cmp must be == 0
@@ -127,7 +127,7 @@ void generateCode(quad *q, char *rounding, int precision)
                 case FLOAT_NUMBER:
                 case INTEGER_NUMBER:
                     fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
-                    switch(currentQuad->operands[0].type)
+                    switch(getSymbolTypeFromOperand(currentQuad->operands[0]))
                     {
                         case INTEGER_NUMBER:
                         case FLOAT_NUMBER:
@@ -194,6 +194,7 @@ void generateCode(quad *q, char *rounding, int precision)
             break;
 
         case C2MP_QUAD_DOWHILE:
+            ++indent;
             fprintf(output, "\n%*sdo\n%*s{",indent*4," ",indent*4," ");
             break;
 
@@ -205,7 +206,7 @@ void generateCode(quad *q, char *rounding, int precision)
 
         case C2MP_QUAD_ENDDOWHILE:
             --indent;
-            fprintf(output, " while (%s);\n", getNameFromReference(currentQuad->assignment));
+            fprintf(output, "} while (%s);\n", getNameFromReference(currentQuad->assignment));
             break;
 
         case C2MP_FUNCTION_POW:
@@ -326,9 +327,7 @@ void generateCode(quad *q, char *rounding, int precision)
 
 bool * generateInitCode(quad *q, int precision)
 {
-    int index;
     bool *tempList;
-    const char *varName;
     quad *firstQuad = q;
     quad *currentQuad = q;
 
