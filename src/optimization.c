@@ -152,37 +152,40 @@ quad* removeLoopInvariants(quad* quads)
             case C2MP_FUNCTION_COSH:
             case C2MP_FUNCTION_SINH:
             case C2MP_FUNCTION_UNKNOWN:
-                isInvariant = true;
-                for(int i=0;i<q->operandsNum;++i)
+                if(blocDepth == 1)
                 {
-                    if(q->operands[i].type == C2MP_QUAD_OPERAND_INTEGER || q->operands[i].type == C2MP_QUAD_OPERAND_FLOAT)
+                    isInvariant = true;
+                    for(int i=0;i<q->operandsNum;++i)
                     {
-                        continue;
-                    }
-                    if(q->operands[i].type == C2MP_QUAD_OPERAND_VARIABLE)
-                    {
-                        if(referenceIsIn(q->operands[i].reference, modifiedVariables))
+                        if(q->operands[i].type == C2MP_QUAD_OPERAND_INTEGER || q->operands[i].type == C2MP_QUAD_OPERAND_FLOAT)
                         {
+                            continue;
+                        }
+                        if(q->operands[i].type == C2MP_QUAD_OPERAND_VARIABLE)
+                        {
+                            if(referenceIsIn(q->operands[i].reference, modifiedVariables))
+                            {
+                                isInvariant = false;
+                            }
+                        }
+                        else
+                        { // not integer or float or variable
                             isInvariant = false;
                         }
                     }
-                    else
-                    { // not integer or float or variable
-                        isInvariant = false;
+                    if(isInvariant)
+                    {printf("invariant detectte\n");
+                        
+                        quad *quadToInsert = q;
+                        q=q->previous;
+                        q->next = quadToInsert->next;
+                        q->next->previous = q;
+                        
+                        quadToInsert->previous = firstQuadInBloc->previous;
+                        quadToInsert->next = firstQuadInBloc;
+                        firstQuadInBloc->previous->next = quadToInsert;
+                        firstQuadInBloc->previous = quadToInsert;
                     }
-                }
-                if(isInvariant)
-                {printf("invariant detectte\n");
-                    
-                    quad *quadToInsert = q;
-                    q=q->previous;
-                    q->next = quadToInsert->next;
-                    q->next->previous = q;
-                    
-                    quadToInsert->previous = firstQuadInBloc->previous;
-                    quadToInsert->next = firstQuadInBloc;
-                    firstQuadInBloc->previous->next = quadToInsert;
-                    firstQuadInBloc->previous = quadToInsert;
                 }
                 break;
             case C2MP_QUAD_IF:
