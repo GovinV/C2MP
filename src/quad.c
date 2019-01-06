@@ -112,6 +112,11 @@ quad *copySemiQuad(semiQuad *sq)
     {
         case C2MP_QUAD_ASSIGNMENT:
             generatedQuads = generateQuadsFromAST(sq->expression);
+            if (sq->expression->operator == C2MP_FUNCTION_UNKNOWN)
+            {
+                generatedQuads->previous->assignment = sq->assignment;
+                return generatedQuads;
+            }
             return concatQuads(generatedQuads, 
                         createQuad(sq->assignment, sq->operator, NULL, C2MP_QUAD_UNARY, 
                             createVariableOperand(generatedQuads->previous->assignment)));
@@ -453,7 +458,8 @@ quad *generateQuadsFromAST(expressionAST *expr)
                         quadExpr = generateQuadsFromAST(expr->customFunction.args[i]);
                         reference = quadExpr->previous->assignment;
                         opeList[i] = createVariableOperand(reference);
-                        finalQuads = concatQuads(quadExpr, 
+                        finalQuads = concatQuads(finalQuads, quadExpr);
+                        finalQuads = concatQuads(finalQuads, 
                                      createQuad(newTemp(MPC_T).reference, C2MP_QUAD_ASSIGNMENT,
                                      NULL,
                                      C2MP_QUAD_UNARY,
