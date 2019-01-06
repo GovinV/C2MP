@@ -1,0 +1,3 @@
+test_pragma_no_bracket.c 1
+test_pragma_bad_argument.c 1
+test_using_undefined_variable.c 2
