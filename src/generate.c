@@ -120,7 +120,7 @@ void generateCode(quad *q, char *rounding, int precision)
             fprintf(output, ") != 0;");
             break;
         
-        case C2MP_QUAD_NO_ASSIGNEMENT:
+        case C2MP_QUAD_NO_ASSIGNMENT:
             // can only be custom functions!
             fprintf(output, "%s(", currentQuad->fctName);
             for (int i = 0; i < currentQuad->operandsNum; i++)
@@ -288,7 +288,7 @@ void generateCode(quad *q, char *rounding, int precision)
         
         // custom function (not converted into a MPC function)
         case C2MP_FUNCTION_UNKNOWN:
-            if (currentQuad->assignment != C2MP_QUAD_NO_ASSIGNEMENT)
+            if (currentQuad->assignment != C2MP_QUAD_NO_ASSIGNMENT)
             {
                 // we have to assign the function a lvalue !
                 fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));

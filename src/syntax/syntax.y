@@ -398,7 +398,11 @@ INSTRUCTION:
         {   
             if ($1->operator == C2MP_FUNCTION_UNKNOWN)
             {
-                $$ = createSemiQuad(C2MP_QUAD_NO_ASSIGNEMENT, -1, $1);
+                $$ = createSemiQuad(C2MP_QUAD_NO_ASSIGNMENT, -1, $1);
+            }
+            else
+            {
+                panic("syntax.y", "parsing", "This fct cannot be not assigned");
             }
         }
 	|                                                              

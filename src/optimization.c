@@ -38,7 +38,7 @@ quad* optimizeQuads(quad* quads)
 {
     quads = removeAllCommonSubExpressions(quads);
     quads = removeUselessTemp(quads);
-    // quads = removeLoopsInvariants(quads);
+    quads = removeLoopsInvariants(quads);
     
     return quads;
 }
@@ -190,6 +190,7 @@ quad* removeLoopInvariants(quad* quads)
             case C2MP_QUAD_DOWHILE:
                 ++blocDepth;
                 break;
+            case C2MP_QUAD_NO_ASSIGNMENT:
             case C2MP_QUAD_ELSE:
                 // nothing
                 break;
@@ -197,7 +198,8 @@ quad* removeLoopInvariants(quad* quads)
             case C2MP_QUAD_ENDWHILE:
             case C2MP_QUAD_ENDDOWHILE:
             	--blocDepth;
-                break; 
+                break;
+
             default:
             	panic("optimization.c","getModifiedVariablesInBloc","Not recognized operator\n");
             	break;
@@ -264,6 +266,7 @@ referenceList *getModifiedVariablesInBloc(quad* quads)
             case C2MP_QUAD_DOWHILE:
                 ++blocDepth;
                 break;
+            case C2MP_QUAD_NO_ASSIGNMENT:
             case C2MP_QUAD_ELSE:
                 // nothing
                 break;
@@ -647,7 +650,7 @@ quad* removeCommonSubExpression(quad* quads, quad* firstQuad)
 					}
 				}	
                 break;
-
+            case C2MP_QUAD_NO_ASSIGNMENT:
             case C2MP_FUNCTION_UNKNOWN:
                 break;
             case C2MP_QUAD_IF:
@@ -724,6 +727,7 @@ quad* ignoreBlocForCommonSubExpression(quad* quads, quad* firstQuad)
             case C2MP_QUAD_DOWHILE:
                 q = ignoreBlocForCommonSubExpression(q->next, firstQuad);
                 break;
+            case C2MP_QUAD_NO_ASSIGNMENT:
             case C2MP_QUAD_ELSE:
                 // ignore
                 break;
