@@ -40,7 +40,7 @@ do
 
 	echo "Test on $file"
 
-	./C2MP $file > testLog/$FileName.output
+	./C2MP $file > testLog/$FileName.output 2>&1
 	if [ $? -eq 0 ]
 	then 
 		# echo "PreCompiled $FileName"
@@ -175,6 +175,6 @@ do
 done
 
 
-echo "############"
+echo "########################"
 echo "$Success/$Processed Tests Passed"
-echo "############"
+echo "########################"
