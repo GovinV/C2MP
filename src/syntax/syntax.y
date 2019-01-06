@@ -222,7 +222,7 @@ axiom :
      ;
 
 P_PRAGMA:
-	PRAGMA P_EXTENSION BACKSLASH '{' BLOC '}'
+	PRAGMA P_EXTENSION BACKSLASH '{' BLOC_LIST '}'
         {
             if (optionVerbose)
             {
