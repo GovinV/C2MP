@@ -222,7 +222,7 @@ axiom :
      ;
 
 P_PRAGMA:
-	PRAGMA P_EXTENSION BACKSLASH BLOC
+	PRAGMA P_EXTENSION BACKSLASH '{' BLOC '}'
         {
             if (optionVerbose)
             {
@@ -233,10 +233,10 @@ P_PRAGMA:
             if (optionPrintSemiquads)
             {
                 printf("SemiQuads generation...\n");
-                printSemiQuads($4);
+                printSemiQuads($5);
                 printf("End of semiQuads generation.\n");
             }
-            quads = getQuadsFromSemiQuads($4);
+            quads = getQuadsFromSemiQuads($5);
             if (optionPrintQuads)
             {
                 printf("Quads generation...\n");
@@ -632,7 +632,6 @@ int main(int argc, char *argv[])
                 break;
             // naming resulting file
             case 'o':
-                free(resultFileName);
                 resultFileName = strdup(optarg);
                 break;
             // print quads
