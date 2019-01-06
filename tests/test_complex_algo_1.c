@@ -9,7 +9,7 @@ int main()
 
     printf("### Testing complex algorithms ###\n");
 
-    #pragma MPC
+    #pragma MPC precision(2000) 
     {
         while(d<4)
         {
@@ -21,14 +21,30 @@ int main()
             c = pow(c, -a);
             a=a+1;
         }
-        //a=a-b+c-f+e;
+        
+        do
+        {
+            c = sqrt(c);
+            d=d+1;
+        }while(d<324);
+        
+        b = a+e;
+        c = b*e;
+        f = a*b*c*d*e;
+        f =  pow(f, e);
+        
+        while(c > -10.0)
+        {
+            c = c-1.0;
+            printf("%f\n", c);
+        }
     }
     
     printf("### Here are the results! ###\n");
-    printf("looped; %6f 7.400000\n", d);
     printf("a:; %6f 8.400000\n", a);
     printf("b:; %6f 8.400000\n", b);
     printf("c:; %6f 8.400000\n", c);
+    printf("d:; %6f 8.400000\n", d);
     printf("e:; %6f 8.400000\n", e);
     printf("f:; %6f 8.400000\n", f);
 

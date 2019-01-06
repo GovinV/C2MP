@@ -85,6 +85,7 @@ expressionAST *copyExpressionAST(expressionAST *expressionAST)
         case C2MP_OPERATOR_BITWISE_XOR:
         case C2MP_OPERATOR_LOGICAL_AND:
         case C2MP_OPERATOR_LOGICAL_OR:
+        case C2MP_FUNCTION_POW:
             currentAST->expression.e1 = copyExpressionAST(expressionAST->expression.e1);
             currentAST->expression.e2 = copyExpressionAST(expressionAST->expression.e2);
             break;
@@ -92,8 +93,24 @@ expressionAST *copyExpressionAST(expressionAST *expressionAST)
         case C2MP_OPERATOR_UNARY_PLUS:
         case C2MP_OPERATOR_LOGICAL_NOT:
         case C2MP_OPERATOR_BITWISE_NOT:
+        case C2MP_FUNCTION_SQRT:
+        case C2MP_FUNCTION_EXP:
+        case C2MP_FUNCTION_LOG:
+        case C2MP_FUNCTION_LOG10:
+        case C2MP_FUNCTION_COS:
+        case C2MP_FUNCTION_SIN:
+        case C2MP_FUNCTION_COSH:
+        case C2MP_FUNCTION_SINH:
             currentAST->expression.e1 = copyExpressionAST(expressionAST->expression.e1);
             break;
+        
+        case C2MP_FUNCTION_UNKNOWN:
+            for (int i = 0; i < expressionAST->customFunction.argnum; i++)
+            {
+                currentAST->customFunction.args[i] = copyExpressionAST(expressionAST->customFunction.args[i]);
+            }
+            break;
+
         case C2MP_CHARACTER_INTEGER: // number
             currentAST->valueInt = expressionAST->valueInt;
             break;
@@ -107,7 +124,7 @@ expressionAST *copyExpressionAST(expressionAST *expressionAST)
             currentAST->valueString = strdup(expressionAST->valueString);
             break;
         default:
-            fprintf(stderr, "Warning, unknown expression operation : %c\n", expressionAST->operator);
+            fprintf(stderr, "Warning, unknown expression operation : %c (%d)\n", expressionAST->operator, expressionAST->operator);
     }
 
     return currentAST;
