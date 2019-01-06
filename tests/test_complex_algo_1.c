@@ -11,7 +11,7 @@ int main()
 
     #pragma MPC
     {
-        while(d<100)
+        while(d<4)
         {
             f=1;
             e = sqrt(e);
