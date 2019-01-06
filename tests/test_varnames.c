@@ -4,7 +4,7 @@
 
 int main()
 {
-    float whileABC = 1, afora = 1,  dob = 1, if1 = 1;
+    float whileABC = 1, afora = 1,  dob = 1, if1 = 0;
 
     printf("### Testing variables names ###\n");
 
@@ -12,15 +12,17 @@ int main()
     #pragma MPC 
     {
         whileABC = afora + dob;
-        while(whileABC)
+        while(if1 < whileABC*10)
         {
-            if1 = dob;
-            whileABC = whileABC - 1;
+            if1 = if1+dob;
         }
     }
 
     printf("### result ###\n");
-    printf("dummy %6f 2.000000\n", whileABC);
+    printf("looped; %lf 20.000000\n", if1);
+    printf("whileABC; %lf 2.000000\n", whileABC);
+    printf("afora; %lf 1.000000\n", afora);
+    printf("dob; %lf 1.000000\n", dob);
 
     return 0;
 }

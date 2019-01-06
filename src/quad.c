@@ -643,8 +643,6 @@ void printQuads(quad* q)
         printf("No quads to print...\n");
     }
 
-    printf("Note: this is not printing the operands.\n");
-
     quad *firstQuad = q;
     quad *currentQuad = q;
 
