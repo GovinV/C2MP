@@ -113,11 +113,11 @@ void generateCode(quad *q, char *rounding, int precision)
         // result must be different from 0
         case C2MP_OPERATOR_NOT_EQUAL:
             fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
-            fprintf(output, "!mpc_cmp(");
+            fprintf(output, "mpc_cmp(");
             outputOperand(currentQuad->operands[0]);
             fprintf(output, ", ");
             outputOperand(currentQuad->operands[1]);
-            fprintf(output, ");");
+            fprintf(output, ") != 0;");
             break;
 
         case C2MP_QUAD_ASSIGNMENT:
@@ -173,8 +173,8 @@ void generateCode(quad *q, char *rounding, int precision)
 
         case C2MP_QUAD_IF:
             ++indent;
-            outputOperand(currentQuad->operands[0]);
             fprintf(output, "\n%*sif (",indent*4," ");
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ") {");
             break;
 
