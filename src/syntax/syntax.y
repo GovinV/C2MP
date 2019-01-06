@@ -663,6 +663,8 @@ int main(int argc, char *argv[])
     open_file();    
     yyout = output;
 
+    snprintf(ret, 10, "output%d.c", 0);
+    
     while(pragmaMet == 0)
     {
         yyparse();
@@ -708,7 +710,7 @@ int main(int argc, char *argv[])
         else break;
     }
 
-    if ( rename(ret, resultFileName) == -1)
+    if (rename(ret, resultFileName) == -1)
     {
         panic("syntax.y", "main", "Error Rename File\n");
     }
