@@ -32,23 +32,23 @@ int main()
         c = b*e;
         f = a*b*c*d*e;
         f =  pow(f, e);
-        
-        printf("%f\n", c);
 
-        while(c < 100.0)
+        while(c < 50.0)
         {
+            b = sin(cos(sinh(c*d)+f-a)*c+d);
             c = c+1.0;
-            printf("%f\n", c);
         }
+        
+        f = (f-c)/pow(d, 3.5);
     }
     
     printf("### Here are the results! ###\n");
-    printf("a:; %6f 8.400000\n", a);
-    printf("b:; %6f 8.400000\n", b);
-    printf("c:; %6f 8.400000\n", c);
-    printf("d:; %6f 8.400000\n", d);
-    printf("e:; %6f 8.400000\n", e);
-    printf("f:; %6f 8.400000\n", f);
+    printf("a:; %6f 2.396271\n", a);
+    printf("b:; %6f -0.622225\n", b);
+    printf("c:; %6f 50.127622\n", c);
+    printf("d:; %6f 305.000000\n", d);
+    printf("e:; %6f 2.618034\n", e);
+    printf("f:; %6f 45443.148086\n", f);
 
     return 0;
 
