@@ -17,6 +17,10 @@
 #include "ast.h"
 #include "symbol.h"
 
+/**
+ * \struct semiquad
+ * \brief struct semiQuad - direct generation of the grammar
+ */
 typedef struct semiQuad semiQuad;
 
 /**

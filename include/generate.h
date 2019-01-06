@@ -15,7 +15,16 @@
 #include "symbol.h"
 #include "ast.h"
 
+/**
+ * \struct quadOperand
+ * \brief struct quadOperand - operand in Quad
+ */
 typedef struct quadOperand quadOperand;
+
+/**
+ * \struct quad
+ * \brief struct quad generate
+ */
 typedef struct quad quad;
 
 /**

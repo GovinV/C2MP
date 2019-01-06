@@ -27,7 +27,16 @@
 #define C2MP_QUAD_BINARY 2
 #define C2MP_QUAD_UNARY  1
 
+/**
+ * \struct quadOperand
+ * \brief struct quadOperand - operand in Quad
+ */
 typedef struct quadOperand quadOperand;
+
+/**
+ * \struct quad
+ * \brief struct quad generate
+ */
 typedef struct quad quad;
 
 /**

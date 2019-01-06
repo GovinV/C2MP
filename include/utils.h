@@ -107,8 +107,10 @@ FILE * finput;
 
 /**
  * \brief Function Error Output.
+ * \param File
+ * \param Function 
+ * \param Error Message
  */
-
 void panic(char *, char * , char *);
 
 /**

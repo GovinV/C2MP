@@ -16,7 +16,10 @@
 
 #define MAX 1024*8
 
-// Type of a symbol
+/**
+ * \enum symbolType
+ * \brief Type of the symbol - presence in struct symbol
+ */
 typedef enum 
 {
     FLOAT_NUMBER,
@@ -24,7 +27,10 @@ typedef enum
     MPC_T
 } symbolType;
 
-// This structure describes a symbol
+/**
+ * \struct symbol
+ * \brief struct symbol - symbol met in syntax.y
+ */
 typedef struct symbol_s
 {
     int reference;
