@@ -49,7 +49,7 @@ OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o) $(LEX_OUTPUT_OBJ
 # DEPS = $(OBJECTS:.o=.d)
 
 # flags #
-COMPILE_FLAGS = -Wall -Wextra -g -std=gnu99
+COMPILE_FLAGS = -Wall -Wextra -g -std=gnu99 -DYY_TYPEDEF_YY_SIZE_T -Dyy_size_t=ssize_t
 LEX_FLAGS = 
 YACC_FLAGS = -d -v
 INCLUDES = -I include/ -I /usr/local/include

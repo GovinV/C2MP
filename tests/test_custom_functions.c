@@ -53,7 +53,9 @@ int main()
         // if expressions are used as arguments, they are converted in MPC!
         k = myfunction3(x+y, sqrt(4));
         // we don't need assignements!
-        printf("I can print strings here!\n");
+        printf("### I can print strings here!\n");
+        // no assignment and expressions compiled into MPC
+        myfunction3(pow(1,2), x*(y+1));
     }
 
     printf("### Here are the results! ###\n");
