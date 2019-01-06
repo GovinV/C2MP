@@ -177,7 +177,7 @@ quad* removeLoopInvariants(quad* quads)
                         }
                     }
                     if(isInvariant)
-                    {printf("invariant detectte\n");
+                    {
                         
                         quad *quadToInsert = q;
                         q=q->previous;
@@ -264,7 +264,6 @@ referenceList *getModifiedVariablesInBloc(quad* quads)
             case C2MP_FUNCTION_COSH:
             case C2MP_FUNCTION_SINH:
             case C2MP_FUNCTION_UNKNOWN:
-                printf("%s is modified\n", getNameFromReference(q->assignment));
                 modifiedVariables = addReference(modifiedVariables, q->assignment);
                 break;
             case C2MP_QUAD_IF:
