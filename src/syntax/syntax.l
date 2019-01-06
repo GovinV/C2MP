@@ -21,7 +21,7 @@
 											write_file(yytext);									
 									}
 
-#pragma[ \t]+MPC[ \t]+				{
+#pragma[ \t]+MPC[ \t]*				{
 										if (pragmaMet == 0)
 										{
 											pragmaOn = 1;
