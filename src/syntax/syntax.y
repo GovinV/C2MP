@@ -237,26 +237,26 @@ axiom :
 P_PRAGMA:
 	PRAGMA P_EXTENSION BACKSLASH BLOC
         {
-            if (optionVerbose)
+            if (option_verbose)
             {
                 printf("***** Found Pragma *****\n");
                 printf("Rounding = %s\n", $2.rounding);
                 printf("Precision = %d\n", $2.precision);
             }
-            if (optionPrintSemiquads)
+            if (option_print_semiquads)
             {
                 printf("SemiQuads generation...\n");
                 printSemiQuads($4);
                 printf("End of semiQuads generation.\n");
             }
             quads = getQuadsFromSemiQuads($4);
-            if (optionPrintQuads)
+            if (option_print_quads)
             {
                 printf("Quads generation...\n");
                 printQuads(quads);
                 printf("End of quads generation.\n");
             }
-            if (optiFlag)
+            if (option_flag)
             {
                 printf("Optimization:\n");
                 quads = optimizeQuads(quads);
@@ -393,18 +393,6 @@ BLOC:
 INSTRUCTION:
     ASSIGNMENT                                                   
         { $$ = $1; }
-    |   
-     FCT
-        {   
-            if ($1->operator == C2MP_FUNCTION_UNKNOWN)
-            {
-                $$ = createSemiQuad(C2MP_QUAD_NO_ASSIGNMENT, -1, $1);
-            }
-            else
-            {
-                panic("syntax.y", "parsing", "This fct cannot be not assigned");
-            }
-        }
 	|                                                              
         { $$ = NULL; }
 	;
@@ -557,10 +545,20 @@ FCT:
     ;
 
 VAR:
-    SYMBOL            
+    SYMBOL
         {
             $$.name = $1;
             $$.reference = getReferenceFromName($1);
+        }
+    | PRECISION
+        {
+            $$.name = strdup("precision");
+            $$.reference = getReferenceFromName("precision");
+        }
+    | ROUNDING
+        {
+            $$.name = strdup("rounding");
+            $$.reference = getReferenceFromName("rounding");
         }
     ;
 
@@ -598,23 +596,31 @@ int main(int argc, char *argv[])
         panic("syntax.y", "main", "Missing argument - usage : ./C2MP <file>.c -O");
     }
  
-    int opt, i, j, errFlag;
-    char tempFile1[50],  tempFile2[50];
+    int opt,
+        i, j,
+        errflag;
+ 
+    char ch, 
+        ret[50], 
+        ret2[50];
+    char * rc;
+    char *resultFileName = strdup("result.c");
 
-    char *inputFileExtension    = strrchr(argv[1], '.');
-    char *resultFileName        = "C2MP_result.c";
-    optionPrintQuads            = 0;
-    optionPrintSemiquads        = 0;
-    optionVerbose               = 0;
-    opt                         = 0;
-    optiFlag                    = 0;
-    errFlag                     = 0;
-    i                           = 1;
-    pragmaOn                    = 0;
-    pragmaBlocOn                = 0;
-    pragmaBlocIndex             = 0;
-
-    if (strncmp(inputFileExtension, ".c", 2) != 0)
+ 
+    option_print_quads = 0;
+    option_print_semiquads = 0;
+    opt         = 0;
+    errflag     = 0;
+    option_flag = 0;
+    i           = 1;
+    ch          = '.';    
+ 
+    pragmaOn        = 0;
+    pragmaBlocOn    = 0;
+    pragmaBlocIndex = 0;
+ 
+    rc = strrchr(argv[1], ch);
+    if (strncmp(rc, ".c", 2) != 0)
     {
         panic("syntax.y", "main", "Extension File Error");
     }
@@ -631,7 +637,7 @@ int main(int argc, char *argv[])
         {
             // apply optimization
             case 'O':
-                optiFlag = 1;
+                option_flag = 1;
                 break;
             // naming resulting file
             case 'o':
@@ -640,31 +646,31 @@ int main(int argc, char *argv[])
                 break;
             // print quads
             case 'q':
-                optionPrintQuads = 1;
+                option_print_quads = 1;
                 break;
             // print semiquads
             case 's':
-                optionPrintSemiquads = 1;
+                option_print_semiquads = 1;
                 break;
             // maximal verbose
             case 'v':
-                optionVerbose = 1;
-                optionPrintQuads = 1;
-                optionPrintSemiquads = 1;
+                option_verbose = 1;
+                option_print_quads = 1;
+                option_print_semiquads = 1;
                 break;
             /* Character not recognized */
             case '?':
-                errFlag++;
+                errflag++;
                 break;
         }
     }
  
-    if (errFlag)
+    if (errflag)
     {
         panic("syntax.y", "main", "usage : ./C2MP <fichier> -o");
     }
-    snprintf(tempFile1, 10, "output%d.c", 0);
-    open_file(tempFile1);    
+ 
+    open_file();    
     yyout = output;
 
     while(pragmaMet == 0)
@@ -681,11 +687,11 @@ int main(int argc, char *argv[])
                 panic("syntax.y", "main", "Error Close File\n");
 
             // create new output
-            snprintf(tempFile1, 10, "output%d.c", i); 
-            snprintf(tempFile2, 10, "output%d.c", i-1); 
+            snprintf(ret, 10, "output%d.c", i); 
+            snprintf(ret2, 10, "output%d.c", i-1); 
 
             // open new file
-            output = fopen(tempFile1, "w+");
+            output = fopen(ret, "w+");
             if(output == NULL)
                 panic("syntax.y", "main", "Error Open File\n");
             if (i == 1)
@@ -696,7 +702,7 @@ int main(int argc, char *argv[])
             }
             else
             {
-                finput = fopen(tempFile2, "r");
+                finput = fopen(ret2, "r");
                 if(finput == NULL)
                     panic("syntax.y", "main", "Error Open File\n");
             }
@@ -712,7 +718,7 @@ int main(int argc, char *argv[])
         else break;
     }
 
-    if (rename(tempFile1, resultFileName) == -1)
+    if ( rename(ret, resultFileName) == -1)
     {
         panic("syntax.y", "main", "Error Rename File\n");
     }
@@ -720,18 +726,19 @@ int main(int argc, char *argv[])
     if ( fclose(finput) != 0)
         panic("syntax.y", "main", "Error Close File\n");
  
-    if (optionVerbose)
+    if (option_verbose)
     {
         printf("\n%d pragma in source. Final Result in file : result.c\n",i-1);
         printf("End of parsing\n");
     }
- 
+
+    free(resultFileName);    
     close_file();
 
     for( j = 0 ; j < i-1 ; j++)
     {
-        snprintf(tempFile1, 10, "output%d.c", j); 
-        if (remove(tempFile1) != 0 )
+        snprintf(ret, 10, "output%d.c", j); 
+        if ( remove(ret) != 0 )
         {
             panic("syntax.y", "main", "Error Remove File\n");
         }
