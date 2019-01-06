@@ -32,10 +32,13 @@ int main()
         c = b*e;
         f = a*b*c*d*e;
         f =  pow(f, e);
+        c = 5.0;
         
-        while(c > -10.0)
+        printf("%f\n", c);
+
+        while(c < 10.0)
         {
-            c = c-1.0;
+            c = c+1.0;
             printf("%f\n", c);
         }
     }
