@@ -12,6 +12,11 @@ BUILD_PATH = build
 BIN_PATH = bin
 DOC_PATH = doc/html
 
+TESTLOG_PATH = testLog
+TESTPRECOMPILED_PATH = testPreCompiled
+TESTCOMPILED_PATH = testCompiled
+TESTRESULT_PATH = tmpResultTest
+
 # executable # 
 BIN_NAME = C2MP
 
@@ -115,6 +120,21 @@ clean:
 	@$(RM) -r $(BIN_PATH)
 	@echo "Deleting documentation"
 	@$(RM) -r $(DOC_PATH)
+	if test -e C2MP_result.c; \
+	then rm C2MP_result.c; \
+	fi
+	if test -d $(TESTLOG_PATH); \
+	then rm -r $(TESTLOG_PATH); \
+	fi
+	if test -d $(TESTPRECOMPILED_PATH); \
+	then rm -r $(TESTPRECOMPILED_PATH); \
+	fi
+	if test -d $(TESTCOMPILED_PATH); \
+	then rm -r $(TESTCOMPILED_PATH); \
+	fi
+	if test -d $(TESTRESULT_PATH); \
+	then rm -r $(TESTRESULT_PATH); \
+	fi
 none:
 	@echo "les obj"
 	@echo $(OBJECTS)
@@ -129,5 +149,9 @@ none:
 .PHONY: doc 
 doc:
 	doxygen Doxyfile
+
+.PHONY: run
+run:
+	./test_campaign.sh
 
 

@@ -1,9 +1,9 @@
 #!/bin/bash
 
-rm -r testLog
-rm -r testPreCompiled
-rm -r testCompiled
-rm -r tmpResultTest
+#rm -r testLog
+#rm -r testPreCompiled
+#rm -r testCompiled
+#rm -r tmpResultTest
 
 mkdir testLog
 mkdir testPreCompiled
