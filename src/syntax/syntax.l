@@ -182,7 +182,7 @@ for									{
 											write_file(yytext);
 										}
 									}
-precision 							{
+[^_a-zA-Z0-9]precision[^_a-zA-Z0-9] {
 										if(pragmaOn)
 											return PRECISION;
 										else
@@ -190,7 +190,7 @@ precision 							{
 											write_file(yytext);
 										}
 									}
-rounding  							{
+[^_a-zA-Z0-9]rounding[^_a-zA-Z0-9]  {
 										if(pragmaOn)
 											return ROUNDING;
 										else

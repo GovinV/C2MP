@@ -4,7 +4,7 @@
 
 int main()
 {
-    float whileABC = 1, afora = 1,  dob = 1, if1 = 0;
+    float whileABC = 1, afora = 1,  dob = 1, if1 = 0, precision2;
 
     printf("### Testing variables names ###\n");
 
@@ -16,6 +16,7 @@ int main()
         {
             if1 = if1+dob;
         }
+        precision2 = dob;
     }
 
     printf("### result ###\n");
@@ -23,6 +24,7 @@ int main()
     printf("whileABC; %lf 2.000000\n", whileABC);
     printf("afora; %lf 1.000000\n", afora);
     printf("dob; %lf 1.000000\n", dob);
+    printf("precision2; %lf 1.000000\n", precision2);
 
     return 0;
 }
