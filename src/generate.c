@@ -379,7 +379,7 @@ bool * generateInitCode(quad *q, int precision)
                     fprintf(output, "    int %s;\n", getSymbolFromReference(i).name);
                     break;
                 case FLOAT_NUMBER:
-                    fprintf(output, "    float %s;\n", getSymbolFromReference(i).name);
+                    fprintf(output, "    double %s;\n", getSymbolFromReference(i).name);
                     break;
                 case MPC_T:
                     fprintf(output, "    mpc_t %s;", getSymbolFromReference(i).name);

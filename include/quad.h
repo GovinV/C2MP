@@ -38,7 +38,7 @@ quadOperand createIntegerOperand(int value);
  * @param value value of the constant
  * @return The created operand
  */
-quadOperand createFloatOperand(float value);
+quadOperand createFloatOperand(double value);
 /**
  * @brief Creates an quad operand related to nothing (example : operand2 of sqrt)
  * @return The created operand
