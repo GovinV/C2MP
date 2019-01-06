@@ -585,6 +585,27 @@ void printOperand(quadOperand operand)
     switch(operand.type)
     {
         case C2MP_QUAD_OPERAND_INTEGER:
+            printf("%d", operand.valueInt);
+            break;
+        case C2MP_QUAD_OPERAND_FLOAT:
+            printf("%f", operand.valueFloat);
+            break;
+        case C2MP_QUAD_OPERAND_VARIABLE:
+            printf("%s", getNameFromReference(operand.reference));
+            break;
+        case C2MP_QUAD_OPERAND_STRING:
+            printf("%s", operand.valueString);
+            break;
+        default:
+            printf("Warning, unknown operand type : %d\n", operand.type);
+    }
+}
+
+void outputOperand(quadOperand operand)
+{
+    switch(operand.type)
+    {
+        case C2MP_QUAD_OPERAND_INTEGER:
             fprintf(output, "%d", operand.valueInt);
             break;
         case C2MP_QUAD_OPERAND_FLOAT:
@@ -649,8 +670,8 @@ void printQuads(quad* q)
             case C2MP_OPERATOR_LOGICAL_NOT:
             case C2MP_OPERATOR_BITWISE_NOT:
                 printf("%s = %c ", 
-                    getNameFromReference(currentQuad->assignment),
-                    currentQuad->operator);
+                getNameFromReference(currentQuad->assignment),
+                currentQuad->operator);
                 printOperand(currentQuad->operands[0]);
                 break;
             case C2MP_QUAD_ASSIGNMENT:

@@ -130,6 +130,12 @@ quad *concatQuads(quad *q1, quad *q2);
 void printOperand(quadOperand operand);
 
 /**
+ * @brief Outputs an operand to a file
+ * @param operand operand
+ */
+void outputOperand(quadOperand operand);
+
+/**
  * @brief Prints a list of quads
  * @param g quads
  */

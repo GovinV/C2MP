@@ -30,33 +30,33 @@ void generateCode(quad *q, char *rounding, int precision)
         {
         case C2MP_OPERATOR_BINARY_PLUS:
             fprintf(output, "mpc_add(%s, ", getNameFromReference(currentQuad->assignment));
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", ");
-            printOperand(currentQuad->operands[1]);
+            outputOperand(currentQuad->operands[1]);
             fprintf(output, ", %s);", rounding);
             break;
 
         case C2MP_OPERATOR_BINARY_MINUS:
             fprintf(output, "mpc_sub(%s, ", getNameFromReference(currentQuad->assignment));
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", ");
-            printOperand(currentQuad->operands[1]);
+            outputOperand(currentQuad->operands[1]);
             fprintf(output, ", %s);", rounding);
             break;
 
         case C2MP_OPERATOR_BINARY_DOT:
             fprintf(output, "mpc_mul(%s, ", getNameFromReference(currentQuad->assignment));
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", ");
-            printOperand(currentQuad->operands[1]);
+            outputOperand(currentQuad->operands[1]);
             fprintf(output, ", %s);", rounding);
             break;
 
         case C2MP_OPERATOR_BINARY_DIVIDE:
             fprintf(output, "mpc_div(%s, ", getNameFromReference(currentQuad->assignment));
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", ");
-            printOperand(currentQuad->operands[1]);
+            outputOperand(currentQuad->operands[1]);
             fprintf(output, ", %s);", rounding);
             break;
 
@@ -64,9 +64,9 @@ void generateCode(quad *q, char *rounding, int precision)
         case C2MP_OPERATOR_LOWER_THAN:
             fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
             fprintf(output, "mpc_cmp(");
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", ");
-            printOperand(currentQuad->operands[1]);
+            outputOperand(currentQuad->operands[1]);
             fprintf(output, ") > 0;");
             break;
 
@@ -74,9 +74,9 @@ void generateCode(quad *q, char *rounding, int precision)
         case C2MP_OPERATOR_GREATER_THAN:
             fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
             fprintf(output, "mpc_cmp(");
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", ");
-            printOperand(currentQuad->operands[1]);
+            outputOperand(currentQuad->operands[1]);
             fprintf(output, ") < 0;");
             break;
 
@@ -84,9 +84,9 @@ void generateCode(quad *q, char *rounding, int precision)
         case C2MP_OPERATOR_LOWER_OR_EQUAL:
             fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
             fprintf(output, "mpc_cmp(");
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", ");
-            printOperand(currentQuad->operands[1]);
+            outputOperand(currentQuad->operands[1]);
             fprintf(output, ") >= 0;");
             break;
 
@@ -94,9 +94,9 @@ void generateCode(quad *q, char *rounding, int precision)
         case C2MP_OPERATOR_GREATER_OR_EQUAL:
             fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
             fprintf(output, "mpc_cmp(");
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", ");
-            printOperand(currentQuad->operands[1]);
+            outputOperand(currentQuad->operands[1]);
             fprintf(output, ") <= 0;");
             break;
 
@@ -104,9 +104,9 @@ void generateCode(quad *q, char *rounding, int precision)
         case C2MP_OPERATOR_EQUAL:
             fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
             fprintf(output, "mpc_cmp(");
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", ");
-            printOperand(currentQuad->operands[1]);
+            outputOperand(currentQuad->operands[1]);
             fprintf(output, ") == 0;");
             break;
 
@@ -114,9 +114,9 @@ void generateCode(quad *q, char *rounding, int precision)
         case C2MP_OPERATOR_NOT_EQUAL:
             fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
             fprintf(output, "!mpc_cmp(");
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", ");
-            printOperand(currentQuad->operands[1]);
+            outputOperand(currentQuad->operands[1]);
             fprintf(output, ");");
             break;
 
@@ -135,7 +135,7 @@ void generateCode(quad *q, char *rounding, int precision)
                             break;
                         case MPC_T:
                             fprintf(output, "mpc_get_ldc(");
-                            printOperand(currentQuad->operands[0]);
+                            outputOperand(currentQuad->operands[0]);
                             fprintf(output, ", %s);", rounding);
                             break;
                     }
@@ -162,7 +162,7 @@ void generateCode(quad *q, char *rounding, int precision)
                     }
                     // printed every time
                     fprintf(output, "%s, ", getNameFromReference(currentQuad->assignment));
-                    printOperand(currentQuad->operands[0]);
+                    outputOperand(currentQuad->operands[0]);
                     fprintf(output, ", %s);", rounding);
                     break;
 
@@ -173,7 +173,7 @@ void generateCode(quad *q, char *rounding, int precision)
 
         case C2MP_QUAD_IF:
             ++indent;
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, "\n%*sif (",indent*4," ");
             fprintf(output, ") {");
             break;
@@ -212,65 +212,65 @@ void generateCode(quad *q, char *rounding, int precision)
 
         case C2MP_FUNCTION_POW:
             fprintf(output, "mpc_pow(%s, ", getNameFromReference(currentQuad->assignment));
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", ");
-            printOperand(currentQuad->operands[1]);
+            outputOperand(currentQuad->operands[1]);
             fprintf(output, ", %s);", rounding);
             break;
         
         case C2MP_FUNCTION_SQRT:
             fprintf(output, "mpc_sqrt(%s, ", getNameFromReference(currentQuad->assignment));
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", %s);", rounding);
             break;
         /**
          * Not supporting ABS because MPC is 
         case C2MP_FUNCTION_ABS:
             fprintf(output, "mpc_abs(%s, ", getNameFromReference(currentQuad->assignment));
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", %s);", rounding);
             break;
         */
 
         case C2MP_FUNCTION_EXP:
             fprintf(output, "mpc_exp(%s, ", getNameFromReference(currentQuad->assignment));
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", %s);", rounding);
             break;
         
         case C2MP_FUNCTION_LOG:
             fprintf(output, "mpc_log(%s, ", getNameFromReference(currentQuad->assignment));
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", %s);", rounding);
             break;
         
         case C2MP_FUNCTION_LOG10:
             fprintf(output, "mpc_log10(%s, ", getNameFromReference(currentQuad->assignment));
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", %s);", rounding);
             break;
         
         case C2MP_FUNCTION_COS:
             fprintf(output, "mpc_cos(%s, ", getNameFromReference(currentQuad->assignment));
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", %s);", rounding);
             break;
 
         case C2MP_FUNCTION_SIN:
             fprintf(output, "mpc_sin(%s, ", getNameFromReference(currentQuad->assignment));
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", %s);", rounding);
             break;
         
         case C2MP_FUNCTION_COSH:
             fprintf(output, "mpc_cosh(%s, ", getNameFromReference(currentQuad->assignment));
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", %s);", rounding);
             break;
 
         case C2MP_FUNCTION_SINH:
             fprintf(output, "mpc_sinh(%s, ", getNameFromReference(currentQuad->assignment));
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", %s);", rounding);
             break;
         
@@ -286,14 +286,14 @@ void generateCode(quad *q, char *rounding, int precision)
             {
                 if (i != 0) 
                     fprintf(output, ", ");
-                printOperand(currentQuad->operands[i]);
+                outputOperand(currentQuad->operands[i]);
             }
             fprintf(output, ");");
             break;
 
         case C2MP_OPERATOR_UNARY_MINUS:
             fprintf(output, "mpc_neg(%s, ", getNameFromReference(currentQuad->assignment));
-            printOperand(currentQuad->operands[0]);
+            outputOperand(currentQuad->operands[0]);
             fprintf(output, ", %s);", rounding);
             break;
 
