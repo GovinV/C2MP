@@ -25,7 +25,7 @@ int main()
     }
 
     printf("### Here are the results! We print 6 decimals ###\n");
-    printf("pow(2, 3) %6f 8.000000\n", a);
+    printf("pow(2,3) %6f 8.000000\n", a);
     printf("sqrt(2) %6f 1.414214\n", b);
     printf("exp(2) %6f 7.389056\n", d);
     printf("log(2) %6f 0.693147\n", e);

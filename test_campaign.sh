@@ -3,6 +3,7 @@
 rm -r testLog
 rm -r testPreCompiled
 rm -r testCompiled
+rm -r tmpResultTest
 
 mkdir testLog
 mkdir testPreCompiled
@@ -18,7 +19,7 @@ do
 	if [ $? -eq 0 ]
 	then 
 		echo "PreCompiled $FileName"
-		mv C2MP_result.c testPreCompiled/$FileName
+		cp C2MP_result.c testPreCompiled/$FileName
 	else
 		echo "Fail to precompile $file" 
 	fi
@@ -27,7 +28,7 @@ do
 	./C2MP $file -O > testLog/opti_$FileName.output
 	if [ $? -eq 0 ]
 	then 
-		mv C2MP_result.c testPreCompiled/opti_$FileName
+		cp C2MP_result.c testPreCompiled/opti_$FileName
 	else
 		echo "Fail to precompile with optimization $FileName" 
 	fi
@@ -49,7 +50,6 @@ do
 		echo "Compiled $FileName"
 	else
 		echo "Fail to compile $FileName with MPC"
-		continue 
 	fi
 done
 
@@ -61,10 +61,10 @@ do
 	FileName=`echo $file | cut -d'/' -f3` 
 	echo "$file"
 
-	timeout 1s ./testCompiled/$FileName > tmpResultTest/$FileName
+	timeout 1s ./testCompiled/$FileName | grep -v "^#" > tmpResultTest/$FileName
 	if [ $? -eq 0 ]
 	then 
-		echo "Succes : $FileName executed, output:"
+		echo "Success : $FileName executed, output:"
 		# cat tmpResultTest/$FileName
 	else
 		echo "Fail to execute $FileName with MPC"
@@ -72,20 +72,24 @@ do
 done
 
 
-# for file in /testCompiled/test*
-# do
-# 	output=0
-# 	FileName=`echo $file | cut -d'/' -f3` 
-# 	echo "$file"
 
-# 	timeout 1s ./testCompiled/$FileName > tmpResultTest/$FileName
-# 	if [ $? -eq 0 ]
-# 	then 
-# 		echo "Succes : $FileName executed, output:"
-# 		# cat tmpResultTest/$FileName
-# 	else
-# 		echo "Fail to execute $FileName with MPC"
-# 	fi
-# done
+for file in ./tmpResultTest/test*
+do
+	NotSame=0
+	NotSame=$(awk '{
+					    f1=$2; f2=$3
+					    getline 
+					    if (!(f1 < f2+0.0001 && f1 > f2-0.0001 )) {
+					    	print 1
+					    }
+			  		}' $file)
 
-rm -r tmpResultTest
+	if [ "$NotSame" = "" ]
+	then
+		echo "Success : $file all expected value"
+	else
+		echo "Failed : $file do not return expected value."
+	fi
+done
+
+# rm -r tmpResultTest
