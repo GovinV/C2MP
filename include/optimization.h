@@ -1,6 +1,14 @@
 #ifndef OPTI_H
 #define OPTI_H
 
+/**
+ * \file optimization
+ * \brief Optimize Quad or Operation to reduce the generate code
+ * \author DIVRIOTIS C. FLINT C. JUNG L. VETRIVEL G. 
+ * \version 0.1
+ * \date Janvier 2018
+ *
+ */
 #include "utils.h"
 #include <string.h>
 #include "quad.h"

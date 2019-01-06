@@ -10,6 +10,7 @@ BUILD_PATH = build
 # BUILD_LEX_PATH = build
 # BUILD_YACC_PATH = build
 BIN_PATH = bin
+DOC_PATH = doc/html
 
 # executable # 
 BIN_NAME = C2MP
@@ -112,7 +113,10 @@ clean:
 	@echo "Deleting directories"
 	@$(RM) -r $(BUILD_PATH)
 	@$(RM) -r $(BIN_PATH)
+	@echo "Deleting result.c"
 	@$(RM) result.c
+	@echo "Deleting documentation"
+	@$(RM) -r $(DOC_PATH)
 none:
 	@echo "les obj"
 	@echo $(OBJECTS)
@@ -124,5 +128,8 @@ none:
 	@echo $(LEXS_C)
 	@echo "les yaccs c"
 	@echo $(YACCS_C)
+.PHONY: doc 
+doc:
+	doxygen Doxyfile
 
 
