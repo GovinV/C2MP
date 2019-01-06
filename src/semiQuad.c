@@ -43,17 +43,20 @@ void freeSemiQuad(semiQuad *sq)
     {
         return;
     }
-
+    
     semiQuad *firstSemiQuad = sq, *toFree;
-    semiQuad *currentSemiQuad = sq->next;
+    semiQuad *currentSemiQuad = sq;
 
     while(currentSemiQuad != firstSemiQuad)
     {
         toFree = currentSemiQuad; 
         currentSemiQuad = currentSemiQuad->next;
-        freeExpressionAST(toFree->expression);
+        if (toFree->expression != NULL)
+            freeExpressionAST(toFree->expression);
         free(toFree);
     }
+    if (firstSemiQuad->expression != NULL)
+        free(firstSemiQuad->expression);
     free(firstSemiQuad);
 }
 
