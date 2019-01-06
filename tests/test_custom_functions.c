@@ -36,7 +36,7 @@ double myfunction3(mpc_t a, mpc_t b)
 int main()
 {
 
-    int a, x = 2, y = 3;
+    int a, b = 0, x = 2, y = 3;
     double k, l;
 
     printf("### Testing supported mathematic functions ###\n");
@@ -53,14 +53,17 @@ int main()
         // if expressions are used as arguments, they are converted in MPC!
         k = myfunction3(x+y, sqrt(4));
         // we don't need assignements!
-        printf("### I can print strings here!\n");
+        printf("printf;b=b+1; %d 0\n", b);
+        b = b + 10;
+        // printing again with a changed value of b
+        printf("printf;b=b+1; %d 10\n", b);        
         // no assignment and expressions compiled into MPC
         myfunction3(pow(1,2), x*(y+1));
     }
 
-    printf("### Here are the results! ###\n");
     printf("myfunction1(2,3); %lf 8.000000\n", l);
     printf("myfunction3(2+3,sqrt(4),\"MPC_RNDZZ\") %lf 25.000000\n", k);
+    
 
     return 0;
 
