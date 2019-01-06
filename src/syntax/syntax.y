@@ -261,18 +261,18 @@ P_PRAGMA:
 	;
 
 P_EXTENSION:
-	EXTENSION P_EXTENSION 
-        { 
+	EXTENSION P_EXTENSION
+        {
             $$ = $2;
             if ($1.type == ROUNDING_T)
                 $$.rounding = $1.rounding;
             if ($1.type == PRECISION_T)
                 $$.precision = $1.precision;
         }
-	|                      
-        { 
+	|
+        {
             $$.rounding = strdup("MPC_RNDZZ");
-            $$.precision = 128; 
+            $$.precision = 128;
         }
 	;
 
