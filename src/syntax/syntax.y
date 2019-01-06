@@ -237,23 +237,32 @@ axiom :
 P_PRAGMA:
 	PRAGMA P_EXTENSION BACKSLASH BLOC
         {
-            printf("***** Found Pragma *****\n");
-            printf("Rounding = %s\n", $2.rounding);
-            printf("Precision = %d\n", $2.precision);
-            printf("generated semi quads :\n");
-            printSemiQuads($4);
-            printf("Quads generation:\n");
+            if (option_verbose)
+            {
+                printf("***** Found Pragma *****\n");
+                printf("Rounding = %s\n", $2.rounding);
+                printf("Precision = %d\n", $2.precision);
+            }
+            if (option_print_semiquads)
+            {
+                printf("SemiQuads generation...\n");
+                printSemiQuads($4);
+                printf("End of semiQuads generation.\n");
+            }
             quads = getQuadsFromSemiQuads($4);
-            printf("End of quads generation\n");
-            if (option_flag == 1)
+            if (option_print_quads)
+            {
+                printf("Quads generation...\n");
+                printQuads(quads);
+                printf("End of quads generation.\n");
+            }
+            if (option_flag)
             {
                 printf("Optimization:\n");
-                //printQuads(quads);
                 quads = optimizeQuads(quads);
                 printf("End of Optimization.\n");
             }
             generateCode(quads, $2.rounding, $2.precision);
-            printf("\n");
             // some memory frees
             freeQuads(quads);
             free($2.rounding); // strdup of rounding
@@ -585,14 +594,16 @@ int main(int argc, char *argv[])
         ret[50], 
         ret2[50];
     char * rc;
+    char *resultFileName = strdup("result.c");
 
  
+    option_print_quads = 0;
+    option_print_semiquads = 0;
     opt         = 0;
     errflag     = 0;
     option_flag = 0;
     i           = 1;
-    ch          = '.';
-
+    ch          = '.';    
  
     pragmaOn        = 0;
     pragmaBlocOn    = 0;
@@ -610,12 +621,32 @@ int main(int argc, char *argv[])
     yyin = finput;
  
     /* Use getopt to handle option */
-    while ( (opt = getopt(argc, argv, "O") ) != -1)
+    while ( (opt = getopt(argc, argv, "Oo:aqsv") ) != -1)
     {
         switch (opt) 
         {
+            // apply optimization
             case 'O':
-                            option_flag = 1;
+                option_flag = 1;
+                break;
+            // naming resulting file
+            case 'o':
+                free(resultFileName);
+                resultFileName = strdup(optarg);
+                break;
+            // print quads
+            case 'q':
+                option_print_quads = 1;
+                break;
+            // print semiquads
+            case 's':
+                option_print_semiquads = 1;
+                break;
+            // maximal verbose
+            case 'v':
+                option_verbose = 1;
+                option_print_quads = 1;
+                option_print_semiquads = 1;
                 break;
             /* Character not recognized */
             case '?':
@@ -677,8 +708,7 @@ int main(int argc, char *argv[])
         else break;
     }
 
-    printf("%d pragma in source. Final Result in file : result.c\n",i-1);
-    if ( rename(ret, "result.c") == -1)
+    if ( rename(ret, resultFileName) == -1)
     {
         panic("syntax.y", "main", "Error Rename File\n");
     }
@@ -686,8 +716,13 @@ int main(int argc, char *argv[])
     if ( fclose(finput) != 0)
         panic("syntax.y", "main", "Error Close File\n");
  
-    printf("End of parsing\n");
+    if (option_verbose)
+    {
+        printf("\n%d pragma in source. Final Result in file : result.c\n",i-1);
+        printf("End of parsing\n");
+    }
 
+    free(resultFileName);    
     close_file();
  
     return 0;

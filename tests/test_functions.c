@@ -5,6 +5,7 @@
 int main()
 {
 
+    // using float for fun ;)
     float a, b, d, e, f, g, h, i, j, x = 2, y = 3, z = 3.14;
 
     printf("### Testing supported mathematic functions ###\n");

@@ -605,8 +605,10 @@ void printQuads(quad* q)
 {
     if(q == NULL)
     {
-        printf("no quad\n");
+        printf("No quads to print...\n");
     }
+
+    printf("Note: this is not printing the operands.\n");
 
     quad *firstQuad = q;
     quad *currentQuad = q;
@@ -682,8 +684,35 @@ void printQuads(quad* q)
                 --indent;
                 printf("\b\bwhile");
                 break;
+            case C2MP_FUNCTION_COS:
+                printf("cos");
+                break;
+            case C2MP_FUNCTION_COSH:
+                printf("cosh");
+                break;
+            case C2MP_FUNCTION_SIN:
+                printf("sin");
+                break;
+            case C2MP_FUNCTION_SINH:
+                printf("sinh");
+                break;
+            case C2MP_FUNCTION_EXP:
+                printf("exp");
+                break;
+            case C2MP_FUNCTION_LOG:
+                printf("log");
+                break;
+            case C2MP_FUNCTION_LOG10:
+                printf("log10");
+                break;
+            case C2MP_FUNCTION_POW:
+                printf("pow");
+                break;
+            case C2MP_FUNCTION_SQRT:
+                printf("sqrt");
+                break;
             case C2MP_FUNCTION_UNKNOWN:
-                printf("%s(args not displayed here)", currentQuad->fctName);
+                printf("%s", currentQuad->fctName);
                 break;
             default:
                 fprintf(stderr, "Warning, unknown quad operation : %c\n", currentQuad->operator);
