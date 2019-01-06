@@ -97,10 +97,10 @@ p : unary +
 int pragmaOn;
 int pragmaBlocOn;
 int pragmaBlocIndex;
-int option_flag;
-int option_print_quads;
-int option_print_semiquads;
-int option_verbose;
+int optiFlag;
+int optionPrintQuads;
+int optionPrintSemiquads;
+int optionVerbose;
 int pragmaMet;
 FILE * output;
 FILE * finput;
@@ -130,7 +130,7 @@ int parseFct(char *);
  * \brief Open file output.
  * \return 0 if SUCESS
  */
-int open_file(void);
+int open_file(char * name);
 
 /**
  * \brief Close file output.
@@ -144,9 +144,9 @@ int close_file(void);
  */
 int write_file(const char * expr);
 
-/**
- * \brief Open file input.
- * \return 0 if SUCESS
- */
-int open_file2(char * name);
+// *
+//  * \brief Open file input.
+//  * \return 0 if SUCESS
+ 
+// int open_file2(char * name);
 #endif // __UTILS_C

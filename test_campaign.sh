@@ -8,8 +8,6 @@ mkdir testLog
 mkdir testPreCompiled
 mkdir testCompiled
 
-
-
 FileName=0
 for file in ./tests/test*.c
 do
@@ -20,7 +18,7 @@ do
 	if [ $? -eq 0 ]
 	then 
 		echo "PreCompiled $FileName"
-		mv result.c testPreCompiled/$FileName
+		mv C2MP_result.c testPreCompiled/$FileName
 	else
 		echo "Fail to precompile $file" 
 	fi
@@ -45,7 +43,7 @@ do
 	Name=`echo "$FileName" | cut -d'.' -f1`
 	echo "gcc $file -lmpc"
 
-	gcc -o ./testCompiled/$Name $file -lmpc > /dev/null 2>&1
+	gcc -o ./testCompiled/$Name $file -lmpc > testLog/$FileName.output 2>&1
 	if [ $? -eq 0 ]
 	then 
 		echo "Compiled $FileName"
@@ -72,5 +70,22 @@ do
 		echo "Fail to execute $FileName with MPC"
 	fi
 done
-rm -r tmpResultTest
 
+
+# for file in /testCompiled/test*
+# do
+# 	output=0
+# 	FileName=`echo $file | cut -d'/' -f3` 
+# 	echo "$file"
+
+# 	timeout 1s ./testCompiled/$FileName > tmpResultTest/$FileName
+# 	if [ $? -eq 0 ]
+# 	then 
+# 		echo "Succes : $FileName executed, output:"
+# 		# cat tmpResultTest/$FileName
+# 	else
+# 		echo "Fail to execute $FileName with MPC"
+# 	fi
+# done
+
+rm -r tmpResultTest

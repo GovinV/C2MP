@@ -15,6 +15,7 @@ int main()
         while(whileABC)
         {
             if1 = dob;
+            whileABC = whileABC - 1;
         }
     }
 

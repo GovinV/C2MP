@@ -47,9 +47,9 @@ int parseFct(char *symbol)
     return C2MP_FUNCTION_UNKNOWN;
 }
 
-int open_file(void)
+int open_file(char * name)
 {
-    output = fopen("output0.c", "w+");
+    output = fopen(name, "w+");
 	if(output == NULL)
 	    panic("utils", "open_file", "Error open file\n");
     return 0;
@@ -62,13 +62,13 @@ int close_file(void)
     return 0;                             
 }
 
-int open_file2(char * name)
-{
-    output = fopen(name, "rw+");
-	if(output == NULL)
-	    panic("utils", "open_file2", "Error Open File\n");
-    return 0;
-}
+// int open_file2(char * name)
+// {
+//     output = fopen(name, "rw+");
+// 	if(output == NULL)
+// 	    panic("utils", "open_file2", "Error Open File\n");
+//     return 0;
+// }
 
 
 int write_file(const char * expr)
