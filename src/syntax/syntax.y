@@ -595,7 +595,7 @@ int main(int argc, char *argv[])
         panic("syntax.y", "main", "Missing argument - usage : ./C2MP <file>.c -O");
     }
  
-    int opt, i, j, errFlag;
+    int opt, i, j, rc, errFlag;
     char tempFile1[50],  tempFile2[50];
 
     char *inputFileExtension    = strrchr(argv[1], '.');
@@ -607,6 +607,7 @@ int main(int argc, char *argv[])
     optiFlag                    = 0;
     errFlag                     = 0;
     i                           = 1;
+    rc                          = 0;
     pragmaOn                    = 0;
     pragmaBlocOn                = 0;
     pragmaBlocIndex             = 0;
@@ -665,7 +666,21 @@ int main(int argc, char *argv[])
 
     while(pragmaMet == 0)
     {
-        yyparse();
+        /* value returned by yyparse is 0 if parsing was successful */
+        rc = yyparse();
+        if(rc == 1)
+        {
+            panic("syntax.y", "main", "Parsing failed because of invalid input,"
+                "i.e., input that contains a syntax error or that causes YYABORT to be invoked");
+        }
+        else if(rc == 2)
+        {
+            panic("syntax.y", "main", "Parsing failed due to memory exhaustion. ");
+        }
+        else if (rc != 0)
+        {
+            panic("syntax.y", "main", "Parsing failed : Unknown Error. ");
+        }
         if (pragmaMet == 1) // if we met a pragma
         {
             pragmaMet = 0; // reset 

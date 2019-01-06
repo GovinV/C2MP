@@ -3,7 +3,7 @@
 /* sortie d'erreur */
 void panic(char * file, char * function, char * error)
 {
-    fprintf(stderr, "%s.c : Unexpected Error Occurred - function '%s'\n", file, function);
+    fprintf(stderr, "File %s: Unexpected Error Occurred - function '%s'\n", file, function);
     fprintf(stderr, "\t%s\n", error);
     
     exit(EXIT_FAILURE);
@@ -51,24 +51,16 @@ int open_file(char * name)
 {
     output = fopen(name, "w+");
 	if(output == NULL)
-	    panic("utils", "open_file", "Error open file\n");
+	    panic("utils.c", "open_file", "Error open file\n");
     return 0;
 }
 
 int close_file(void)
 {
     if ( fclose(output) != 0)
-        panic("utils", "close_file", "Error Close File\n");
+        panic("utils.c", "close_file", "Error Close File\n");
     return 0;                             
 }
-
-// int open_file2(char * name)
-// {
-//     output = fopen(name, "rw+");
-// 	if(output == NULL)
-// 	    panic("utils", "open_file2", "Error Open File\n");
-//     return 0;
-// }
 
 
 int write_file(const char * expr)

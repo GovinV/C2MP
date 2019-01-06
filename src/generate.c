@@ -170,7 +170,7 @@ void generateCode(quad *q, char *rounding, int precision)
                             break;                           
                     
                         default:
-                            panic("generate", "generateCode", "Unknown operand type");
+                            panic("generate.c", "generateCode", "Unknown operand type");
                     }
                     // printed every time
                     fprintf(output, "%s, ", getNameFromReference(currentQuad->assignment));
@@ -179,7 +179,7 @@ void generateCode(quad *q, char *rounding, int precision)
                     break;
 
                 default:
-                    panic("generate", "generateCode", "Unknown operand type");
+                    panic("generate.c", "generateCode", "Unknown operand type");
             }
             break;
 
@@ -398,7 +398,7 @@ bool * generateInitCode(quad *q, int precision)
                     fprintf(output, " mpc_init2(%s, %d);\n", getSymbolFromReference(i).name, precision);
                     break;
                 default:
-                    panic("generate", "generateInitCode", "unknown type");
+                    panic("generate.c", "generateInitCode", "unknown type");
             }
         }
     }
@@ -433,7 +433,7 @@ void generateClearCode(bool *tempList)
                     fprintf(output, "    mpc_clear(%s);\n", getSymbolFromReference(i).name);
                     break;
                 default:
-                    panic("generate", "generateClearCode", "unknown type");
+                    panic("generate.c", "generateClearCode", "unknown type");
             }
         }
     }

@@ -145,9 +145,4 @@ int close_file(void);
  */
 int write_file(const char * expr);
 
-// *
-//  * \brief Open file input.
-//  * \return 0 if SUCESS
- 
-// int open_file2(char * name);
 #endif // __UTILS_C
