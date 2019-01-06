@@ -59,7 +59,7 @@ int main()
     }
 
     printf("### Here are the results! ###\n");
-    printf("myfunction1(2, 3); %lf 8.000000\n", l);
+    printf("myfunction1(2,3); %lf 8.000000\n", l);
     printf("myfunction3(2+3,sqrt(4),\"MPC_RNDZZ\") %lf 25.000000\n", k);
 
     return 0;
