@@ -70,6 +70,7 @@ p : unary +
 #define C2MP_QUAD_ENDWHILE              'w'
 #define C2MP_QUAD_DOWHILE               'D'
 #define C2MP_QUAD_ENDDOWHILE            'd'
+#define C2MP_QUAD_NO_ASSIGNEMENT        ' '
 
 // Known functions
 #define C2MP_FUNCTION_POW               1

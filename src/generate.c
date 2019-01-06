@@ -119,6 +119,18 @@ void generateCode(quad *q, char *rounding, int precision)
             outputOperand(currentQuad->operands[1]);
             fprintf(output, ") != 0;");
             break;
+        
+        case C2MP_QUAD_NO_ASSIGNEMENT:
+            // can only be custom functions!
+            fprintf(output, "%s(", currentQuad->fctName);
+            for (int i = 0; i < currentQuad->operandsNum; i++)
+            {
+                if (i != 0) 
+                    fprintf(output, ", ");
+                outputOperand(currentQuad->operands[i]);
+            }
+            fprintf(output, ");");
+            break;
 
         case C2MP_QUAD_ASSIGNMENT:
             ass = getSymbolFromReference(currentQuad->assignment);

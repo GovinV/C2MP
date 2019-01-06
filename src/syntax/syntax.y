@@ -393,6 +393,14 @@ BLOC:
 INSTRUCTION:
     ASSIGNMENT                                                   
         { $$ = $1; }
+    |   
+     FCT
+        {   
+            if ($1->operator == C2MP_FUNCTION_UNKNOWN)
+            {
+                $$ = createSemiQuad(C2MP_QUAD_NO_ASSIGNEMENT, -1, $1);
+            }
+        }
 	|                                                              
         { $$ = NULL; }
 	;

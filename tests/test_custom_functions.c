@@ -52,6 +52,8 @@ int main()
         a = myfunction2("string", a, 4, 1.2);
         // if expressions are used as arguments, they are converted in MPC!
         k = myfunction3(x+y, sqrt(4));
+        // we don't need assignements!
+        printf("I can print strings here!\n");
     }
 
     printf("### Here are the results! ###\n");

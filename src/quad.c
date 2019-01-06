@@ -110,6 +110,14 @@ quad *copySemiQuad(semiQuad *sq)
     quad *generatedQuads;
     switch(sq->operator)
     {
+        case C2MP_QUAD_NO_ASSIGNEMENT:
+            // Only custom functions here!
+            generatedQuads = generateQuadsFromAST(sq->expression);
+            generatedQuads->previous->assignment = -1;
+            generatedQuads->previous->operator = C2MP_QUAD_NO_ASSIGNEMENT;
+            return generatedQuads;
+            break;
+
         case C2MP_QUAD_ASSIGNMENT:
             generatedQuads = generateQuadsFromAST(sq->expression);
             if (sq->expression->operator == C2MP_FUNCTION_UNKNOWN)
