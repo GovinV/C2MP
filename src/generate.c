@@ -63,61 +63,61 @@ void generateCode(quad *q, char *rounding, int precision)
         // result of mpc_cmp must be > 0
         case C2MP_OPERATOR_LOWER_THAN:
             fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
-            fprintf(output, "(mpfr_cmp(mpc_realref(");
+            fprintf(output, "mpc_cmp(");
             outputOperand(currentQuad->operands[0]);
-            fprintf(output, "), mpc_realref(");
+            fprintf(output, ", ");
             outputOperand(currentQuad->operands[1]);
-            fprintf(output, ")) < 0);");
+            fprintf(output, ") == 2;");
             break;
 
         // result of mpc_cmp must be < 0
         case C2MP_OPERATOR_GREATER_THAN:
             fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
-            fprintf(output, "(mpfr_cmp(mpc_realref(");
+            fprintf(output, "mpc_cmp(");
             outputOperand(currentQuad->operands[0]);
-            fprintf(output, "), mpc_realref(");
+            fprintf(output, ", ");
             outputOperand(currentQuad->operands[1]);
-            fprintf(output, ")) > 0);");
+            fprintf(output, ") == 1;");
             break;
 
         // result of mpc_cmp must be >= 0
         case C2MP_OPERATOR_LOWER_OR_EQUAL:
             fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
-            fprintf(output, "(mpfr_cmp(mpc_realref(");
+            fprintf(output, "mpc_cmp(");
             outputOperand(currentQuad->operands[0]);
-            fprintf(output, "), mpc_realref(");
+            fprintf(output, ", ");
             outputOperand(currentQuad->operands[1]);
-            fprintf(output, ")) <= 0);");
+            fprintf(output, ") != 1;");
             break;
 
         // result of mpc_cmp must be <= 0
         case C2MP_OPERATOR_GREATER_OR_EQUAL:
             fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
-            fprintf(output, "(mpfr_cmp(mpc_realref(");
+            fprintf(output, "mpc_cmp(");
             outputOperand(currentQuad->operands[0]);
-            fprintf(output, "), mpc_realref(");
+            fprintf(output, ", ");
             outputOperand(currentQuad->operands[1]);
-            fprintf(output, ")) >= 0);");
+            fprintf(output, ") != 2;");
             break;
 
         // result of mpc_cmp must be == 0
         case C2MP_OPERATOR_EQUAL:
             fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
-            fprintf(output, "(mpfr_cmp(mpc_realref(");
+            fprintf(output, "mpc_cmp(");
             outputOperand(currentQuad->operands[0]);
-            fprintf(output, "), mpc_realref(");
+            fprintf(output, ", ");
             outputOperand(currentQuad->operands[1]);
-            fprintf(output, ")) == 0);");
+            fprintf(output, ") == 0;");
             break;
 
         // result must be different from 0
         case C2MP_OPERATOR_NOT_EQUAL:
             fprintf(output, "%s = ", getNameFromReference(currentQuad->assignment));
-            fprintf(output, "(mpfr_cmp(mpc_realref(");
+            fprintf(output, "mpc_cmp(");
             outputOperand(currentQuad->operands[0]);
-            fprintf(output, "), mpc_realref(");
+            fprintf(output, ", ");
             outputOperand(currentQuad->operands[1]);
-            fprintf(output, ")) != 0);");
+            fprintf(output, ") != 0;");
             break;
         
         case C2MP_QUAD_NO_ASSIGNMENT:
