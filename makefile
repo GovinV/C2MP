@@ -113,8 +113,6 @@ clean:
 	@echo "Deleting directories"
 	@$(RM) -r $(BUILD_PATH)
 	@$(RM) -r $(BIN_PATH)
-	@echo "Deleting result.c"
-	@$(RM) result.c
 	@echo "Deleting documentation"
 	@$(RM) -r $(DOC_PATH)
 none:
