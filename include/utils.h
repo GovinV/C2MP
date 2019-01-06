@@ -1,6 +1,15 @@
 #ifndef __UTILS_C
 #define __UTILS_C
 
+/**
+ * \file utils
+ * \brief Program contains different important define and variable necessary to syntax.y 
+ * \author DIVRIOTIS C. FLINT C. JUNG L. VETRIVEL G. 
+ * \version 0.1
+ * \date Janvier 2018
+ *
+ */
+
 /*
 list of operators :
 < > : binary
@@ -97,45 +106,45 @@ FILE * output;
 FILE * finput;
 
 /**
- * @brief Function Error Output.
+ * \brief Function Error Output.
  */
 
 void panic(char *, char * , char *);
 
 /**
- * @brief Verify if the pragma exists in params.
- * @return Return PRECISION if the extension is precision, 
+ * \brief Verify if the pragma exists in params.
+ * \return Return PRECISION if the extension is precision, 
  * return ROUNDING if extension is rounding, ERROR (-1) if error.
  */
 int checkExtension(char *);
 
 /**
- * @brief Verifiy if the symbol in argument exists and if we can translate to MPC.
- * @return math function match
+ * \brief Verifiy if the symbol in argument exists and if we can translate to MPC.
+ * \return math function match
  */
 int parseFct(char *);
 
 /**
- * @brief Open file output.
- * @return 0 if SUCESS
+ * \brief Open file output.
+ * \return 0 if SUCESS
  */
 int open_file(void);
 
 /**
- * @brief Close file output.
- * @return 0 if SUCESS
+ * \brief Close file output.
+ * \return 0 if SUCESS
  */
 int close_file(void);
 
 /**
- * @brief Write the expression in argument in file output.
- * @return 0 if SUCESS
+ * \brief Write the expression in argument in file output.
+ * \return 0 if SUCESS
  */
 int write_file(const char * expr);
 
 /**
- * @brief Open file input.
- * @return 0 if SUCESS
+ * \brief Open file input.
+ * \return 0 if SUCESS
  */
 int open_file2(char * name);
 #endif // __UTILS_C
