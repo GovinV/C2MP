@@ -396,29 +396,6 @@ INSTRUCTION:
         { $$ = NULL; }
 	;
 
-/*CONDITION:
-    COMPARISON
-    | '(' CONDITION ')'
-    | CONDITION OR CONDITION        { printf("REDUCED OR\n"); }
-    | CONDITION AND CONDITION       { printf("REDUCED AND\n"); }
-    | CONDITION '&' CONDITION
-    | CONDITION '^' CONDITION
-    | CONDITION '|' CONDITION
-    | '!' CONDITION
-    ;*/
-
-/*COMPARISON:
-	EXPR '<' EXPR
-	| EXPR '>' EXPR
-	| EXPR LTE EXPR
-	| EXPR GTE EXPR
-	| EXPR EQ EXPR
-	| EXPR NEQ EXPR
-	//| EXPR // TODO : while(1) empeche par ce commentaire. 
-    le pb semble etre regle en dupliquant les boucles.
-    le pb est encore plus regle en fusionnant expr et condition
-	;*/
-
 RVALUE:
 	EXPR                    
         { $$ = $1; }

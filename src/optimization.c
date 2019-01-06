@@ -36,9 +36,12 @@ referenceList *concatReferenceList(referenceList *list1, referenceList *list2)
 
 quad* optimizeQuads(quad* quads)
 {
-    quads = removeAllCommonSubExpressions(quads);
-    quads = removeUselessTemp(quads);
-    quads = removeLoopsInvariants(quads);
+    for(int i=0;i<100;++i)
+    {
+        quads = removeAllCommonSubExpressions(quads);
+        quads = removeUselessTemp(quads);
+        quads = removeLoopsInvariants(quads);
+    }
     
     return quads;
 }
