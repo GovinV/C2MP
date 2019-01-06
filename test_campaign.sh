@@ -27,7 +27,7 @@ do
 	./C2MP $file -O > testLog/opti_$FileName.output
 	if [ $? -eq 0 ]
 	then 
-		mv result.c testPreCompiled/opti_$FileName
+		mv C2MP_result.c testPreCompiled/opti_$FileName
 	else
 		echo "Fail to precompile with optimization $FileName" 
 	fi
