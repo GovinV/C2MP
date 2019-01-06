@@ -19,7 +19,7 @@ int main()
         precision2 = dob;
         rounding2 = precision2;
         precision = whileABC;
-        rounding = precision;
+        rounding = whileABC+1;
     }
 
     printf("### result ###\n");
@@ -28,7 +28,7 @@ int main()
     printf("afora; %lf 1.000000\n", afora);
     printf("dob; %lf 1.000000\n", dob);
     printf("precision; %lf 2.000000\n", precision);
-    printf("rounding; %lf 2.000000\n", rounding);
+    printf("rounding; %lf 3.000000\n", rounding);
     printf("precision2; %lf 1.000000\n", precision2);
     printf("rounding2; %lf 1.000000\n", rounding2);
 
