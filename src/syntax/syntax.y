@@ -244,10 +244,12 @@ P_PRAGMA:
                 printf("End of quads generation.\n");
             }
             if (optiFlag)
-            {
-                printf("Optimization:\n");
+            {   
+                if (optionVerbose)
+                    printf("Optimization:\n");
                 quads = optimizeQuads(quads);
-                printf("End of Optimization.\n");
+                if (optionVerbose)
+                    printf("End of Optimization.\n");
             }
             generateCode(quads, $2.rounding, $2.precision);
             // some memory frees
