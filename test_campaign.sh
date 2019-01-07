@@ -87,21 +87,34 @@ do
 	fi
 
 	NotSame=0
-	NotSame=$(awk '{
-					    f1=$2; f2=$3
-					    getline 
-					    if (!(f1 < f2+0.0001 && f1 > f2-0.0001 )) {
-					    	print "1"
-					    }
-			  		}' tmpResultTest/$Name)
+	while IFS= read -a line
+	do
+		arr=($line)
+		resGen=${arr[1]}
+		resAtt=${arr[2]}
+		resGen=`bc -l <<<"$resGen+0.0"`
+		resGen1=`bc -l <<<"$resGen-0.000001"`
+		resGen2=`bc -l <<<"$resGen+0.000001"`
+		resAtt=`bc -l <<<"$resAtt+0.0"`
+		test1=$(echo "$resAtt > $resGen1" | bc -l)
+		test2=$(echo "$resAtt < $resGen2" | bc -l)
+		if [ $test1 -eq 1 ] && [ $test2 -eq 1 ]
+		then
+			:
+		else
+			echo "	$line"
+			NotSame=1
+		fi
+	done < ./tmpResultTest/$Name
 
-	if [ "$NotSame" = "1" ]
+	if [ $NotSame -eq 1 ]
 	then
 		Expected=`cat ./tests/expected_behaviour | grep $Name | cut -d' ' -f2`
 		if [ $Expected -eq 4 ]
 		then
 			Success=$((Success+1))
 		else
+			# echo "	$NotSame"
 			echo "	Not expected result (step 4) $file : Not Expected, expected to stop step $Expected"
 		fi	
 		continue
