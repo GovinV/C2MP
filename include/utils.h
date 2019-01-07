@@ -107,6 +107,7 @@ FILE * output;
 FILE * finput;
 
 /**
+ * \fn void panic(char *, char * , char *)
  * \brief Function Error Output.
  * \param File
  * \param Function 
@@ -115,6 +116,7 @@ FILE * finput;
 void panic(char *, char * , char *);
 
 /**
+ * \fn int checkExtension(char *)
  * \brief Verify if the pragma exists in params.
  * \return Return PRECISION if the extension is precision, 
  * return ROUNDING if extension is rounding, ERROR (-1) if error.
@@ -122,27 +124,31 @@ void panic(char *, char * , char *);
 int checkExtension(char *);
 
 /**
+ * \fn int parseFct(char *)
  * \brief Verifiy if the symbol in argument exists and if we can translate to MPC.
  * \return math function match
  */
 int parseFct(char *);
 
 /**
+ * \fn int open_file(char * name)
  * \brief Open file output.
- * \return 0 if SUCESS
+ * \return 0 if SUCCESS
  */
 int open_file(char * name);
 
 /**
+ * \fn int close_file(void)
  * \brief Close file output.
- * \return 0 if SUCESS
+ * \return 0 if SUCCESS
  */
 int close_file(void);
 
 /**
+ * \fn int write_file(const char * expr)
  * \brief Write the expression in argument in file output.
- * \return 0 if SUCESS
+ * \return 0 if SUCCESS
  */
 int write_file(const char * expr);
 
-#endif // __UTILS_C
+#endif // UTILS_C
