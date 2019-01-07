@@ -697,8 +697,10 @@ quad* removeUselessTempFromBloc(quad* quads, quad* firstQuad, int assignment, in
             case C2MP_QUAD_ASSIGNMENT:
                 if(assignmentUsed)
                     break;
-                if(q->assignment == assignment)  
+                if(q->assignment == assignment && q->operands[0].reference != assignment)  
                     assignmentUsed = -1;
+                else if(q->operands[0].reference == assignment)
+                    assignmentUsed = 1;
                 break;
             case C2MP_OPERATOR_BINARY_PLUS:
             case C2MP_OPERATOR_BINARY_DOT:
@@ -711,7 +713,7 @@ quad* removeUselessTempFromBloc(quad* quads, quad* firstQuad, int assignment, in
             case C2MP_OPERATOR_LOGICAL_OR:
             case C2MP_FUNCTION_SQRT:
             case C2MP_FUNCTION_POW:
-            //case C2MP_FUNCTION_ABS:
+            case C2MP_FUNCTION_SQR:
             case C2MP_FUNCTION_EXP:
             case C2MP_FUNCTION_LOG:
             case C2MP_FUNCTION_LOG10:
@@ -719,7 +721,6 @@ quad* removeUselessTempFromBloc(quad* quads, quad* firstQuad, int assignment, in
             case C2MP_FUNCTION_SIN:
             case C2MP_FUNCTION_COSH:
             case C2MP_FUNCTION_SINH:
-            case C2MP_FUNCTION_SQR:
             case C2MP_OPERATOR_BINARY_MINUS:
             case C2MP_OPERATOR_BINARY_DIVIDE:
             case C2MP_OPERATOR_LOWER_THAN:
@@ -746,7 +747,6 @@ quad* removeUselessTempFromBloc(quad* quads, quad* firstQuad, int assignment, in
             case C2MP_QUAD_WHILE:
             case C2MP_QUAD_DOWHILE:
                 if(q->assignment == assignment || q->operands[0].reference == assignment)
-
                     assignmentUsed = 1;
                 q = removeUselessTempFromBloc(q->next, firstQuad,assignment,usedInBloc)->previous;
                 break;
@@ -803,7 +803,7 @@ quad* removeUselessTemp(quad* quads)
             case C2MP_OPERATOR_LOGICAL_OR:
             case C2MP_FUNCTION_SQRT:
             case C2MP_FUNCTION_POW:
-            //case C2MP_FUNCTION_ABS:
+            case C2MP_FUNCTION_SQR:
             case C2MP_FUNCTION_EXP:
             case C2MP_FUNCTION_LOG:
             case C2MP_FUNCTION_LOG10:
@@ -811,7 +811,6 @@ quad* removeUselessTemp(quad* quads)
             case C2MP_FUNCTION_SIN:
             case C2MP_FUNCTION_COSH:
             case C2MP_FUNCTION_SINH:
-            case C2MP_FUNCTION_SQR:
             case C2MP_OPERATOR_BINARY_MINUS:
             case C2MP_OPERATOR_BINARY_DIVIDE:
             case C2MP_OPERATOR_LOWER_THAN:
@@ -838,19 +837,26 @@ quad* removeUselessTemp(quad* quads)
                 refOccurence = 0;
                 quadPtr = q->next;
                 assignment = q->assignment;
-                // if(quadPtr->operator == C2MP_QUAD_ENDWHILE || quadPtr->operator == C2MP_QUAD_ENDDOWHILE )
-                // {
-                //     refOccurence = 1;
-                //     quadPtr = firstQuad;
-                // }    
-                while (quadPtr != firstQuad)
+                if(getSymbolFromReference(q->assignment).isBlockCondition)
+                {
+                    refOccurence = 1;
+                    quadPtr = firstQuad;
+                }
+                if(q->operands[0].reference == assignment)
+                {
+                    refOccurence = 0;
+                    quadPtr = firstQuad;
+                }
+ 
+                 while (quadPtr != firstQuad)
                 {
                     switch(quadPtr->operator)
                     {
-
                         case C2MP_QUAD_ASSIGNMENT:
-                            if(quadPtr->assignment == assignment)
+                            if(quadPtr->assignment == assignment && q->operands[0].reference != assignment)
                                 refOccurence = -1;
+                            if(quadPtr->operands[0].reference == assignment)
+                               refOccurence = 1;
                             break;
                         case C2MP_QUAD_IF:
                         case C2MP_QUAD_WHILE:
