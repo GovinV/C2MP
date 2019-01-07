@@ -35,7 +35,7 @@ int main()
     printf("sin(2) %6f 0.909297\n", h);
     printf("cosh(2) %6f 3.762196\n", i);
     printf("sinh(2) %6f 3.626860\n", j);
-    printf("sqr(3) %6f 27.000000\n", k);    
+    printf("sqr(3) %6f 9.000000\n", k);    
 
     return 0;
 
