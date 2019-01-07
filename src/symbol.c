@@ -82,3 +82,8 @@ int getSymbolNum(void)
 {
     return variablesSize;
 }
+
+void setSymbolToBlockCondition(int ref)
+{
+    variables[ref].isBlockCondition = true;
+}

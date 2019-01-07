@@ -132,6 +132,7 @@ quad *copySemiQuad(semiQuad *sq)
     
         case C2MP_QUAD_IF:
             generatedQuads = generateQuadsFromAST(sq->expression);
+            setSymbolToBlockCondition(generatedQuads->previous->assignment);
             return concatQuads(generatedQuads, 
                         createQuad(sq->assignment, sq->operator, NULL, C2MP_QUAD_UNARY, 
                             createVariableOperand(generatedQuads->previous->assignment)));

@@ -86,6 +86,7 @@ symbol newTemp(symbolType type, bool isBlockCondition);
 symbol getSymbolFromReference(int ref);
 
 int getSymbolNum(void);
+void setSymbolToBlockCondition(int ref);
 
 #endif // SYMBOL_H
 
