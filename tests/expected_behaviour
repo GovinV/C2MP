@@ -2,15 +2,3 @@ test_pragma_no_bracket.c 1
 test_pragma_bad_argument.c 1
 test_using_undefined_variable.c 2
 test_pragma_imbric 1
-test_arithmetic 9
-test_comparison 9
-test_complex_algo_1 9
-test_controls 9
-test_custom_functions 9
-test_functions 9
-test_pi 9
-test_sujet_1 9
-test_sujet_2 9
-test_varnames 9
-test_boucles_imbriquees 9
-test_affectations_inutiles 9

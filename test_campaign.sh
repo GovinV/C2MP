@@ -22,6 +22,7 @@ Expected=0
 Success=0
 Processed=0
 
+echo "" >> ./tests/expected_behaviour
 
 for file in ./tests/test*.c
 do
@@ -114,7 +115,6 @@ do
 		then
 			Success=$((Success+1))
 		else
-			# echo "	$NotSame"
 			echo "	Not expected result (step 4) $file : Not Expected, expected to stop step $Expected"
 		fi	
 		continue
