@@ -79,6 +79,23 @@ bool referenceIsIn(int reference, referenceList *list)
         a[i] = 6 * i + temp1;
     }
 */
+quad* reuseTemporaries(quad* quads)
+{
+    for(int i=0;i<variablesSize;++i)
+    {
+        if(!variables[i].isTemp)
+        {
+            continue;
+        }
+    }
+}
+
+quad* getSafeReuseQuad(quad* quads, int reference)
+{
+    
+}
+
+
 quad* removeLoopsInvariants(quad* quads)
 {
     quad *firstQuad = quads;
@@ -154,6 +171,7 @@ quad* removeLoopInvariants(quad* quads)
             case C2MP_FUNCTION_SIN:
             case C2MP_FUNCTION_COSH:
             case C2MP_FUNCTION_SINH:
+            case C2MP_FUNCTION_SQR:
             case C2MP_FUNCTION_UNKNOWN:
                 if(blocDepth == 1)
                 {
@@ -263,6 +281,7 @@ referenceList *getModifiedVariablesInBloc(quad* quads)
             case C2MP_FUNCTION_SIN:
             case C2MP_FUNCTION_COSH:
             case C2MP_FUNCTION_SINH:
+            case C2MP_FUNCTION_SQR:
             case C2MP_FUNCTION_UNKNOWN:
                 modifiedVariables = addReference(modifiedVariables, q->assignment);
                 break;
@@ -288,6 +307,86 @@ referenceList *getModifiedVariablesInBloc(quad* quads)
 	} while(q != firstQuad && blocDepth > 0);
 	
 	return modifiedVariables;
+}
+
+referenceList *getUsedVariablesInBloc(quad* quads)
+{
+    if(quads == NULL)
+    {
+        printf("no quads for optimization\n");
+    }
+    
+    referenceList *usedVariables = NULL;
+	
+	quad* q = quads;
+	quad *firstQuad = quads;
+	int blocDepth = 0;
+	
+	do
+	{
+		switch(q->operator)
+		{
+			case C2MP_QUAD_ASSIGNMENT:
+            case C2MP_OPERATOR_UNARY_MINUS:
+            case C2MP_OPERATOR_UNARY_PLUS:
+            case C2MP_OPERATOR_LOGICAL_NOT:
+            case C2MP_OPERATOR_BITWISE_NOT:
+            case C2MP_FUNCTION_SQRT:
+            //case C2MP_FUNCTION_ABS:
+            case C2MP_FUNCTION_EXP:
+            case C2MP_FUNCTION_LOG:
+            case C2MP_FUNCTION_LOG10:
+            case C2MP_FUNCTION_COS:
+            case C2MP_FUNCTION_SIN:
+            case C2MP_FUNCTION_COSH:
+            case C2MP_FUNCTION_SINH:
+            case C2MP_FUNCTION_SQR:
+                usedVariables = addReference(usedVariables, q->operand1);
+                break;
+            case C2MP_OPERATOR_BINARY_PLUS:
+            case C2MP_OPERATOR_BINARY_DOT:
+            case C2MP_OPERATOR_EQUAL:
+            case C2MP_OPERATOR_NOT_EQUAL:
+            case C2MP_OPERATOR_BITWISE_AND:
+            case C2MP_OPERATOR_BITWISE_OR:
+            case C2MP_OPERATOR_BITWISE_XOR:
+            case C2MP_OPERATOR_LOGICAL_AND:
+            case C2MP_OPERATOR_LOGICAL_OR:
+            case C2MP_OPERATOR_BINARY_MINUS:
+            case C2MP_OPERATOR_BINARY_DIVIDE:
+            case C2MP_OPERATOR_LOWER_THAN:
+            case C2MP_OPERATOR_GREATER_THAN:
+            case C2MP_OPERATOR_LOWER_OR_EQUAL:
+            case C2MP_OPERATOR_GREATER_OR_EQUAL:
+            case C2MP_FUNCTION_POW:
+                usedVariables = addReference(usedVariables, q->operand1);
+                usedVariables = addReference(usedVariables, q->operand2);
+                break;
+            case C2MP_FUNCTION_UNKNOWN:
+                fprintf(stderr, "warning, todo : getUsedVariablesInBloc with unknown function\n");
+                break;
+            case C2MP_QUAD_IF:
+            case C2MP_QUAD_WHILE:
+            case C2MP_QUAD_DOWHILE:
+                ++blocDepth;
+                break;
+            case C2MP_QUAD_NO_ASSIGNMENT:
+            case C2MP_QUAD_ELSE:
+                // nothing
+                break;
+            case C2MP_QUAD_ENDIF:
+            case C2MP_QUAD_ENDWHILE:
+            case C2MP_QUAD_ENDDOWHILE:
+            	--blocDepth;
+                break; 
+            default:
+            	panic("optimization.c","getUsedVariablesInBloc","Not recognized operator\n");
+            	break;
+		}
+		q = q->next;
+	} while(q != firstQuad && blocDepth > 0);
+	
+	return usedVariables;
 }
 
 quad* removeUselessTempFromBloc(quad* quads, quad* firstQuad, int assignment, int * usedInBloc)
@@ -325,6 +424,7 @@ quad* removeUselessTempFromBloc(quad* quads, quad* firstQuad, int assignment, in
             case C2MP_FUNCTION_SIN:
             case C2MP_FUNCTION_COSH:
             case C2MP_FUNCTION_SINH:
+            case C2MP_FUNCTION_SQR:
             case C2MP_OPERATOR_BINARY_MINUS:
             case C2MP_OPERATOR_BINARY_DIVIDE:
             case C2MP_OPERATOR_LOWER_THAN:
@@ -416,6 +516,7 @@ quad* removeUselessTemp(quad* quads)
             case C2MP_FUNCTION_SIN:
             case C2MP_FUNCTION_COSH:
             case C2MP_FUNCTION_SINH:
+            case C2MP_FUNCTION_SQR:
             case C2MP_OPERATOR_BINARY_MINUS:
             case C2MP_OPERATOR_BINARY_DIVIDE:
             case C2MP_OPERATOR_LOWER_THAN:
@@ -614,6 +715,7 @@ quad* removeCommonSubExpression(quad* quads, quad* firstQuad)
             case C2MP_FUNCTION_SIN:
             case C2MP_FUNCTION_COSH:
             case C2MP_FUNCTION_SINH:
+            case C2MP_FUNCTION_SQR:
 
 				optimizationRefOp1 = getOperandOptimizationRef(q->operands[0].reference);
 				
@@ -712,6 +814,7 @@ quad* ignoreBlocForCommonSubExpression(quad* quads, quad* firstQuad)
             case C2MP_FUNCTION_SIN:
             case C2MP_FUNCTION_COSH:
             case C2MP_FUNCTION_SINH:
+            case C2MP_FUNCTION_SQR:
             case C2MP_OPERATOR_BINARY_MINUS:
             case C2MP_OPERATOR_BINARY_DIVIDE:
             case C2MP_OPERATOR_LOWER_THAN:

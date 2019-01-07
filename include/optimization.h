@@ -57,6 +57,9 @@ quad* optimizeQuads(quad* quads);
 quad* removeLoopsInvariants(quad* quads);
 quad* removeLoopInvariants(quad* quads); // removes invariants from ONE loop, returns the LAST quad of the bloc
 referenceList *getModifiedVariablesInBloc(quad* quads); // returns a list of reference which can be modified in this bloc
+referenceList *getUsedVariablesInBloc(quad* quads);
+quad* reuseTemporaries(quad* quads);
+quad* getSafeReuseQuad(quad* quads, int reference);
 quad* removeUselessTemp(quad* quads);
 quad* removeAllCommonSubExpressions(quad* quads);
 quad* removeCommonSubExpression(quad* quads, quad* firstQuad);
