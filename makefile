@@ -123,6 +123,9 @@ clean:
 	if test -e y.output; \
 	then rm y.output; \
 	fi
+	if test -d doc; \
+	then rm -r doc; \
+	fi
 	if test -e C2MP_result.c; \
 	then rm C2MP_result.c; \
 	fi
@@ -159,7 +162,7 @@ run:
 
 .PHONY: archive
 archive: 
-	tar zcvf C2MP_DIVRIOTIS_FLINT_JUNG_VETRIVEL.tar.gz makefile ./src/*.c ./src/syntax/* Doxyfile LICENSE README.md test_campaign.sh ./tests/* ./include/* ./doc 
+	tar zcvf C2MP_DIVRIOTIS_FLINT_JUNG_VETRIVEL.tar.gz makefile ./src/*.c ./src/syntax/* Doxyfile LICENSE README.md test_campaign.sh ./tests/* ./include/*
 
 
 
