@@ -137,6 +137,11 @@ Examples, if you want the testfile test_x.c to file a the precompilation, you ha
 
 Check the tests/ repository for examples.
 
+
+## Documentation
+
+Run `make doc | firefox doc/html/index.html"
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
