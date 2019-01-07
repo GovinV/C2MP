@@ -204,7 +204,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
     expressionAST *opeAST;
     symbolType tempType = MPC_T;
     int reference1, reference2, reference;
-    int resultTemporary;
+    int resultTemporary, resultZero, resultRef1;
     switch(expr->operator)
     {
         case C2MP_OPERATOR_LOGICAL_AND:
@@ -214,7 +214,10 @@ quad *generateQuadsFromAST(expressionAST *expr)
             reference1 = quadExpr1->previous->assignment;
             reference2 = quadExpr2->previous->assignment;
 
+            resultRef1 = newTemp(MPC_T, false).reference;
+            resultZero = newTemp(MPC_T, false).reference;
             resultTemporary = newTemp(INTEGER_NUMBER, true).reference;
+
 
             /* generate these quads :
             a = ...
@@ -232,14 +235,26 @@ quad *generateQuadsFromAST(expressionAST *expr)
             a result of expr1
             b result of expr2
             */
-
             finalQuads = concatQuads(quadExpr1,
+                            createQuad(resultRef1,
+                                C2MP_QUAD_ASSIGNMENT,
+                                NULL,
+                                C2MP_QUAD_UNARY,
+                               createVariableOperand(reference1))); // if expr1 == 0
+            finalQuads = concatQuads(quadExpr1,
+                            createQuad(resultZero,
+                                C2MP_QUAD_ASSIGNMENT,
+                                NULL,
+                                C2MP_QUAD_UNARY,
+                                createIntegerOperand(0))); // if expr1 == 0
+            finalQuads = concatQuads(finalQuads,
                             createQuad(resultTemporary,
                                 C2MP_OPERATOR_NOT_EQUAL,
                                 NULL,
                                 C2MP_QUAD_BINARY,
-                                createVariableOperand(reference1),
-                                createIntegerOperand(0))); // if expr1 == 0
+                                createVariableOperand(resultRef1),
+                                createVariableOperand(resultZero))); // if expr1 == 0
+
             finalQuads = concatQuads(finalQuads,
                             createQuad(-1, C2MP_QUAD_IF, NULL, 
                                 C2MP_QUAD_UNARY,
@@ -276,6 +291,8 @@ quad *generateQuadsFromAST(expressionAST *expr)
             reference1 = quadExpr1->previous->assignment;
             reference2 = quadExpr2->previous->assignment;
 
+            resultRef1 = newTemp(MPC_T, false).reference;
+            resultZero = newTemp(MPC_T, false).reference;
             resultTemporary = newTemp(INTEGER_NUMBER, true).reference;
 
             /* generate these quads :
@@ -294,14 +311,27 @@ quad *generateQuadsFromAST(expressionAST *expr)
             a result of expr1
             b result of expr2
             */
-
             finalQuads = concatQuads(quadExpr1,
+                            createQuad(resultRef1,
+                                C2MP_QUAD_ASSIGNMENT,
+                                NULL,
+                                C2MP_QUAD_UNARY,
+                               createVariableOperand(reference1))); // if expr1 == 0
+            finalQuads = concatQuads(quadExpr1,
+                            createQuad(resultZero,
+                                C2MP_QUAD_ASSIGNMENT,
+                                NULL,
+                                C2MP_QUAD_UNARY,
+                                createVariableOperand(0))); // if expr1 == 0
+
+            finalQuads = concatQuads(finalQuads,
                             createQuad(resultTemporary,
-                                C2MP_OPERATOR_EQUAL,
+                                C2MP_OPERATOR_NOT_EQUAL,
                                 NULL,
                                 C2MP_QUAD_BINARY,
-                                createVariableOperand(reference1),
-                                createIntegerOperand(0))); // if expr1 == 0
+                                createVariableOperand(resultRef1),
+                                createVariableOperand(resultZero))); // if expr1 == 0
+
             finalQuads = concatQuads(finalQuads,
                             createQuad(-1,
                                 C2MP_QUAD_IF,
