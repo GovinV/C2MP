@@ -75,4 +75,4 @@ int findExprHashTable(char op, int operand1, int operand2);
 int findConstantTable(int reference);
 void resetTables(void);
 
-#endif //OPTI_H
+#endif //OPTIMIZATION_H

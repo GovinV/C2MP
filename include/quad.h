@@ -38,30 +38,38 @@ typedef struct quadOperand quadOperand;
 typedef struct quad quad;
 
 /**
+ * \fn quadOperand createVariableOperand(int reference)
  * \brief Creates an quad operand related to a variable
  * \param reference reference of the variable
  * \return The created operand
  */
 quadOperand createVariableOperand(int reference);
+
 /**
+ * \fn quadOperand createIntegerOperand(int value)
  * \brief Creates an quad operand related to an integer constant
  * \param value value of the constant
  * \return The created operand
  */
 quadOperand createIntegerOperand(int value);
+
 /**
+ * \fn quadOperand createFloatOperand(double value)
  * \brief Creates an quad operand related to an float constant
  * \param value value of the constant
  * \return The created operand
  */
 quadOperand createFloatOperand(double value);
+
 /**
+ * \fn quadOperand createVoidOperand(void)
  * \brief Creates an quad operand related to nothing (example : operand2 of sqrt)
  * \return The created operand
  */
 quadOperand createVoidOperand(void);
 
 /**
+ * \fn quadOperand createStringOperand(char *string)
  * \brief Creates a string operand for a quad. Used by custom functions.
  * \param string the string (with quotes)
  * \return the created operand
@@ -69,6 +77,7 @@ quadOperand createVoidOperand(void);
 quadOperand createStringOperand(char *string);
 
 /**
+ * \fn symbolType getSymbolTypeFromOperand(quadOperand ope)
  * \brief Returns the type of an operand.
  * An operand can be a constant, in this case it is the type of the constant (int/float)
  * or a variable, in this case it returns the type of the variable
@@ -78,6 +87,7 @@ quadOperand createStringOperand(char *string);
 symbolType getSymbolTypeFromOperand(quadOperand ope);
 
 /**
+ * \fn quad *createQuad(int assignment, char operator, char * name, int operandsNum, ...)
  * \brief Creates a quad structure
  * \param assignement The symbol (index in the table) to which assign the quad
  * \param operator the operator type
@@ -88,6 +98,7 @@ symbolType getSymbolTypeFromOperand(quadOperand ope);
 quad *createQuad(int assignment, char operator, char * name, int operandsNum, ...);
 
 /**
+ * \fn quad *createQuadFromOperandList(int assignment, char operator, char *name, int argsNum, quadOperand *list)
  * \brief Creates a quad from an operand list
  * \param assignement The assignement to which belongs the resulting quad
  * \param operator The type of the quad
@@ -100,6 +111,7 @@ quad *createQuadFromOperandList(int assignment, char operator, char *name, int a
 
 
 /**
+ * \fn void freeQuads(quad *q)
  * \brief Frees the memory from quads
  * \param q a chained list of quads to be freed
  */
@@ -107,6 +119,7 @@ void freeQuads(quad *q);
 
 
 /**
+ * \fn quad *copySemiQuad(semiQuad *sq)
  * \brief Gets a quad list from a single semiQuad.
  * Example : the semiQuad a=x+b could be converted to the following quads :
  * t1=x, t2=b, a=t1+t2
@@ -116,6 +129,7 @@ void freeQuads(quad *q);
 quad *copySemiQuad(semiQuad *sq);
 
 /**
+ * \fn quad *generateQuadsFromAST(expressionAST *expr)
  * \brief Generates a list of quads matching the given AST
  * \param expr expressionAST to be read
  * \return The created quad list
@@ -123,6 +137,7 @@ quad *copySemiQuad(semiQuad *sq);
 quad *generateQuadsFromAST(expressionAST *expr);
 
 /**
+ * \fn quad *getQuadsFromSemiQuads(semiQuad *sq)
  * \brief Generates a list of quads matching a list of semiQuads
  * \param sq semiQuad list
  * \return The created quad list
@@ -131,6 +146,7 @@ quad *getQuadsFromSemiQuads(semiQuad *sq);
 
 
 /**
+ * \fn quad *concatQuads(quad *q1, quad *q2)
  * \brief Concatenates two lists of suads
  * (careful ! The two lists are modified by this operation)
  * \param q1 first list
@@ -140,18 +156,21 @@ quad *getQuadsFromSemiQuads(semiQuad *sq);
 quad *concatQuads(quad *q1, quad *q2);
 
 /**
+ * \fn void printOperand(quadOperand operand)
  * \brief Prints an operand
  * \param operand operand
  */
 void printOperand(quadOperand operand);
 
 /**
+ * \fn void outputOperand(quadOperand operand)
  * \brief Outputs an operand to a file
  * \param operand operand
  */
 void outputOperand(quadOperand operand);
 
 /**
+ * \fn void printQuads(quad* q)
  * \brief Prints a list of quads
  * \param g quads
  */
@@ -159,4 +178,4 @@ void printQuads(quad* q);
 
 
 
-#endif
+#endif // QUAD_H

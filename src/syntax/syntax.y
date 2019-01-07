@@ -575,7 +575,7 @@ int main(int argc, char *argv[])
     }
  
     int opt, i, j, rc, errFlag;
-    char tempFile1[50],  tempFile2[50];
+    char tempFile1[50],  tempFile2[50], tempFile3[50];
 
     char *inputFileExtension    = strrchr(argv[1], '.');
     char *resultFileName        = "C2MP_result.c";
@@ -649,15 +649,51 @@ int main(int argc, char *argv[])
         rc = yyparse();
         if(rc == 1)
         {
+            for( j = 0 ; j < i-1 ; j++)
+            {
+                snprintf(tempFile3, 10, "output%d.c", j); 
+                if (remove(tempFile3) != 0 )
+                {
+                    panic("syntax.y", "main", "Error Remove File\n");
+                }
+                
+            }
+            if ( fclose(finput) != 0)
+                panic("syntax.y", "main", "Error Close File\n");
+            close_file();
             panic("syntax.y", "main", "Parsing failed because of invalid input,"
                 "i.e., input that contains a syntax error or that causes YYABORT to be invoked");
         }
         else if(rc == 2)
         {
+            for( j = 0 ; j < i-1 ; j++)
+            {
+                snprintf(tempFile3, 10, "output%d.c", j); 
+                if (remove(tempFile3) != 0 )
+                {
+                    panic("syntax.y", "main", "Error Remove File\n");
+                }
+                
+            }
+            if ( fclose(finput) != 0)
+                panic("syntax.y", "main", "Error Close File\n");
+            close_file();
             panic("syntax.y", "main", "Parsing failed due to memory exhaustion. ");
         }
         else if (rc != 0)
         {
+            for( j = 0 ; j < i-1 ; j++)
+            {
+                snprintf(tempFile3, 10, "output%d.c", j); 
+                if (remove(tempFile3) != 0 )
+                {
+                    panic("syntax.y", "main", "Error Remove File\n");
+                }
+                
+            }
+            if ( fclose(finput) != 0)
+                panic("syntax.y", "main", "Error Close File\n");
+            close_file();
             panic("syntax.y", "main", "Parsing failed : Unknown Error. ");
         }
         if (pragmaMet == 1) // if we met a pragma
@@ -704,6 +740,18 @@ int main(int argc, char *argv[])
 
     if (rename(tempFile1, resultFileName) == -1)
     {
+        for( j = 0 ; j < i-1 ; j++)
+        {
+            snprintf(tempFile3, 10, "output%d.c", j); 
+            if (remove(tempFile3) != 0 )
+            {
+                panic("syntax.y", "main", "Error Remove File\n");
+            }
+                
+        }
+        if ( fclose(finput) != 0)
+            panic("syntax.y", "main", "Error Close File\n");
+        close_file();
         panic("syntax.y", "main", "Error Rename File\n");
     }
 
