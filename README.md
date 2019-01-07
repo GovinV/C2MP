@@ -107,7 +107,26 @@ Besides, C2MP is doing the following optimization on the code:
 * Removing useless temporary variables
 * Removing loop invariants
 * Reusing temporary variables (if not used anymore)
+## Test
+To run all tests in repository tests/, run `make run` after `make`.
 
+Each test will go through 8 step:
+* Step 1: Precompile with C2MP `./C2MP prgm.c`
+* Step 2: Compile with gcc `gcc result.c -lmpc -o result`
+* Step 3: Execute the generated file `./result`
+* Step 4: Test on the output, all output should be this way `xxxx GeneratedResult ExepectedResult` xxxx can be replaced by the variable name for example
+* Step 5: Precompile with C2MP with optimization `./C2MP prgm.c -O -o opti_result.c` 
+* Step 6: Compile with gcc `gcc opti_result.c -lmpc -o opti_result`
+* Step 7: Execute the generated file `./opti_result`
+* Step 8: Test if output of optimized version is the same as the not optimized one
+* Step 9: Success
+
+**Specify a behavior for a test**
+
+If you write a test that fail one of the test's step, you have to add in file `tests/expected_behavior` the test filename and the step on which it is expected to fail. 
+
+Examples, if you want the testfile test_x.c to file a the precompilation, you have to had on a new line:
+`test_x.c 1`
 ## Examples
 
 Check the tests/ repository for examples.
