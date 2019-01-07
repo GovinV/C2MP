@@ -84,6 +84,7 @@ p : unary +
 #define C2MP_FUNCTION_COSH              9
 #define C2MP_FUNCTION_SINH              10
 #define C2MP_FUNCTION_UNKNOWN           11
+#define C2MP_FUNCTION_SQR               12
 
 // max args for a function
 #define MAX_FCT_ARGS 10

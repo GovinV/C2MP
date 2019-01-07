@@ -6,7 +6,7 @@ int main()
 {
 
     // using float for fun ;)
-    float a, b, d, e, f, g, h, i, j, x = 2, y = 3, z = 3.14;
+    float a, b, d, e, f, g, h, i, j, k, x = 2, y = 3, z = 3.14;
 
     printf("### Testing supported mathematic functions ###\n");
 
@@ -22,6 +22,7 @@ int main()
         h = sin(x);
         i = cosh(2);
         j = sinh(x);
+        k = sqr(3);
     }
 
     printf("### Here are the results! We print 6 decimals ###\n");
@@ -34,6 +35,7 @@ int main()
     printf("sin(2) %6f 0.909297\n", h);
     printf("cosh(2) %6f 3.762196\n", i);
     printf("sinh(2) %6f 3.626860\n", j);
+    printf("sqr(3) %6f 27.000000\n", k);    
 
     return 0;
 

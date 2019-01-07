@@ -101,6 +101,7 @@ expressionAST *copyExpressionAST(expressionAST *expressionAST)
         case C2MP_FUNCTION_SIN:
         case C2MP_FUNCTION_COSH:
         case C2MP_FUNCTION_SINH:
+        case C2MP_FUNCTION_SQR:
             currentAST->expression.e1 = copyExpressionAST(expressionAST->expression.e1);
             break;
         

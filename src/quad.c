@@ -387,6 +387,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
         case C2MP_FUNCTION_SIN:
         case C2MP_FUNCTION_SINH:
         case C2MP_FUNCTION_SQRT:
+        case C2MP_FUNCTION_SQR:
 
             quadExpr = generateQuadsFromAST(expr->expression.e1);
 

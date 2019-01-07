@@ -187,7 +187,7 @@ void generateCode(quad *q, char *rounding, int precision)
             ++indent;
             fprintf(output, "\n%*sif (",indent*4," ");
             outputOperand(currentQuad->operands[0]);
-            fprintf(output, ") {");
+            fprintf(output, ")\n%*s{",indent*4," ");
             break;
 
         case C2MP_QUAD_ELSE:
@@ -282,6 +282,12 @@ void generateCode(quad *q, char *rounding, int precision)
 
         case C2MP_FUNCTION_SINH:
             fprintf(output, "mpc_sinh(%s, ", getNameFromReference(currentQuad->assignment));
+            outputOperand(currentQuad->operands[0]);
+            fprintf(output, ", %s);", rounding);
+            break;
+        
+        case C2MP_FUNCTION_SQR:
+            fprintf(output, "mpc_sqr(%s, ", getNameFromReference(currentQuad->assignment));
             outputOperand(currentQuad->operands[0]);
             fprintf(output, ", %s);", rounding);
             break;

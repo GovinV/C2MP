@@ -44,6 +44,8 @@ int parseFct(char *symbol)
         return C2MP_FUNCTION_COSH;
     if (strncmp(symbol, "sinh", 5) == 0)
         return C2MP_FUNCTION_SINH;
+    if (strncmp(symbol, "sqr", 4) == 0)
+        return C2MP_FUNCTION_SQR; 
     return C2MP_FUNCTION_UNKNOWN;
 }
 
