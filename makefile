@@ -159,7 +159,7 @@ run:
 
 .PHONY: archive
 archive: 
-	tar zcvf C2MP_DIVRIOTIS_FLINT_JUNG_VETRIVEL.tar.gz ./src/*.c ./src/syntax/* Doxyfile LICENSE README.md test_campaign.sh ./tests/* ./include/* ./doc 
+	tar zcvf C2MP_DIVRIOTIS_FLINT_JUNG_VETRIVEL.tar.gz makefile ./src/*.c ./src/syntax/* Doxyfile LICENSE README.md test_campaign.sh ./tests/* ./include/* ./doc 
 
 
 
