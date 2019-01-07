@@ -37,6 +37,12 @@ the resulting source file.
 
 You can visit the MPC project website here: http://www.multiprecision.org/mpc
 
+## Installation
+
+To install C2MP, go in the root folder, and then run `make`.
+To generate documentation, run `make doc`, but make sure you have doxygen installed before !
+To run tests, run `make run` in the root folder.
+
 ## How it works
 
 ```
