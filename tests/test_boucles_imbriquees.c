@@ -7,7 +7,7 @@ int main()
 
     double a, b, c, d, e, f, g, h;
 
-    printf("### Testing complex algorithms ###\n");
+    printf("### Testing imbricated loops ###\n");
 
     #pragma MPC precision(2000) 
     {
