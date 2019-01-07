@@ -451,16 +451,16 @@ EXPR:
         { $$ = createExpressionAST(C2MP_OPERATOR_LOGICAL_OR, $1, $3); }
     | EXPR AND EXPR     
         { $$ = createExpressionAST(C2MP_OPERATOR_LOGICAL_AND, $1, $3); }
-    | EXPR '&' EXPR     
+    /*| EXPR '&' EXPR     
         { $$ = createExpressionAST(C2MP_OPERATOR_BITWISE_AND, $1, $3); }
     | EXPR '^' EXPR     
-        { $$ = createExpressionAST(C2MP_OPERATOR_BITWISE_XOR, $1, $3); }
+        { $$ = createExpressionAST(C2MP_OPERATOR_BITWISE_XOR, $1, $3); } // bitwise operator not handled
     | EXPR '|' EXPR     
-        { $$ = createExpressionAST(C2MP_OPERATOR_BITWISE_OR, $1, $3); }
+        { $$ = createExpressionAST(C2MP_OPERATOR_BITWISE_OR, $1, $3); }*/
     | '!' EXPR          
         { $$ = createExpressionAST(C2MP_OPERATOR_LOGICAL_NOT, $2, NULL); }
-    | '~' EXPR          
-        { $$ = createExpressionAST(C2MP_OPERATOR_BITWISE_NOT, $2, NULL); }
+    /*| '~' EXPR          
+        { $$ = createExpressionAST(C2MP_OPERATOR_BITWISE_NOT, $2, NULL); }*/
     | '(' EXPR ')'      
         { $$ = $2; }
     | VAR               
