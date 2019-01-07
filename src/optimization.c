@@ -36,12 +36,13 @@ referenceList *concatReferenceList(referenceList *list1, referenceList *list2)
 
 quad* optimizeQuads(quad* quads)
 {
-    for(int i=0;i<100;++i)
-    {
-        quads = removeAllCommonSubExpressions(quads);
-        quads = removeUselessTemp(quads);
-        quads = removeLoopsInvariants(quads);
-    }
+    //for(int i=0;i<100;++i)
+    //{
+    //    quads = removeAllCommonSubExpressions(quads);
+    //    quads = removeUselessTemp(quads);
+    //    quads = removeLoopsInvariants(quads);
+        quads = reuseTemporaries(quads);
+    //}
     
     return quads;
 }
@@ -81,18 +82,307 @@ bool referenceIsIn(int reference, referenceList *list)
 */
 quad* reuseTemporaries(quad* quads)
 {
-    for(int i=0;i<variablesSize;++i)
+    quad *firstQuad = quads;
+    for(int i=0;i<getSymbolNum();++i)
     {
-        if(!variables[i].isTemp)
+        if(!getSymbolFromReference(i).isTemp)
         {
             continue;
         }
+        if(getSymbolFromReference(i).isBlockCondition)
+        {
+            continue;
+        }
+        
+        quad *nextFreeQuad = getSafeReuseQuad(quads, i);
+        int replaced = 0;
+        
+        while(nextFreeQuad != firstQuad)
+        {
+            switch(nextFreeQuad->operator)
+            {
+                case C2MP_QUAD_ASSIGNMENT:
+                case C2MP_OPERATOR_BINARY_PLUS:
+                case C2MP_OPERATOR_BINARY_DOT:
+                case C2MP_OPERATOR_EQUAL:
+                case C2MP_OPERATOR_NOT_EQUAL:
+                case C2MP_OPERATOR_BITWISE_AND:
+                case C2MP_OPERATOR_BITWISE_OR:
+                case C2MP_OPERATOR_BITWISE_XOR:
+                case C2MP_OPERATOR_LOGICAL_AND:
+                case C2MP_OPERATOR_LOGICAL_OR:
+                case C2MP_OPERATOR_BINARY_MINUS:
+                case C2MP_OPERATOR_BINARY_DIVIDE:
+                case C2MP_OPERATOR_LOWER_THAN:
+                case C2MP_OPERATOR_GREATER_THAN:
+                case C2MP_OPERATOR_LOWER_OR_EQUAL:
+                case C2MP_OPERATOR_GREATER_OR_EQUAL:
+                case C2MP_FUNCTION_POW:
+                case C2MP_OPERATOR_UNARY_MINUS:
+                case C2MP_OPERATOR_UNARY_PLUS:
+                case C2MP_OPERATOR_LOGICAL_NOT:
+                case C2MP_OPERATOR_BITWISE_NOT:
+                case C2MP_FUNCTION_SQRT:
+                //case C2MP_FUNCTION_ABS:
+                case C2MP_FUNCTION_EXP:
+                case C2MP_FUNCTION_LOG:
+                case C2MP_FUNCTION_LOG10:
+                case C2MP_FUNCTION_COS:
+                case C2MP_FUNCTION_SIN:
+                case C2MP_FUNCTION_COSH:
+                case C2MP_FUNCTION_SINH:
+                case C2MP_FUNCTION_SQR:
+                case C2MP_FUNCTION_UNKNOWN:
+                    if(getSymbolFromReference(nextFreeQuad->assignment).isTemp)
+                    {
+                        nextFreeQuad = replaceUntil(nextFreeQuad, firstQuad, nextFreeQuad->assignment, i);
+                        replaced = 1;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            
+            if(replaced)
+            {
+                break;
+            }
+            
+            nextFreeQuad = nextFreeQuad->next;
+        }
     }
+    
+    return quads;
+}
+
+quad* replaceUntil(quad* begin, quad*end, int oldRef, int newRef)
+{
+    quad *q = begin;
+    while(q != end)
+    {
+        switch(q->operator)
+        {
+            case C2MP_QUAD_ASSIGNMENT:
+            case C2MP_OPERATOR_UNARY_MINUS:
+            case C2MP_OPERATOR_UNARY_PLUS:
+            case C2MP_OPERATOR_LOGICAL_NOT:
+            case C2MP_OPERATOR_BITWISE_NOT:
+            case C2MP_FUNCTION_SQRT:
+            //case C2MP_FUNCTION_ABS:
+            case C2MP_FUNCTION_EXP:
+            case C2MP_FUNCTION_LOG:
+            case C2MP_FUNCTION_LOG10:
+            case C2MP_FUNCTION_COS:
+            case C2MP_FUNCTION_SIN:
+            case C2MP_FUNCTION_COSH:
+            case C2MP_FUNCTION_SINH:
+            case C2MP_FUNCTION_SQR:
+                if(q->assignment == oldRef)
+                {
+                    q->assignment = newRef;
+                }
+                if(q->operands[0].type == C2MP_QUAD_OPERAND_VARIABLE && q->operands[0].reference == oldRef)
+                {
+                    q->operands[0].reference = newRef;
+                }
+                break;
+            case C2MP_OPERATOR_BINARY_PLUS:
+            case C2MP_OPERATOR_BINARY_DOT:
+            case C2MP_OPERATOR_EQUAL:
+            case C2MP_OPERATOR_NOT_EQUAL:
+            case C2MP_OPERATOR_BITWISE_AND:
+            case C2MP_OPERATOR_BITWISE_OR:
+            case C2MP_OPERATOR_BITWISE_XOR:
+            case C2MP_OPERATOR_LOGICAL_AND:
+            case C2MP_OPERATOR_LOGICAL_OR:
+            case C2MP_OPERATOR_BINARY_MINUS:
+            case C2MP_OPERATOR_BINARY_DIVIDE:
+            case C2MP_OPERATOR_LOWER_THAN:
+            case C2MP_OPERATOR_GREATER_THAN:
+            case C2MP_OPERATOR_LOWER_OR_EQUAL:
+            case C2MP_OPERATOR_GREATER_OR_EQUAL:
+            case C2MP_FUNCTION_POW:
+                if(q->assignment == oldRef)
+                {
+                    q->assignment = newRef;
+                }
+                if(q->operands[0].type == C2MP_QUAD_OPERAND_VARIABLE && q->operands[0].reference == oldRef)
+                {
+                    q->operands[0].reference = newRef;
+                }
+                if(q->operands[1].type == C2MP_QUAD_OPERAND_VARIABLE && q->operands[1].reference == oldRef)
+                {
+                    q->operands[1].reference = newRef;
+                }
+                break;
+            case C2MP_FUNCTION_UNKNOWN:
+                if(q->assignment == oldRef)
+                {
+                    q->assignment = newRef;
+                }
+                for(int i = 0; i < q->operandsNum; i++)
+                {
+                    if(q->operands[i].type == C2MP_QUAD_OPERAND_VARIABLE && q->operands[i].reference == oldRef)
+                    {
+                        q->operands[i].reference = newRef;
+                    }
+                }
+                break;
+            case C2MP_QUAD_IF:
+            case C2MP_QUAD_WHILE:
+            case C2MP_QUAD_DOWHILE:
+            case C2MP_QUAD_ENDIF:
+            case C2MP_QUAD_ENDWHILE:
+            case C2MP_QUAD_ENDDOWHILE:
+                if(q->assignment == oldRef)
+                {
+                    q->assignment = newRef;
+                }
+                break;
+            case C2MP_QUAD_NO_ASSIGNMENT:
+                for(int i = 0; i < q->operandsNum; i++)
+                {
+                    if(q->operands[i].type == C2MP_QUAD_OPERAND_VARIABLE && q->operands[i].reference == oldRef)
+                    {
+                        q->operands[i].reference = newRef;
+                    }
+                }
+                break;
+            case C2MP_QUAD_ELSE:
+                // nothing
+                break;
+            default:
+                panic("optimization.c","getSafeReuseQuad","Not recognized operator\n");
+        }
+        
+        q = q->next;
+    }
+    return begin;
 }
 
 quad* getSafeReuseQuad(quad* quads, int reference)
 {
+    quad *q = quads;
+    quad *firstQuad = quads;
+    quad *lastFreeQuad = quads;
     
+    int blocDepth = 0;
+    int inIf = 0;
+    referenceList *modifiedVariables = NULL;
+    referenceList *usedVariables = NULL;
+    
+    do
+    {
+        switch(q->operator)
+        {
+            case C2MP_QUAD_IF:
+                if(blocDepth == 0)
+                {
+                    inIf = 1;
+                }
+                break;
+            case C2MP_QUAD_WHILE:
+            case C2MP_QUAD_DOWHILE:
+                ++blocDepth;
+                if(blocDepth == 1 && !inIf)
+                {
+                    modifiedVariables = getModifiedVariablesInBloc(q);
+                    usedVariables = getUsedVariablesInBloc(q);
+                }
+                break;
+            case C2MP_QUAD_NO_ASSIGNMENT:
+            case C2MP_QUAD_ELSE:
+                // nothing
+                break;
+            case C2MP_QUAD_ENDIF:
+                if(blocDepth == 0)
+                {
+                    inIf = 0;
+                }
+                break;
+            case C2MP_QUAD_ENDWHILE:
+            case C2MP_QUAD_ENDDOWHILE:
+            	--blocDepth;
+            default:
+                break;
+        }
+        if(blocDepth == 0 && !inIf)
+        {
+            int usedOrModified;
+            switch(q->operator)
+            {
+                case C2MP_QUAD_ASSIGNMENT:
+                case C2MP_OPERATOR_BINARY_PLUS:
+                case C2MP_OPERATOR_BINARY_DOT:
+                case C2MP_OPERATOR_EQUAL:
+                case C2MP_OPERATOR_NOT_EQUAL:
+                case C2MP_OPERATOR_BITWISE_AND:
+                case C2MP_OPERATOR_BITWISE_OR:
+                case C2MP_OPERATOR_BITWISE_XOR:
+                case C2MP_OPERATOR_LOGICAL_AND:
+                case C2MP_OPERATOR_LOGICAL_OR:
+                case C2MP_OPERATOR_BINARY_MINUS:
+                case C2MP_OPERATOR_BINARY_DIVIDE:
+                case C2MP_OPERATOR_LOWER_THAN:
+                case C2MP_OPERATOR_GREATER_THAN:
+                case C2MP_OPERATOR_LOWER_OR_EQUAL:
+                case C2MP_OPERATOR_GREATER_OR_EQUAL:
+                case C2MP_FUNCTION_POW:
+                case C2MP_OPERATOR_UNARY_MINUS:
+                case C2MP_OPERATOR_UNARY_PLUS:
+                case C2MP_OPERATOR_LOGICAL_NOT:
+                case C2MP_OPERATOR_BITWISE_NOT:
+                case C2MP_FUNCTION_SQRT:
+                //case C2MP_FUNCTION_ABS:
+                case C2MP_FUNCTION_EXP:
+                case C2MP_FUNCTION_LOG:
+                case C2MP_FUNCTION_LOG10:
+                case C2MP_FUNCTION_COS:
+                case C2MP_FUNCTION_SIN:
+                case C2MP_FUNCTION_COSH:
+                case C2MP_FUNCTION_SINH:
+                case C2MP_FUNCTION_SQR:
+                    if(q->assignment == reference || q->operands[0].reference == reference || q->operands[1].reference == reference)
+                    {
+                        lastFreeQuad = q->next;
+                    }
+                    break;
+                case C2MP_FUNCTION_UNKNOWN:
+                    usedOrModified = q->assignment == reference;
+                    for(int i = 0; i < q->operandsNum; i++)
+                    {
+                        usedOrModified = usedOrModified||(q->operands[i].reference == reference);
+                    }
+                    if(usedOrModified)
+                    {
+                        lastFreeQuad = q->next;
+                    }
+                    break;
+                case C2MP_QUAD_ENDWHILE:
+                case C2MP_QUAD_ENDDOWHILE:
+                    if(referenceIsIn(reference, modifiedVariables) || referenceIsIn(reference, usedVariables))
+                    { // if the reference has been used in a loop, only the quad next to the end is free to use
+                        lastFreeQuad = q->next;
+                    }
+                    modifiedVariables = NULL;
+                    usedVariables = NULL;
+                    break;
+                case C2MP_QUAD_IF:
+                case C2MP_QUAD_WHILE:
+                case C2MP_QUAD_DOWHILE:
+                case C2MP_QUAD_NO_ASSIGNMENT:
+                case C2MP_QUAD_ELSE:
+                case C2MP_QUAD_ENDIF:
+                    // nothing
+                    break;
+                default:
+                    panic("optimization.c","getSafeReuseQuad","Not recognized operator\n");
+            }
+        }
+        q=q->next;
+    }while(q != firstQuad);
+    
+    return lastFreeQuad;
 }
 
 
@@ -341,7 +631,7 @@ referenceList *getUsedVariablesInBloc(quad* quads)
             case C2MP_FUNCTION_COSH:
             case C2MP_FUNCTION_SINH:
             case C2MP_FUNCTION_SQR:
-                usedVariables = addReference(usedVariables, q->operand1);
+                usedVariables = addReference(usedVariables, q->operands[0].reference);
                 break;
             case C2MP_OPERATOR_BINARY_PLUS:
             case C2MP_OPERATOR_BINARY_DOT:
@@ -359,11 +649,14 @@ referenceList *getUsedVariablesInBloc(quad* quads)
             case C2MP_OPERATOR_LOWER_OR_EQUAL:
             case C2MP_OPERATOR_GREATER_OR_EQUAL:
             case C2MP_FUNCTION_POW:
-                usedVariables = addReference(usedVariables, q->operand1);
-                usedVariables = addReference(usedVariables, q->operand2);
+                usedVariables = addReference(usedVariables, q->operands[0].reference);
+                usedVariables = addReference(usedVariables, q->operands[1].reference);
                 break;
             case C2MP_FUNCTION_UNKNOWN:
-                fprintf(stderr, "warning, todo : getUsedVariablesInBloc with unknown function\n");
+                for(int i = 0; i < q->operandsNum; i++)
+                {
+                    usedVariables = addReference(usedVariables, q->operands[i].reference);
+                }
                 break;
             case C2MP_QUAD_IF:
             case C2MP_QUAD_WHILE:

@@ -7,12 +7,13 @@
 symbol variables[MAX];
 int variablesSize = 0;
 
-symbol newSymbol(const char name[], symbolType type, bool isTemp)
+symbol newSymbol(const char name[], symbolType type, bool isTemp, bool isBlockCondition)
 {
     variables[variablesSize].name = strdup(name);
     variables[variablesSize].reference = variablesSize;
     variables[variablesSize].isConstant = 0;
     variables[variablesSize].isTemp = isTemp;
+    variables[variablesSize].isBlockCondition = isBlockCondition;
     
     variables[variablesSize].type_symbol = type;
     
@@ -54,7 +55,7 @@ int getReferenceFromName(const char name[])
     int reference = getSymbolReference(name);
     if(reference == -1)
     {
-        return newSymbol(name, FLOAT_NUMBER, false).reference;
+        return newSymbol(name, FLOAT_NUMBER, false, false).reference;
     }
 
     return reference;
@@ -66,7 +67,7 @@ const char *getNameFromReference(int reference)
     return variables[reference].name;
 }
 
-symbol newTemp(symbolType type)
+symbol newTemp(symbolType type, bool isBlockCondition)
 {
     char buffer[1024];
     static int tempCount = 0;
@@ -74,5 +75,10 @@ symbol newTemp(symbolType type)
     
     ++tempCount;
 
-    return newSymbol(buffer, type, true);
+    return newSymbol(buffer, type, true, isBlockCondition);
+}
+
+int getSymbolNum(void)
+{
+    return variablesSize;
 }

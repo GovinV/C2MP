@@ -37,6 +37,7 @@ typedef struct symbol_s
     char *name;
     bool isConstant;
     bool isTemp;
+    bool isBlockCondition;
     symbolType type_symbol;
 } symbol;
 
@@ -46,7 +47,7 @@ typedef struct symbol_s
  * \param isTemp Specify if the symbol created is a temporary variable
  * \return Returns the instance of the new symbol created.
  */
-symbol newSymbol(const char name[], symbolType type, bool isTemp);
+symbol newSymbol(const char name[], symbolType type, bool isTemp, bool isBlockCondition);
 
 /**
  * \brief This function return the reference of a symbol in the symbol table
@@ -74,7 +75,7 @@ const char *getNameFromReference(int reference);
  * \brief Generate a new temporary variable
  * \return The symbol associated with the variable generated
  */
-symbol newTemp(symbolType type);
+symbol newTemp(symbolType type, bool isBlockCondition);
 
 /**
  * \brief This function returns the symbol from the symbol table at the index
@@ -83,6 +84,8 @@ symbol newTemp(symbolType type);
  * \return The symbol at the index specified as a parameter
  */
 symbol getSymbolFromReference(int ref);
+
+int getSymbolNum(void);
 
 #endif // SYMBOL_H
 

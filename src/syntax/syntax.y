@@ -46,7 +46,7 @@ const char *getNameFromReference(int reference);
 semiQuad *createSemiQuad(char operator, int assignment, expressionAST *expression);
 semiQuad *concatSemiQuad(semiQuad *q1, semiQuad *q2);
 void printSemiQuads(semiQuad *q1);
-symbol newTemp(symbolType type);
+symbol newTemp(symbolType type, bool isBlockCondition);
 // generate.h
 void generateCode(quad* q, char *rounding, int precision);
 // optimization.h
@@ -325,7 +325,7 @@ BLOC:
         }
 	| WHILE '(' EXPR ')' BLOC            
         {
-            int conditionVariable = newTemp(INTEGER_NUMBER).reference; 
+            int conditionVariable = newTemp(INTEGER_NUMBER, true).reference; 
             /* loops need to know which variable they are looping on */
             semiQuad *whileQuad = createSemiQuad(C2MP_QUAD_WHILE, 
                                                  conditionVariable, $3);
@@ -339,7 +339,7 @@ BLOC:
         }
 	| DO BLOC WHILE '(' EXPR ')' ';'     
         {
-            int conditionVariable = newTemp(INTEGER_NUMBER).reference;
+            int conditionVariable = newTemp(INTEGER_NUMBER, true).reference;
             semiQuad *doWhileQuad = createSemiQuad(C2MP_QUAD_DOWHILE,
                                                    conditionVariable,
                                                    $5);
@@ -361,7 +361,7 @@ BLOC:
         }
 	| FOR '(' INSTRUCTION ';' EXPR ';' INSTRUCTION ')' BLOC  
         {
-            int conditionVariable = newTemp(INTEGER_NUMBER).reference;
+            int conditionVariable = newTemp(INTEGER_NUMBER, true).reference;
             semiQuad *whileQuad = createSemiQuad(C2MP_QUAD_WHILE,
                                                  conditionVariable,
                                                  $5);
@@ -512,6 +512,7 @@ FCT:
                 case C2MP_FUNCTION_SIN:
                 case C2MP_FUNCTION_COSH:
                 case C2MP_FUNCTION_SINH:
+                case C2MP_FUNCTION_SQR:
                     $$ = createExpressionAST(type, $3, NULL);
                     break;
                 // this should not happen...

@@ -59,6 +59,7 @@ quad* removeLoopInvariants(quad* quads); // removes invariants from ONE loop, re
 referenceList *getModifiedVariablesInBloc(quad* quads); // returns a list of reference which can be modified in this bloc
 referenceList *getUsedVariablesInBloc(quad* quads);
 quad* reuseTemporaries(quad* quads);
+quad* replaceUntil(quad* begin, quad*end, int oldRef, int newRef);
 quad* getSafeReuseQuad(quad* quads, int reference);
 quad* removeUselessTemp(quad* quads);
 quad* removeAllCommonSubExpressions(quad* quads);

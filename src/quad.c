@@ -214,7 +214,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
             reference1 = quadExpr1->previous->assignment;
             reference2 = quadExpr2->previous->assignment;
 
-            resultTemporary = newTemp(INTEGER_NUMBER).reference;
+            resultTemporary = newTemp(INTEGER_NUMBER, true).reference;
 
             /* generate these quads :
             a = ...
@@ -276,7 +276,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
             reference1 = quadExpr1->previous->assignment;
             reference2 = quadExpr2->previous->assignment;
 
-            resultTemporary = newTemp(INTEGER_NUMBER).reference;
+            resultTemporary = newTemp(INTEGER_NUMBER, true).reference;
 
             /* generate these quads :
             a = ...
@@ -364,7 +364,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
 
             finalQuads = concatQuads(quadExpr1, quadExpr2);
             finalQuads = concatQuads(finalQuads, 
-                            createQuad(newTemp(tempType).reference, expr->operator,
+                            createQuad(newTemp(tempType, false).reference, expr->operator,
                                 NULL,
                                 C2MP_QUAD_BINARY,
                                 createVariableOperand(reference1), 
@@ -395,7 +395,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
             reference = quadExpr->previous->assignment;
 
             finalQuads = concatQuads(quadExpr, 
-                            createQuad(newTemp(MPC_T).reference, expr->operator,
+                            createQuad(newTemp(MPC_T, false).reference, expr->operator,
                                 NULL,
                                 C2MP_QUAD_UNARY,
                                 createVariableOperand(reference)));
@@ -404,7 +404,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
             break;
 
         case C2MP_CHARACTER_INTEGER: // number
-            return createQuad(newTemp(MPC_T).reference, C2MP_QUAD_ASSIGNMENT,
+            return createQuad(newTemp(MPC_T, false).reference, C2MP_QUAD_ASSIGNMENT,
                         NULL,
                         C2MP_QUAD_UNARY,
                         createIntegerOperand(expr->valueInt));
@@ -412,14 +412,14 @@ quad *generateQuadsFromAST(expressionAST *expr)
 
         case C2MP_CHARACTER_FLOAT: // float
 
-            return createQuad(newTemp(MPC_T).reference, C2MP_QUAD_ASSIGNMENT,
+            return createQuad(newTemp(MPC_T, false).reference, C2MP_QUAD_ASSIGNMENT,
                         NULL,
                         C2MP_QUAD_UNARY,
                         createFloatOperand(expr->valueFloat));
             break;
 
         case C2MP_CHARACTER_VARIABLE: // variable
-            return createQuad(newTemp(MPC_T).reference, C2MP_QUAD_ASSIGNMENT,
+            return createQuad(newTemp(MPC_T, false).reference, C2MP_QUAD_ASSIGNMENT,
                         NULL,
                         C2MP_QUAD_UNARY,
                         createVariableOperand(expr->valueVariable));
@@ -469,7 +469,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
                         opeList[i] = createVariableOperand(reference);
                         finalQuads = concatQuads(finalQuads, quadExpr);
                         finalQuads = concatQuads(finalQuads, 
-                                     createQuad(newTemp(MPC_T).reference, C2MP_QUAD_ASSIGNMENT,
+                                     createQuad(newTemp(MPC_T, false).reference, C2MP_QUAD_ASSIGNMENT,
                                      NULL,
                                      C2MP_QUAD_UNARY,
                                      opeList[i]));
@@ -481,7 +481,7 @@ quad *generateQuadsFromAST(expressionAST *expr)
             }
             // Default behaviour with assignement to the function !
             // we need to know if there is an assignment or not...
-            quadExpr1 = createQuadFromOperandList(newTemp(MPC_T).reference,
+            quadExpr1 = createQuadFromOperandList(newTemp(MPC_T, false).reference,
                                              C2MP_FUNCTION_UNKNOWN, 
                                              expr->customFunction.name,
                                              expr->customFunction.argnum,
