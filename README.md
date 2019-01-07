@@ -102,8 +102,7 @@ Our compiler is handling following instructions:
 * Unknown function are recopied in the resulting code, arguments are translated 
 if they are expressions (ex: function(a, c+d, pow(x,y)) => function(a, temp1, temp2) where 
 temp1 and temp2 are mpc_t variables that contains the result of there respective operation)
-* Printfs in the pragma are supported (note: maximum arguments number of a function is 10)
-
+* Printfs in the pragma are supported (note: maximum arguments number of a function is 10). 
 Also, C2MP is compiling as many pragmas as needed in one source file.
 
 **Optimizations**
@@ -140,7 +139,7 @@ Check the tests/ repository for examples.
 
 ## Documentation
 
-Run `make doc | firefox doc/html/index.html"
+Run `make doc | firefox doc/html/index.html"`
 
 ## License
 
