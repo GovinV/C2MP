@@ -133,7 +133,9 @@ quad* reuseTemporaries(quad* quads)
                 case C2MP_FUNCTION_SINH:
                 case C2MP_FUNCTION_SQR:
                 case C2MP_FUNCTION_UNKNOWN:
-                    if(getSymbolFromReference(nextFreeQuad->assignment).isTemp)
+                    if(getSymbolFromReference(nextFreeQuad->assignment).isTemp &&
+                    getSymbolFromReference(nextFreeQuad->assignment).type_symbol == getSymbolFromReference(i).type_symbol &&
+                    !getSymbolFromReference(nextFreeQuad->assignment).isBlockCondition)
                     {
                         nextFreeQuad = replaceUntil(nextFreeQuad, firstQuad, nextFreeQuad->assignment, i);
                         replaced = 1;
